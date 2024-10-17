@@ -1,0 +1,10 @@
+version: "3.7"  # Have to use it unless you upgrade docker-compose
+services:
+  web-project:
+    image: tiim32/iti0302-2024:latest
+    container_name: web-project
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/opt/web-project/application.properties:/app/application.properties"
