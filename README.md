@@ -1,5 +1,9 @@
 # ITI0302-2024 tiim32
 
+## Deployment status
+The application is currently deployed on a server and accessible via domain **tiim32.zapto.org**.
+
+
 ## Overview
 This project is a Spring Boot application with a PostgreSQL database. It uses Liquibase for database migrations.
 The project is containerized using Docker and utilizes two separate `docker-compose` configurations:
