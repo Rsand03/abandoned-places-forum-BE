@@ -17,7 +17,7 @@ public class AbandonedPlaceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Integer location; // for testing, to be replaced with Point(lon, lat)
+    private Integer location;
     private String type;
     private String condition;
 
