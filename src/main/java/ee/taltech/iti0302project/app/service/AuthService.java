@@ -1,6 +1,6 @@
 package ee.taltech.iti0302project.app.service;
 
-import ee.taltech.iti0302project.app.dto.UserDto;
+import ee.taltech.iti0302project.app.dto.UserRegisterDto;
 import ee.taltech.iti0302project.app.dto.mapper.UserMapper;
 import ee.taltech.iti0302project.app.entity.UserEntity;
 import ee.taltech.iti0302project.app.repository.UserRepository;
@@ -23,27 +23,27 @@ public class AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserDto registerUser(UserDto userDto) {
-        logger.info("Registering user with username: {}", userDto.getUsername());
+    public UserRegisterDto registerUser(UserRegisterDto userRegisterDto) {
+        logger.info("Registering user with username: {}", userRegisterDto.getUsername());
 
         // Check if the username already exists
-        if (userRepository.existsByUsername(userDto.getUsername())) {
+        if (userRepository.existsByUsername(userRegisterDto.getUsername())) {
             throw new IllegalArgumentException("Username is already in use.");
         }
 
         // Check if the email already exists
-        if (userRepository.existsByEmail(userDto.getEmail())) {
+        if (userRepository.existsByEmail(userRegisterDto.getEmail())) {
             throw new IllegalArgumentException("Email is already in use.");
         }
 
         UserEntity user = new UserEntity();
-        user.setUsername(userDto.getUsername());
+        user.setUsername(userRegisterDto.getUsername());
 
         // Hash the password before setting it in the entity
-        String hashedPassword = passwordEncoder.encode(userDto.getPassword());
+        String hashedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
         user.setPassword(hashedPassword);
 
-        user.setEmail(userDto.getEmail());
+        user.setEmail(userRegisterDto.getEmail());
         user.setPoints(0);
         user.setRole("USER");
         user.setCreatedAt(LocalDateTime.now());
@@ -55,7 +55,7 @@ public class AuthService {
     }
 
 
-    public UserDto authenticateUser(String username, String password) {
+    public UserRegisterDto authenticateUser(String username, String password) {
         logger.info("Authenticating user with username: {}", username);
 
         // Fetch user from the database

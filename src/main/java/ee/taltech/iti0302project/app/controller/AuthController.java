@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.app.controller;
 
-import ee.taltech.iti0302project.app.dto.UserDto;
+import ee.taltech.iti0302project.app.dto.UserLoginDto;
+import ee.taltech.iti0302project.app.dto.UserRegisterDto;
 import ee.taltech.iti0302project.app.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(authService.registerUser(userDto));
+    public ResponseEntity<UserRegisterDto> registerUser(@RequestBody UserRegisterDto userRegisterDto) {
+        return ResponseEntity.ok(authService.registerUser(userRegisterDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
-        UserDto authenticatedUser = authService.authenticateUser(userDto.getUsername(), userDto.getPassword());
+    public ResponseEntity<UserRegisterDto> login(@RequestBody UserLoginDto userLoginDto) {
+        UserRegisterDto authenticatedUser = authService.authenticateUser(userLoginDto.getUsername(), userLoginDto.getPassword());
         return ResponseEntity.ok(authenticatedUser);
     }
 }
