@@ -14,8 +14,14 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(authService.registerUser(userDto));
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto user) {
-        return ResponseEntity.ok(authService.registerUser(user));
+    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
+        UserDto authenticatedUser = authService.authenticateUser(userDto.getUsername(), userDto.getPassword());
+        return ResponseEntity.ok(authenticatedUser);
     }
 }
