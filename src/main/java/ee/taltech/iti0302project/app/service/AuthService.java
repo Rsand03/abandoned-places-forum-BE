@@ -21,7 +21,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;  // Injected from SecurityConfig
+    private final PasswordEncoder passwordEncoder;
 
     public UserDto registerUser(UserDto userDto) {
         logger.info("Registering user with username: {}", userDto.getUsername());
@@ -62,7 +62,7 @@ public class AuthService {
         Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             logger.warn("Authentication failed: User not found");
-            throw new RuntimeException("User not found"); // or throw a custom exception
+            throw new RuntimeException("User not found");
         }
 
         UserEntity user = optionalUser.get();
@@ -70,7 +70,7 @@ public class AuthService {
         // Verify the password
         if (!passwordEncoder.matches(password, user.getPassword())) {
             logger.warn("Authentication failed: Incorrect password for user {}", username);
-            throw new RuntimeException("Incorrect password"); // or throw a custom exception
+            throw new RuntimeException("Incorrect password");
         }
 
         logger.info("User authenticated successfully with username: {}", username);
