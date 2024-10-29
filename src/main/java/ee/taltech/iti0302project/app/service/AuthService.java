@@ -4,11 +4,14 @@ import ee.taltech.iti0302project.app.dto.UserRegisterDto;
 import ee.taltech.iti0302project.app.dto.mapper.UserMapper;
 import ee.taltech.iti0302project.app.entity.UserEntity;
 import ee.taltech.iti0302project.app.repository.UserRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,7 +26,11 @@ public class AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserRegisterDto registerUser(UserRegisterDto userRegisterDto) {
+    @Value("${JWT_SECRET_KEY}")
+    private String secretKey;
+
+    public String registerUser(UserRegisterDto userRegisterDto) {
+
         logger.info("Registering user with username: {}", userRegisterDto.getUsername());
 
         // Check if the username already exists
@@ -51,11 +58,11 @@ public class AuthService {
         userRepository.save(user);
         logger.info("User registered and saved with ID: {}", user.getId());
 
-        return userMapper.toDto(user);
+        return generateToken(userRegisterDto.getUsername());
     }
 
 
-    public UserRegisterDto authenticateUser(String username, String password) {
+    public String authenticateUser(String username, String password) {
         logger.info("Authenticating user with username: {}", username);
 
         // Fetch user from the database
@@ -74,6 +81,14 @@ public class AuthService {
         }
 
         logger.info("User authenticated successfully with username: {}", username);
-        return userMapper.toDto(user);
+        return generateToken(username);
     }
+
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
 }
