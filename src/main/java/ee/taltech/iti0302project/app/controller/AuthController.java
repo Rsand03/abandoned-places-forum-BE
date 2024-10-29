@@ -1,6 +1,6 @@
 package ee.taltech.iti0302project.app.controller;
 
-import ee.taltech.iti0302project.app.dto.UserLoginDto;
+import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.UserRegisterDto;
 import ee.taltech.iti0302project.app.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthService authService;
