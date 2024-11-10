@@ -195,7 +195,7 @@
     <!-- ChangeSet for the posts table -->
     <changeSet id="8" author="author_name">
         <createTable tableName="posts">
-            <column name="id" type="integer">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="title" type="varchar(255)"/>
@@ -204,7 +204,7 @@
             </column>
             <column name="location_id" type="uuid"/>
             <column name="created_by" type="uuid">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="created_at" type="timestamp">
                 <constraints nullable="false"/>
