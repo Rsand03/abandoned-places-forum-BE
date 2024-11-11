@@ -1,7 +1,7 @@
-package ee.taltech.iti0302project.app.dto.mapper;
+package ee.taltech.iti0302project.app.dto.mapper.user;
 
-import ee.taltech.iti0302project.app.dto.UserRegisterDto;
-import ee.taltech.iti0302project.app.entity.UserEntity;
+import ee.taltech.iti0302project.app.dto.auth.UserRegisterDto;
+import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

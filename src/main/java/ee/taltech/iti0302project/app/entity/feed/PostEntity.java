@@ -1,16 +1,16 @@
 package ee.taltech.iti0302project.app.entity.feed;
 
-import ee.taltech.iti0302project.app.entity.UserEntity;
+import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
-
+@Entity
 @Getter
 @Setter
-@Entity
 @Table(name = "posts")
 public class PostEntity {
     @Id
@@ -23,9 +23,10 @@ public class PostEntity {
     @Column(name = "location_id")
     private UUID locationId;
 
-    @Column(name = "created_by")
-    private UUID createdBy;
+    @ManyToOne
+    @JoinColumn(name = "created_by", referencedColumnName = "id", nullable = false)
+    private UserEntity createdBy;
 
     @Column(name = "created_at", nullable = false)
-    private java.sql.Timestamp createdAt;
+    private Timestamp createdAt;
 }

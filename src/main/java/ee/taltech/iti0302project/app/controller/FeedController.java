@@ -1,5 +1,6 @@
 package ee.taltech.iti0302project.app.controller;
 
+import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
 import ee.taltech.iti0302project.app.dto.feed.PostDto;
 import ee.taltech.iti0302project.app.service.FeedService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class FeedController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        List<PostDto> postDtos = feedService.getAllPosts();
+    public ResponseEntity<List<FetchPostsDto>> getAllPosts() {
+        List<FetchPostsDto> postDtos = feedService.getAllPosts();
         return ResponseEntity.ok(postDtos);
     }
 }
