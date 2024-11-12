@@ -242,7 +242,7 @@
     <!-- ChangeSet for the post_comments table -->
     <changeSet id="10" author="author_name">
         <createTable tableName="post_comments">
-            <column name="id" type="integer">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="body" type="text">
