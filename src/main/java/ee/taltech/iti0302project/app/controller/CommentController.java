@@ -25,7 +25,6 @@ public class CommentController {
     ) {
         String comment = body.get("comment").asText();
         CommentDto commentDto = commentService.createComment(postId, comment, userId);
-        System.out.println(comment);
         return ResponseEntity.ok(commentDto);
     }
 
