@@ -10,7 +10,11 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
         http://www.liquibase.org/xml/ns/pro
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
-    
+
+
+    <include file="/db/changelog/user-changelog.xml"/>
+    <include file="/db/changelog/location-changelog.xml"/>
     <include file="/db/changelog/db.changelog-1.0.xml"/>
+    <include file="/db/changelog/default-data-inserts/location-types.xml"/>
 
 </databaseChangeLog>
