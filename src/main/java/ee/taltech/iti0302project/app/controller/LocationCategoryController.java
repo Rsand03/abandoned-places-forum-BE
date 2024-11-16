@@ -1,7 +1,7 @@
 package ee.taltech.iti0302project.app.controller;
 
 import ee.taltech.iti0302project.app.dto.LocationCategoryDto;
-import ee.taltech.iti0302project.app.service.LocationCategoryService;
+import ee.taltech.iti0302project.app.service.location.LocationCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

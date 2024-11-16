@@ -1,8 +1,8 @@
-package ee.taltech.iti0302project.app.service;
+package ee.taltech.iti0302project.app.service.location;
 
 import ee.taltech.iti0302project.app.dto.LocationConditionDto;
 import ee.taltech.iti0302project.app.dto.mapper.LocationConditionMapper;
-import ee.taltech.iti0302project.app.repository.LocationConditionRepository;
+import ee.taltech.iti0302project.app.repository.location.LocationConditionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

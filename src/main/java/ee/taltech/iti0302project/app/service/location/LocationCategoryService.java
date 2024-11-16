@@ -1,8 +1,8 @@
-package ee.taltech.iti0302project.app.service;
+package ee.taltech.iti0302project.app.service.location;
 
 import ee.taltech.iti0302project.app.dto.LocationCategoryDto;
 import ee.taltech.iti0302project.app.dto.mapper.LocationCategoryMapper;
-import ee.taltech.iti0302project.app.repository.LocationCategoryRepository;
+import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

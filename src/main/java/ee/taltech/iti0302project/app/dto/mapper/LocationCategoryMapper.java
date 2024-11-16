@@ -1,7 +1,7 @@
 package ee.taltech.iti0302project.app.dto.mapper;
 
 import ee.taltech.iti0302project.app.dto.LocationCategoryDto;
-import ee.taltech.iti0302project.app.entity.LocationCategoryEntity;
+import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

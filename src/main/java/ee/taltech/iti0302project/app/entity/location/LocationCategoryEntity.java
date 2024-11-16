@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.entity;
+package ee.taltech.iti0302project.app.entity.location;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

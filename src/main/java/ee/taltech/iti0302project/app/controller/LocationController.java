@@ -2,8 +2,8 @@ package ee.taltech.iti0302project.app.controller;
 
 import ee.taltech.iti0302project.app.dto.LocationConditionDto;
 import ee.taltech.iti0302project.app.dto.LocationStatusDto;
-import ee.taltech.iti0302project.app.service.LocationConditionService;
-import ee.taltech.iti0302project.app.service.LocationStatusService;
+import ee.taltech.iti0302project.app.service.location.LocationConditionService;
+import ee.taltech.iti0302project.app.service.location.LocationStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

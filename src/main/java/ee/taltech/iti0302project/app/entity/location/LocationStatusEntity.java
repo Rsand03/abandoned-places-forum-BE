@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.entity;
+package ee.taltech.iti0302project.app.entity.location;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,12 +10,11 @@ import lombok.Setter;
 
 @Getter @Setter
 @Entity
-@Table(name = "location_conditions")
-public class LocationConditionEntity {
+@Table(name = "location_statuses")
+public class LocationStatusEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-
 }
