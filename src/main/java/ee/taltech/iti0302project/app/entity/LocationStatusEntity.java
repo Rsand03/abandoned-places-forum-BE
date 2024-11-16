@@ -10,12 +10,11 @@ import lombok.Setter;
 
 @Getter @Setter
 @Entity
-@Table(name = "location_types")
-public class LocationTypeEntity {
+@Table(name = "location_statuses")
+public class LocationStatusEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String colorHex;
 }
