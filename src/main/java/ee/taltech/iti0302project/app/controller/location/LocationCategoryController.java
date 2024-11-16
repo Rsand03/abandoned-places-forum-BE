@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.controller;
+package ee.taltech.iti0302project.app.controller.location;
 
 import ee.taltech.iti0302project.app.dto.LocationCategoryDto;
 import ee.taltech.iti0302project.app.service.location.LocationCategoryService;

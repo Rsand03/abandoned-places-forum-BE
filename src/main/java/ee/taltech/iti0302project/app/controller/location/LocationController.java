@@ -1,8 +1,10 @@
-package ee.taltech.iti0302project.app.controller;
+package ee.taltech.iti0302project.app.controller.location;
 
 import ee.taltech.iti0302project.app.dto.LocationConditionDto;
+import ee.taltech.iti0302project.app.dto.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.LocationStatusDto;
 import ee.taltech.iti0302project.app.service.location.LocationConditionService;
+import ee.taltech.iti0302project.app.service.location.LocationService;
 import ee.taltech.iti0302project.app.service.location.LocationStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,12 @@ public class LocationController {
 
     private final LocationConditionService locationConditionService;
     private final LocationStatusService locationStatusService;
+    private final LocationService locationService;
 
+    @GetMapping("")
+    public ResponseEntity<List<LocationResponseDto>> getAllLocations() {
+        return ResponseEntity.ok(locationService.getAllLocations());
+    }
 
     @GetMapping("conditions")
     public ResponseEntity<List<LocationConditionDto>> getLocationConditions() {

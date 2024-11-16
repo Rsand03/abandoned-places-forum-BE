@@ -19,5 +19,6 @@
     <include file="/db/changelog/default-data-inserts/location-categories.xml"/>
     <include file="/db/changelog/default-data-inserts/location-conditions.xml"/>
     <include file="/db/changelog/default-data-inserts/location-statuses.xml"/>
+    <include file="/db/changelog/default-data-inserts/temporary-test-data/locations.xml"/>
 
 </databaseChangeLog>
