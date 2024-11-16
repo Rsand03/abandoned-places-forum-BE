@@ -30,14 +30,13 @@
             <column name="condition" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="accessibility" type="varchar(255)">
+            <column name="status" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="additional_information" type="varchar(255)"/>
             <column name="is_public" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="varchar(10)"/>
             <column name="required_points_to_view" type="integer">
                 <constraints nullable="false"/>
             </column>
@@ -53,13 +52,13 @@
                                  constraintName="fk_locations_created_by"/>
     </changeSet>
 
-    <!-- location_types  -->
+    <!-- location_categories  -->
     <changeSet id="3" author="author_name">
-        <createTable tableName="location_types">
+        <createTable tableName="location_categories">
             <column name="id" type="integer">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="varchar(255)">
+            <column name="category_name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="color_hex" type="varchar(255)">
@@ -68,31 +67,55 @@
         </createTable>
     </changeSet>
 
-    <!-- location_type_assignments -->
-    <changeSet id="4" author="author_name">
-        <createTable tableName="location_type_assignments">
-            <column name="location_id" type="uuid">
-                <constraints nullable="false"/>
+    <!-- location_conditions  -->
+    <changeSet id="4" author="placeholder">
+        <createTable tableName="location_conditions">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="location_type_id" type="integer">
-                <constraints nullable="false"/>
-            </column>
-            <column name="is_main_type" type="boolean">
+            <column name="condition_name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="location_type_assignments" baseColumnNames="location_id"
+    </changeSet>
+
+    <!-- location_statuses  -->
+    <changeSet id="5" author="placeholder">
+        <createTable tableName="location_statuses">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- location_category_assignments -->
+    <changeSet id="6" author="author_name">
+        <createTable tableName="location_category_assignments">
+            <column name="location_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_category_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_main_category" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="location_category_assignments" baseColumnNames="location_id"
                                  referencedTableName="locations" referencedColumnNames="id"
-                                 constraintName="fk_location_type_assignments_location_id"/>
-        <addForeignKeyConstraint baseTableName="location_type_assignments" baseColumnNames="location_type_id"
-                                 referencedTableName="location_types" referencedColumnNames="id"
-                                 constraintName="fk_location_type_assignments_location_type_id"/>
-        <addUniqueConstraint tableName="location_type_assignments" columnNames="location_id, location_type_id"/>
-        <addUniqueConstraint tableName="location_type_assignments" columnNames="location_id, is_main_type"/>
+                                 constraintName="fk_location_category_assignments_location_id"/>
+        <addForeignKeyConstraint baseTableName="location_category_assignments" baseColumnNames="location_category_id"
+                                 referencedTableName="location_categories" referencedColumnNames="id"
+                                 constraintName="fk_location_category_assignments_location_category_id"/>
+        <addUniqueConstraint tableName="location_category_assignments" columnNames="location_id, location_category_id"/>
+        <addUniqueConstraint tableName="location_category_assignments" columnNames="location_id, is_main_category"/>
     </changeSet>
 
     <!-- location_bookmarks -->
-    <changeSet id="5" author="author_name">
+    <changeSet id="7" author="author_name">
         <createTable tableName="location_bookmarks">
             <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
