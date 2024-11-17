@@ -7,8 +7,10 @@ import ee.taltech.iti0302project.app.dto.location.LocationStatusDto;
 import ee.taltech.iti0302project.app.service.location.LocationConditionService;
 import ee.taltech.iti0302project.app.service.location.LocationService;
 import ee.taltech.iti0302project.app.service.location.LocationStatusService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/locations")
 @RequiredArgsConstructor
+@Validated
 public class LocationController {
 
     private final LocationConditionService locationConditionService;
@@ -43,7 +45,7 @@ public class LocationController {
     }
 
     @PostMapping("")
-    public ResponseEntity<UUID> createLocation(@RequestBody LocationCreateDto createdLocation) {
+    public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationCreateDto createdLocation) {
         return locationService.createLocation(createdLocation)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.badRequest().build());

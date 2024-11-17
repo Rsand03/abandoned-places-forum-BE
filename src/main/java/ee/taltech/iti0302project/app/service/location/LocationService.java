@@ -12,13 +12,13 @@ import ee.taltech.iti0302project.app.repository.location.LocationCategoryReposit
 import ee.taltech.iti0302project.app.repository.location.LocationConditionRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationStatusRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Transactional
@@ -37,28 +37,32 @@ public class LocationService {
         return locationMapper.toDtoList(locationRepository.findAll());
     }
 
-    public Optional<UUID> createLocation(LocationCreateDto createdDto) {
+    public Optional<LocationResponseDto> createLocation(LocationCreateDto createdDto) {
         return validateLocation(createdDto)
                 .map(dto -> {
                     LocationEntity createdEntity = locationMapper.toEntity(dto);
 
-                    LocationCategoryEntity mainCategory = locationCategoryRepository.getReferenceById(dto.getMainCategoryId());
+                    LocationCategoryEntity mainCategory = locationCategoryRepository.findById(dto.getMainCategoryId())
+                            .orElseThrow(() -> new EntityNotFoundException("Main category not found"));
                     List<LocationCategoryEntity> subCategories = locationCategoryRepository.findAllById(dto.getSubCategoryIds());
-                    LocationConditionEntity condition = locationConditionRepository.getReferenceById(dto.getConditionId());
-                    LocationStatusEntity status = locationStatusRepository.getReferenceById(dto.getStatusId());
+                    LocationConditionEntity condition = locationConditionRepository.findById(dto.getConditionId())
+                            .orElseThrow(() -> new EntityNotFoundException("Condition not found"));
+                    LocationStatusEntity status = locationStatusRepository.findById(dto.getStatusId())
+                            .orElseThrow(() -> new EntityNotFoundException("Status not found"));
 
                     createdEntity.setMainCategory(mainCategory);
                     createdEntity.setSubCategories(subCategories);
                     createdEntity.setCondition(condition);
                     createdEntity.setStatus(status);
 
-                    return locationRepository.save(createdEntity).getId();
+                    return locationMapper.toResponseDto(locationRepository.save(createdEntity));
                 });
     }
 
     private Optional<LocationCreateDto> validateLocation(LocationCreateDto createdDto) {
         return Optional.of(createdDto)
-                .filter(dto -> dto.getSubCategoryIds().stream().allMatch(locationCategoryRepository::existsById))
+                .filter(dto -> dto.getSubCategoryIds().stream()
+                        .allMatch(x -> x != null && locationCategoryRepository.existsById(x)))
                 .filter(dto -> locationConditionRepository.existsById(dto.getConditionId()))
                 .filter(dto -> locationStatusRepository.existsById(dto.getStatusId()))
                 .filter(dto -> locationCategoryRepository.existsById(dto.getMainCategoryId()))
