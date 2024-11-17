@@ -1,8 +1,8 @@
-package ee.taltech.iti0302project.app.controller;
+package ee.taltech.iti0302project.app.controller.feed;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ee.taltech.iti0302project.app.dto.feed.CommentDto;
-import ee.taltech.iti0302project.app.service.CommentService;
+import ee.taltech.iti0302project.app.service.feed.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

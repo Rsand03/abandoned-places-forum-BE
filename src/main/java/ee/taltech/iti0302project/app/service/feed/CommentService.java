@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.service;
+package ee.taltech.iti0302project.app.service.feed;
 
 import ee.taltech.iti0302project.app.dto.feed.CommentDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.CommentMapper;

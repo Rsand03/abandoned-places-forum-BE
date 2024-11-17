@@ -221,7 +221,7 @@
     <!-- ChangeSet for the upvotes table -->
     <changeSet id="9" author="author_name">
         <createTable tableName="upvotes">
-            <column name="id" type="integer">
+            <column name="id" type="integer" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="post_id" type="integer">

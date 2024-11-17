@@ -1,8 +1,8 @@
-package ee.taltech.iti0302project.app.controller;
+package ee.taltech.iti0302project.app.controller.feed;
 
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
 import ee.taltech.iti0302project.app.dto.feed.PostDto;
-import ee.taltech.iti0302project.app.service.FeedService;
+import ee.taltech.iti0302project.app.service.feed.FeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
