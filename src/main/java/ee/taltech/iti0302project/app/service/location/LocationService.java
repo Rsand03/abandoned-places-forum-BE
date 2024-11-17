@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Transactional
@@ -35,6 +36,15 @@ public class LocationService {
 
     public List<LocationResponseDto> getAllLocations() {
         return locationMapper.toDtoList(locationRepository.findAll());
+    }
+
+    public Optional<LocationResponseDto> deleteLocationByUuid(UUID uuid, UUID createdBy) {
+        return locationRepository.findById(uuid)
+                .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
+                .map(locationEntity -> {
+                    locationRepository.deleteById(uuid);
+                    return locationMapper.toResponseDto(locationEntity);
+                });
     }
 
     public Optional<LocationResponseDto> createLocation(LocationCreateDto createdDto) {
