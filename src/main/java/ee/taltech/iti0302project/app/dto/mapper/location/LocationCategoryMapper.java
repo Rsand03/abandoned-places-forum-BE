@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.dto.mapper;
+package ee.taltech.iti0302project.app.dto.mapper.location;
 
 import ee.taltech.iti0302project.app.dto.location.LocationCategoryDto;
 import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;

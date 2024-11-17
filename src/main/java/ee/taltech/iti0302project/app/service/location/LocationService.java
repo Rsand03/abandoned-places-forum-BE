@@ -2,7 +2,7 @@ package ee.taltech.iti0302project.app.service.location;
 
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
-import ee.taltech.iti0302project.app.dto.mapper.LocationMapper;
+import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationConditionEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
