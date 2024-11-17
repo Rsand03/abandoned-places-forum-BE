@@ -1,6 +1,6 @@
 package ee.taltech.iti0302project.app.service.location;
 
-import ee.taltech.iti0302project.app.dto.LocationCategoryDto;
+import ee.taltech.iti0302project.app.dto.location.LocationCategoryDto;
 import ee.taltech.iti0302project.app.dto.mapper.LocationCategoryMapper;
 import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
 import lombok.RequiredArgsConstructor;

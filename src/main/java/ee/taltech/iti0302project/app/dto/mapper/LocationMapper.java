@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.app.dto.mapper;
 
-import ee.taltech.iti0302project.app.dto.LocationResponseDto;
+import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
+import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,5 +17,8 @@ public interface LocationMapper {
     LocationResponseDto toResponseDto(LocationEntity locationEntity);
 
     List<LocationResponseDto> toDtoList(List<LocationEntity> locationEntityList);
+
+    @Mapping(source = "createdByUserUuid", target = "createdBy")
+    LocationEntity toEntity(LocationCreateDto locationCreateDto);
 
 }

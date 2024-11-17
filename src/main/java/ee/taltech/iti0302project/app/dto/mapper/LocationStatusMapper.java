@@ -1,6 +1,6 @@
 package ee.taltech.iti0302project.app.dto.mapper;
 
-import ee.taltech.iti0302project.app.dto.LocationStatusDto;
+import ee.taltech.iti0302project.app.dto.location.LocationStatusDto;
 import ee.taltech.iti0302project.app.entity.location.LocationStatusEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

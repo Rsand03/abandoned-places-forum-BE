@@ -53,9 +53,13 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <!--<addForeignKeyConstraint baseTableName="locations" baseColumnNames="created_by"
+
+        <addDefaultValue tableName="locations" columnName="is_public" defaultValue="false"/>
+        <addDefaultValue tableName="locations" columnName="is_pending_publication_approval" defaultValue="false"/>
+        <addDefaultValue tableName="locations" columnName="min_required_points_to_view" defaultValue="0"/>
+        <addForeignKeyConstraint baseTableName="locations" baseColumnNames="created_by"
                                  referencedTableName="users" referencedColumnNames="id"
-                                 constraintName="fk_locations_created_by"/>-->
+                                 constraintName="fk_locations_created_by"/>
     </changeSet>
 
     <!-- location_categories  -->

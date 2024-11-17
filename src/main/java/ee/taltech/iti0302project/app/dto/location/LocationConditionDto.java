@@ -1,11 +1,11 @@
-package ee.taltech.iti0302project.app.dto;
+package ee.taltech.iti0302project.app.dto.location;
 
 import lombok.Data;
 
 @Data
 public class LocationConditionDto {
 
-    private Integer id;
+    private Long id;
     private String name;
 
 }

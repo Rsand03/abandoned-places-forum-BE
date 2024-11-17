@@ -24,7 +24,7 @@
             <column name="is_public" value="true"/>
             <column name="is_pending_publication_approval" value="true"/>
             <column name="min_required_points_to_view" value="10"/>
-            <column name="created_by" value="e7c3d377-2c57-4f7a-b99f-d5056160cb71"/> <!-- Example User ID -->
+            <column name="created_by" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"/> <!-- Example User ID -->
             <column name="created_at" value="2024-11-16T10:00:00"/> <!-- Example timestamp -->
         </insert>
 
@@ -40,7 +40,7 @@
             <column name="is_public" value="false"/>
             <column name="is_pending_publication_approval" value="false"/>
             <column name="min_required_points_to_view" value="0"/>
-            <column name="created_by" value="e7c3d377-2c57-4f7a-b99f-d5056160cb71"/> <!-- Example User ID -->
+            <column name="created_by" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"/> <!-- Example User ID -->
             <column name="created_at" value="2024-11-16T10:15:00"/> <!-- Example timestamp -->
         </insert>
 

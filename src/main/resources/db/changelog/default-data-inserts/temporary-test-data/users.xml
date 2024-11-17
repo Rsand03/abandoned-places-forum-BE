@@ -1,0 +1,35 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+
+    <changeSet id="2" author="16-11-2024-rasand">
+
+        <insert tableName="users">
+            <column name="id" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d">
+            </column>
+            <column name="username" value="user">
+            </column>
+            <column name="password" value="$2a$10$ykdiOB2eyy3i1lxNLoQjce6H5Jf9zpraeA2zU7YAMcRdVKV2/qGKW">
+            </column>
+            <column name="email" value="test@tested.com">
+            </column>
+            <column name="role" value="USER">
+            </column>
+            <column name="points" value="0">
+            </column>
+            <column name="created_at" value="2024-11-17 02:53:28.693946">
+            </column>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
