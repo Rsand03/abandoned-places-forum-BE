@@ -11,7 +11,7 @@
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
 
-    <changeSet id="2" author="16-11-2024-rasand">
+    <changeSet id="1" author="16-11-2024-rasand">
 
         <insert tableName="users">
             <column name="id" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d">

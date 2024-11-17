@@ -11,7 +11,7 @@
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
 
-    <changeSet id="2" author="16-11-2024-rasand">
+    <changeSet id="1" author="16-11-2024-rasand">
         <insert tableName="locations">
             <column name="id" value="a59b74f9-d7fc-4c8e-bf47-2b060276421e"/> <!-- Example UUID -->
             <column name="name" value="Example Location 1"/>

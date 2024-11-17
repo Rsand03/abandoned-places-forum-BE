@@ -26,12 +26,12 @@ public class LocationCreateDto {
     @NotNull
     @DecimalMin(value = "-180.0")
     @DecimalMax(value = "180.0")
-    private double lon;
+    private Double lon;
 
     @NotNull
     @DecimalMin(value = "-90.0")
     @DecimalMax(value = "90.0")
-    private double lat;
+    private Double lat;
 
     @NotNull
     @Min(value = 1)
@@ -58,6 +58,6 @@ public class LocationCreateDto {
     @NotNull
     @Min(value = 1)
     @Max(value = 5000)
-    private int minRequiredPointsToView;
+    private Integer minRequiredPointsToView;
 
 }
