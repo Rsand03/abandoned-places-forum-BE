@@ -195,7 +195,7 @@
     <!-- ChangeSet for the posts table -->
     <changeSet id="8" author="author_name">
         <createTable tableName="posts">
-            <column name="id" type="integer">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="title" type="varchar(255)"/>
@@ -204,7 +204,7 @@
             </column>
             <column name="location_id" type="uuid"/>
             <column name="created_by" type="uuid">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="created_at" type="timestamp">
                 <constraints nullable="false"/>
@@ -221,7 +221,7 @@
     <!-- ChangeSet for the upvotes table -->
     <changeSet id="9" author="author_name">
         <createTable tableName="upvotes">
-            <column name="id" type="integer">
+            <column name="id" type="integer" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="post_id" type="integer">
@@ -242,7 +242,7 @@
     <!-- ChangeSet for the post_comments table -->
     <changeSet id="10" author="author_name">
         <createTable tableName="post_comments">
-            <column name="id" type="integer">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="body" type="text">

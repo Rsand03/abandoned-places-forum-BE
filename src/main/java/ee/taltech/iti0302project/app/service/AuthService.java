@@ -1,8 +1,10 @@
 package ee.taltech.iti0302project.app.service;
 
-import ee.taltech.iti0302project.app.dto.UserRegisterDto;
-import ee.taltech.iti0302project.app.dto.mapper.UserMapper;
-import ee.taltech.iti0302project.app.entity.UserEntity;
+import ee.taltech.iti0302project.app.dto.auth.UserRegisterDto;
+import ee.taltech.iti0302project.app.dto.auth.AuthenticationResponseDto;
+import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
+import ee.taltech.iti0302project.app.dto.mapper.user.UserMapper;
+import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,16 +31,14 @@ public class AuthService {
     @Value("${JWT_SECRET_KEY}")
     private String secretKey;
 
-    public String registerUser(UserRegisterDto userRegisterDto) {
+    public AuthenticationResponseDto registerUser(UserRegisterDto userRegisterDto) {
 
         logger.info("Registering user with username: {}", userRegisterDto.getUsername());
 
-        // Check if the username already exists
         if (userRepository.existsByUsername(userRegisterDto.getUsername())) {
             throw new IllegalArgumentException("Username is already in use.");
         }
 
-        // Check if the email already exists
         if (userRepository.existsByEmail(userRegisterDto.getEmail())) {
             throw new IllegalArgumentException("Email is already in use.");
         }
@@ -46,7 +46,6 @@ public class AuthService {
         UserEntity user = new UserEntity();
         user.setUsername(userRegisterDto.getUsername());
 
-        // Hash the password before setting it in the entity
         String hashedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
         user.setPassword(hashedPassword);
 
@@ -58,15 +57,17 @@ public class AuthService {
         userRepository.save(user);
         logger.info("User registered and saved with ID: {}", user.getId());
 
-        return generateToken(userRegisterDto.getUsername());
+        String token = generateToken(user.getUsername());
+
+        return new AuthenticationResponseDto(token, user.getId(), user.getUsername(), user.getRole(), user.getPoints());
     }
 
 
-    public String authenticateUser(String username, String password) {
-        logger.info("Authenticating user with username: {}", username);
+    public AuthenticationResponseDto authenticateUser(UserLoginDto userLoginDto) {
+        logger.info("Authenticating user with username: {}", userLoginDto.getUsername());
 
         // Fetch user from the database
-        Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
+        Optional<UserEntity> optionalUser = userRepository.findByUsername(userLoginDto.getUsername());
         if (optionalUser.isEmpty()) {
             logger.warn("Authentication failed: User not found");
             throw new RuntimeException("User not found");
@@ -75,13 +76,16 @@ public class AuthService {
         UserEntity user = optionalUser.get();
 
         // Verify the password
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            logger.warn("Authentication failed: Incorrect password for user {}", username);
+        if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
+            logger.warn("Authentication failed: Incorrect password for user {}", userLoginDto.getUsername());
             throw new RuntimeException("Incorrect password");
         }
 
-        logger.info("User authenticated successfully with username: {}", username);
-        return generateToken(username);
+        logger.info("User authenticated successfully with username: {}", userLoginDto.getUsername());
+
+        String token = generateToken(userLoginDto.getUsername());
+
+        return new AuthenticationResponseDto(token, user.getId(), user.getUsername(), user.getRole(), user.getPoints());
     }
 
     public String generateToken(String username) {
