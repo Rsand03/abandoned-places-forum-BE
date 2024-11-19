@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+
+    <!-- locations -->
+    <changeSet id="1" author="16-11-2024-rasand">
+        <createTable tableName="locations">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lon" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lat" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="main_category_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_condition_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_status_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="additional_information" type="varchar(255)"/>
+            <column name="is_public" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_pending_publication_approval" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="min_required_points_to_view" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addDefaultValue tableName="locations" columnName="is_public" defaultValue="false"/>
+        <addDefaultValue tableName="locations" columnName="is_pending_publication_approval" defaultValue="false"/>
+        <addDefaultValue tableName="locations" columnName="min_required_points_to_view" defaultValue="0"/>
+        <addForeignKeyConstraint baseTableName="locations" baseColumnNames="created_by"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_locations_created_by"/>
+    </changeSet>
+
+    <!-- location_categories  -->
+    <changeSet id="3" author="author_name">
+        <createTable tableName="location_categories">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color_hex" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- location_conditions  -->
+    <changeSet id="4" author="placeholder">
+        <createTable tableName="location_conditions">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- location_statuses  -->
+    <changeSet id="5" author="placeholder">
+        <createTable tableName="location_statuses">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- location_category_assignments -->
+    <changeSet id="6" author="author_name">
+        <createTable tableName="location_category_assignments">
+            <column name="location_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_category_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="location_category_assignments" baseColumnNames="location_id"
+                                 referencedTableName="locations" referencedColumnNames="id"
+                                 constraintName="fk_location_category_assignments_location_id"/>
+        <addForeignKeyConstraint baseTableName="location_category_assignments" baseColumnNames="location_category_id"
+                                 referencedTableName="location_categories" referencedColumnNames="id"
+                                 constraintName="fk_location_category_assignments_location_category_id"/>
+        <addUniqueConstraint tableName="location_category_assignments" columnNames="location_id, location_category_id"/>
+    </changeSet>
+
+    <!-- location_bookmarks -->
+    <changeSet id="7" author="author_name">
+        <createTable tableName="location_bookmarks">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="bookmark_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="location_bookmarks" baseColumnNames="created_by"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_location_bookmarks_created_by"/>
+        <addForeignKeyConstraint baseTableName="location_bookmarks" baseColumnNames="location_id"
+                                 referencedTableName="locations" referencedColumnNames="id"
+                                 constraintName="fk_location_bookmarks_location_id"/>
+        <addUniqueConstraint tableName="location_bookmarks" columnNames="created_by, location_id, bookmark_type"/>
+    </changeSet>
+
+</databaseChangeLog>
