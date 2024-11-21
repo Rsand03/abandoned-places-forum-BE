@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/register", "/api/**").permitAll()
-                        .requestMatchers("/api/feed").authenticated() // for later
+                        .requestMatchers("/api/feed", "/api/profile").authenticated() // for later
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basicAuth -> {});
@@ -41,7 +41,7 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of("http://localhost:5173", "http://tiim32.zapto.org"));
+        corsConfig.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174", "http://tiim32.zapto.org"));
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         corsConfig.setAllowedHeaders(List.of("*"));
         corsConfig.setAllowCredentials(true);
