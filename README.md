@@ -57,15 +57,3 @@ It consists of three main stages: **build**, **dockerize**, and **deploy**.
     - Builds the Docker image and tags it with the current commit's short SHA for versioning.
     - Pushes both the tagged version (`$DOCKER_IMAGE-$CI_COMMIT_SHORT_SHA`) and a `latest` version to the Docker registry.
 
-#### 3. Deploy
-- Deploy the containerized application to the server.
-- Uses `alpine:latest` with SSH capabilities for secure deployment.
-- **Before Script**:
-    - Installs `openssh-client` to enable SSH operations.
-    - Sets up the SSH agent and adds the SSH private key for secure server access.
-- **Script**:
-    - Connects to the remote server via SSH and navigates to deployment directories.
-    - Uses `docker-compose` to bring down existing services
-    - Pulls the latest Docker image
-    - Runs the latest Docker image.
-
