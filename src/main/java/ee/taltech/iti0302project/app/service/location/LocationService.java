@@ -16,6 +16,7 @@ import ee.taltech.iti0302project.app.repository.location.LocationSpecifications;
 import ee.taltech.iti0302project.app.repository.location.LocationStatusRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 @Service
+@Slf4j
 public class LocationService {
 
     private final LocationRepository locationRepository;
@@ -64,8 +66,6 @@ public class LocationService {
             }
             return locationMapper.toDtoList(locationRepository.findAll(spec));
         });
-
-
     }
 
     public Optional<LocationResponseDto> deleteLocationByUuid(UUID uuid, UUID createdBy) {
@@ -73,6 +73,7 @@ public class LocationService {
                 .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
                 .map(locationEntity -> {
                     locationRepository.deleteById(uuid);
+                    log.info("deleted location with id " + locationEntity.getId());
                     return locationMapper.toResponseDto(locationEntity);
                 });
     }
@@ -94,7 +95,7 @@ public class LocationService {
                     createdEntity.setSubCategories(subCategories);
                     createdEntity.setCondition(condition);
                     createdEntity.setStatus(status);
-
+                    log.info("Created location with id " + createdEntity.getId());
                     return locationMapper.toResponseDto(locationRepository.save(createdEntity));
                 });
     }
