@@ -111,7 +111,6 @@ public class LocationService {
 
     private Optional<LocationCriteria> validateLocationCriteria(LocationCriteria validatedCriteria) {
         return Optional.of(validatedCriteria)
-                .filter(criteria -> !criteria.getSubCategoryIds().isEmpty())
                 .filter(criteria -> criteria.getSubCategoryIds().stream()
                         .noneMatch(x -> x == null || x < 1 || x > 15))
                 .filter(criteria -> userRepository.existsById(criteria.getUserId()));

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public class LocationCriteria {
     private Long mainCategoryId;
 
     @Size(max = 5)
-    private List<Long> subCategoryIds;
+    private List<Long> subCategoryIds = new ArrayList<>();
 
     @Min(value = 1)
     @Max(value = 50)
