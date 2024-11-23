@@ -11,18 +11,6 @@
         http://www.liquibase.org/xml/ns/pro
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-    <changeSet  id="2024-10-04 Add book table"  author="Rasmus Sander">
-        <createTable  tableName="abandoned_place">
-            <column  name="id"  type="bigint"  autoIncrement="true">
-                <constraints  primaryKey="true"/>
-            </column>
-            <column  name="name"  type="text"/>
-            <column  name="location"  type="bigint"/>
-            <column  name="type"  type="text"/>
-            <column  name="condition"  type="text"/>
-        </createTable>
-    </changeSet>
-
     <!-- ChangeSet for the subtopics table -->
     <changeSet id="6" author="author_name">
         <createTable tableName="subtopics">
