@@ -5,6 +5,7 @@ import ee.taltech.iti0302project.app.dto.auth.AuthenticationResponseDto;
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.mapper.user.UserMapper;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
+import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -70,7 +71,7 @@ public class AuthService {
         Optional<UserEntity> optionalUser = userRepository.findByUsername(userLoginDto.getUsername());
         if (optionalUser.isEmpty()) {
             logger.warn("Authentication failed: User not found");
-            throw new RuntimeException("User not found");
+            throw new ApplicationException("User not found");
         }
 
         UserEntity user = optionalUser.get();
@@ -78,7 +79,7 @@ public class AuthService {
         // Verify the password
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             logger.warn("Authentication failed: Incorrect password for user {}", userLoginDto.getUsername());
-            throw new RuntimeException("Incorrect password");
+            throw new ApplicationException("Incorrect password");
         }
 
         logger.info("User authenticated successfully with username: {}", userLoginDto.getUsername());

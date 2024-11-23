@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +23,7 @@ public class FeedService {
     private final PostMapper postMapper;
     private final FetchPostsMapper fetchPostsMapper;
     private final UserRepository userRepository;
+    private final Random random = new Random();
 
     public PostDto createPost(PostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
@@ -43,11 +44,11 @@ public class FeedService {
         List<PostEntity> posts = postRepository.findAll();
         return posts.stream()
                 .map(fetchPostsMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Timestamp generateRandomTimestamp() {
-        long randomTime = System.currentTimeMillis() - (long) (Math.random() * 1000000000);
+        long randomTime = System.currentTimeMillis() - (random.nextLong() % 1000000000);
         return new Timestamp(randomTime);
     }
 }
