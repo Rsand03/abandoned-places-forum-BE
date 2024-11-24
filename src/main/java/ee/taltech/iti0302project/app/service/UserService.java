@@ -4,7 +4,7 @@ import ee.taltech.iti0302project.app.dto.UserCriteria;
 import ee.taltech.iti0302project.app.dto.UserDto;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.repository.UserRepository;
-import ee.taltech.iti0302project.app.repository.location.UserSpecifications;
+import ee.taltech.iti0302project.app.repository.UserSpecifications;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
