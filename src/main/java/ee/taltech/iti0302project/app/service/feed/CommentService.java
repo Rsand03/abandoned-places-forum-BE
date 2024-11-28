@@ -24,15 +24,15 @@ public class CommentService {
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
-    public CommentDto createComment(Long postId, String body, UUID userId) {
-        PostEntity post = postRepository.findById(postId)
+    public CommentDto createComment(CommentDto commentDto) {
+        System.out.println(commentDto);
+        PostEntity post = postRepository.findById(commentDto.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        UserEntity user = userRepository.findById(userId)
+        UserEntity user = userRepository.findById(commentDto.getCreatedById())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        CommentEntity commentEntity = new CommentEntity();
-        commentEntity.setBody(body);
+        CommentEntity commentEntity = commentMapper.toEntity(commentDto);
         commentEntity.setPost(post);
         commentEntity.setCreatedBy(user);
         commentEntity.setCreatedAt(LocalDateTime.now());
