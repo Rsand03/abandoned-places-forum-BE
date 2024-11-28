@@ -9,6 +9,6 @@ import java.util.UUID;
 public class LocationBookmarkDto {
     private UUID id;
     private String type;
-    private String locationName;
+    private UUID locationId;
     private LocalDateTime createdAt;
 }
