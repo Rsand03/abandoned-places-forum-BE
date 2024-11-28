@@ -6,4 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface LocationBookmarkRepository extends JpaRepository<LocationBookmarkEntity, UUID> {
+    boolean existsByLocationIdAndCreatedBy(UUID locationId, UUID createdBy);
+
+    void deleteByLocationIdAndCreatedBy(UUID locationId, UUID createdBy);
 }
