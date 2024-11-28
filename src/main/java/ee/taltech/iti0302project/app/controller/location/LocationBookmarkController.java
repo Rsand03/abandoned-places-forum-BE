@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.app.controller.location;
 
-import ee.taltech.iti0302project.app.dto.location.*;
+import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreateDto;
+import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.service.location.LocationBookmarkService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

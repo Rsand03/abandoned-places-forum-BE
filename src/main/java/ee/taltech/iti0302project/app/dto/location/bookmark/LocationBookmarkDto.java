@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.dto.location;
+package ee.taltech.iti0302project.app.dto.location.bookmark;
 
 import lombok.Data;
 

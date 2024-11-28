@@ -1,9 +1,7 @@
 package ee.taltech.iti0302project.app.service.location;
 
-import ee.taltech.iti0302project.app.dto.location.LocationBookmarkCreateDto;
-import ee.taltech.iti0302project.app.dto.location.LocationBookmarkDto;
-import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
-import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
+import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreateDto;
+import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationBookmarkMapper;
 import ee.taltech.iti0302project.app.entity.location.*;
 import ee.taltech.iti0302project.app.repository.UserRepository;
@@ -48,6 +46,7 @@ public class LocationBookmarkService {
         LocationBookmarkEntity bookmarkEntity = locationBookmarkMapper.toEntity(locationBookmarkCreateDto);
 
         bookmarkEntity.setLocationId(locationBookmarkCreateDto.getLocationId());
+        bookmarkEntity.setType(locationBookmarkCreateDto.getType().getLabel());
 
         LocationBookmarkEntity savedEntity = locationBookmarkRepository.save(bookmarkEntity);
         return Optional.of(locationBookmarkMapper.toResponseDto(savedEntity));

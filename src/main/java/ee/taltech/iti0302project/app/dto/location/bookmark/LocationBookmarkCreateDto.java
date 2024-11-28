@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.dto.location;
+package ee.taltech.iti0302project.app.dto.location.bookmark;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -9,8 +9,7 @@ import java.util.UUID;
 public class LocationBookmarkCreateDto {
 
     @NotNull
-    @Size(max = 20)
-    private String type;
+    private BookmarkType type;
 
     @NotNull
     private UUID createdByUserUuid;
