@@ -47,11 +47,11 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5174"));  // Frontend URL
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));  // Allowed methods
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));  // Allowed headers
-        config.setAllowCredentials(true);  // Allow credentials (cookies, etc.)
-        source.registerCorsConfiguration("/api/**", config);  // Apply to `/api/**` endpoints
+        config.setAllowedOrigins(List.of("http://localhost:5174", "http://localhost:5173", "http://tiim32.zapto.org"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+        source.registerCorsConfiguration("/api/**", config);
         return source;
     }
 }
