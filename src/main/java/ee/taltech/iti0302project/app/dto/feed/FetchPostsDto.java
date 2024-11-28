@@ -1,6 +1,5 @@
 package ee.taltech.iti0302project.app.dto.feed;
 
-import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import lombok.Data;
 
 import java.util.UUID;

@@ -1,10 +1,8 @@
-package ee.taltech.iti0302project.app.service;
+package ee.taltech.iti0302project.app.service.auth;
 
-import ee.taltech.iti0302project.app.config.SecurityConfig;
 import ee.taltech.iti0302project.app.dto.auth.UserRegisterDto;
 import ee.taltech.iti0302project.app.dto.auth.AuthenticationResponseDto;
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
-import ee.taltech.iti0302project.app.dto.mapper.user.UserMapper;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
@@ -27,7 +25,6 @@ public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final SecretKey key;
 
@@ -92,7 +89,10 @@ public class AuthService {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claims(Map.of(
-                        "userId", user.getId()
+                        "userId", user.getId(),
+                        "username", user.getUsername(),
+                        "role", user.getRole(),
+                        "points", user.getPoints()
                 ))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))

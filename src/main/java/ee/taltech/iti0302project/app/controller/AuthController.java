@@ -3,7 +3,7 @@ package ee.taltech.iti0302project.app.controller;
 import ee.taltech.iti0302project.app.dto.auth.AuthenticationResponseDto;
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.auth.UserRegisterDto;
-import ee.taltech.iti0302project.app.service.AuthService;
+import ee.taltech.iti0302project.app.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
