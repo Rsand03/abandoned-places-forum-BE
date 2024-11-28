@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -28,5 +29,5 @@ public class PostEntity {
     private UserEntity createdBy;
 
     @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    private LocalDate createdAt;
 }

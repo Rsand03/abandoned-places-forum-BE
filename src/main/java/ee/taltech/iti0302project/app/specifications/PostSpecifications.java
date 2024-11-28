@@ -14,4 +14,25 @@ public class PostSpecifications {
             return cb.between(root.get("createdAt"), from, to);
         };
     }
+
+    public static Specification<PostEntity> hasTitle(String title) {
+        return (root, query, cb) -> {
+            if (title == null || title.isEmpty()) return null;
+            return cb.like(root.get("title"), "%" + title + "%");
+        };
+    }
+
+    public static Specification<PostEntity> hasBody(String body) {
+        return (root, query, cb) -> {
+            if (body == null || body.isEmpty()) return null;
+            return cb.like(root.get("body"), "%" + body + "%");
+        };
+    }
+
+    public static Specification<PostEntity> createdByUsername(String username) {
+        return (root, query, cb) -> {
+            if (username == null || username.isEmpty()) return null;
+            return cb.equal(root.join("createdBy").get("username"), username);
+        };
+    }
 }
