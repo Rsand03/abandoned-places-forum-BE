@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -59,14 +58,10 @@ public class FeedService {
                 .toList();
     }
 
-    private Timestamp generateRandomTimestamp() {
-        long randomTime = System.currentTimeMillis() - (random.nextLong() % 1000000000);
-        return new Timestamp(randomTime);
-
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria) {
         Specification<PostEntity> spec = Specification.where(null);
 
-        logger.info("Search Criteria: " + criteria);
+        logger.info("Search Criteria: {}", criteria);
 
         if (criteria.createdDateFrom() != null || criteria.createdDateTo() != null) {
             spec = spec.and(PostSpecifications.postedBetween(criteria.createdDateFrom(), criteria.createdDateTo()));
@@ -93,7 +88,7 @@ public class FeedService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         Page<PostEntity> postPage = postRepository.findAll(spec, pageable);
-        logger.info("Post Page:" + postPage.getContent());
+        logger.info("Post Page: {}", postPage.getContent());
 
         List<FetchPostsDto> content = postPage.map(fetchPostsMapper::toDto).getContent();
         return new PageResponse<>(content, postPage.getNumber(), postPage.getSize(), postPage.getTotalElements(), postPage.getTotalPages());

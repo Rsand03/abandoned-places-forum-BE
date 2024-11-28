@@ -6,12 +6,17 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDate;
 
 public class PostSpecifications {
+
+    private PostSpecifications() {}
+
+    public static final String CREATED_AT_COLUMN = "createdAt";
+
     public static Specification<PostEntity> postedBetween(LocalDate from, LocalDate to) {
         return (root, query, cb) -> {
             if (from == null && to == null) return null;
-            if (from == null) return cb.lessThanOrEqualTo(root.get("createdAt"), to);
-            if (to == null) return cb.greaterThanOrEqualTo(root.get("createdAt"), from);
-            return cb.between(root.get("createdAt"), from, to);
+            if (from == null) return cb.lessThanOrEqualTo(root.get(CREATED_AT_COLUMN), to);
+            if (to == null) return cb.greaterThanOrEqualTo(root.get(CREATED_AT_COLUMN), from);
+            return cb.between(root.get(CREATED_AT_COLUMN), from, to);
         };
     }
 

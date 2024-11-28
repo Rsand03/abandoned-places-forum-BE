@@ -6,6 +6,7 @@ import ee.taltech.iti0302project.app.dto.profile.ChangeEmailPasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
+import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,23 +18,24 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProfileService {
 
+    public static final String USER_NOT_FOUND_MSG = "User not found";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
     public UserProfileDto getUserProfile(UUID userId) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MSG));
         return userMapper.toUserProfileDto(user);
     }
 
     public UserProfileDto updateEmail(UUID userId, ChangeEmailDto changeEmailDto) {
 
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MSG));
 
         if (!passwordEncoder.matches(changeEmailDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new ApplicationException("Invalid password");
         }
 
         user.setEmail(changeEmailDto.getNewEmail());
@@ -44,21 +46,21 @@ public class ProfileService {
 
     public UserProfileDto updatePassword(UUID userId, ChangePasswordDto changePasswordDto) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException(USER_NOT_FOUND_MSG));
 
         if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
-            throw new RuntimeException("Current password is incorrect");
+            throw new ApplicationException("Current password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         userRepository.save(user);
 
-        return userMapper.toDto(user);
+        return userMapper.toUserProfileDto(user);
     }
 
     public UserProfileDto updateEmailAndPassword(UUID userId, ChangeEmailPasswordDto changeEmailPasswordDto) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException(USER_NOT_FOUND_MSG));
 
         // Update fields
         user.setEmail(changeEmailPasswordDto.getEmail());
@@ -68,4 +70,3 @@ public class ProfileService {
         return userMapper.toUserProfileDto(updatedUser);
     }
 }
-
