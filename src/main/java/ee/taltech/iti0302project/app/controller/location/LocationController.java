@@ -2,6 +2,7 @@ package ee.taltech.iti0302project.app.controller.location;
 
 import ee.taltech.iti0302project.app.dto.location.LocationConditionDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
+import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.location.LocationStatusDto;
 import ee.taltech.iti0302project.app.service.location.LocationConditionService;
@@ -10,9 +11,9 @@ import ee.taltech.iti0302project.app.service.location.LocationStatusService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api/locations")
 @RequiredArgsConstructor
-@Validated
 public class LocationController {
 
     private final LocationConditionService locationConditionService;
@@ -43,8 +43,13 @@ public class LocationController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<LocationResponseDto>> getAllLocations() {
-        return ResponseEntity.ok(locationService.getAllLocations());
+    public ResponseEntity<List<LocationResponseDto>> getAllLocations(@Valid @ModelAttribute LocationCriteria criteria) {
+        if (criteria.getUserId() == null) {
+            return ResponseEntity.ok(locationService.getAllLocations());
+        }
+        return locationService.getFilteredLocations(criteria)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @PostMapping("")
