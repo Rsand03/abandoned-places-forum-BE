@@ -1,6 +1,5 @@
 package ee.taltech.iti0302project.app.controller.feed;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import ee.taltech.iti0302project.app.dto.feed.CommentDto;
 import ee.taltech.iti0302project.app.service.feed.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/feed/{postId}/comments")
@@ -19,13 +17,10 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<CommentDto> createComment(
-            @PathVariable Long postId,
-            @RequestBody() JsonNode body,
-            @RequestHeader("User-ID") UUID userId
+            @RequestBody CommentDto commentDto
     ) {
-        String comment = body.get("comment").asText();
-        CommentDto commentDto = commentService.createComment(postId, comment, userId);
-        return ResponseEntity.ok(commentDto);
+        CommentDto response = commentService.createComment(commentDto);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping

@@ -3,6 +3,7 @@ package ee.taltech.iti0302project.app.controller.feed;
 import ee.taltech.iti0302project.app.dto.feed.UpvoteDto;
 import ee.taltech.iti0302project.app.service.feed.UpvoteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,11 @@ public class UpvoteController {
 
     @PostMapping
     public ResponseEntity<UpvoteDto> createUpvote(@RequestBody UpvoteDto upvoteDTO) {
+
+        if (upvoteDTO.getUserId() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(upvoteDTO);
+        }
+
         UpvoteDto createdUpvote = upvoteService.toggleUpvote(upvoteDTO);
         return ResponseEntity.ok(createdUpvote);
     }
