@@ -28,6 +28,20 @@ public class LocationBookmarkService {
 
     private final LocationBookmarkMapper locationBookmarkMapper;
 
+    public List<LocationBookmarkDto> getLocationBookmarksByUserAndLocation(UUID userId, Optional<UUID> locationId) {
+        List<LocationBookmarkEntity> bookmarks;
+
+        if (locationId.isPresent()) {
+            bookmarks = locationBookmarkRepository.findByCreatedByAndLocationId(userId, locationId.get());
+        } else {
+            bookmarks = locationBookmarkRepository.findByCreatedBy(userId);
+        }
+
+        return bookmarks.stream()
+                .map(locationBookmarkMapper::toResponseDto)
+                .toList();
+    }
+
     public Optional<LocationBookmarkDto> createLocationBookmark(LocationBookmarkCreateDto locationBookmarkCreateDto) {
         validateLocationBookmark(locationBookmarkCreateDto);
 
@@ -46,7 +60,8 @@ public class LocationBookmarkService {
         }
 
         if (!locationRepository.existsById(locationBookmarkCreateDto.getLocationId())) {
-            throw new EntityNotFoundException("Location not found with ID: " + locationBookmarkCreateDto.getLocationId());
+            throw new EntityNotFoundException("Location not found with ID: "
+                    + locationBookmarkCreateDto.getLocationId());
         }
     }
 
