@@ -2,7 +2,6 @@ package ee.taltech.iti0302project.app.service.profile;
 
 import ee.taltech.iti0302project.app.dto.mapper.user.UserMapper;
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
-import ee.taltech.iti0302project.app.dto.profile.ChangeEmailPasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
