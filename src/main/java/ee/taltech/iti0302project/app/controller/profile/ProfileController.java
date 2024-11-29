@@ -30,14 +30,6 @@ public class ProfileController {
         return ResponseEntity.ok(userProfileDTO);
     }
 
-    @PutMapping("/{userId}/update")
-    public ResponseEntity<UserProfileDto> updateEmailAndPassword(
-            @PathVariable UUID userId,
-            @RequestBody ChangeEmailPasswordDto changeEmailPasswordDTO) {
-        UserProfileDto updatedUser = userService.updateEmailAndPassword(userId, changeEmailPasswordDTO);
-        return ResponseEntity.ok(updatedUser);
-    }
-
     @PutMapping("/{userId}/updateEmail")
     public ResponseEntity<UserProfileDto> updateEmail(
             @PathVariable UUID userId,

@@ -57,16 +57,4 @@ public class ProfileService {
 
         return userMapper.toUserProfileDto(user);
     }
-
-    public UserProfileDto updateEmailAndPassword(UUID userId, ChangeEmailPasswordDto changeEmailPasswordDto) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException(USER_NOT_FOUND_MSG));
-
-        // Update fields
-        user.setEmail(changeEmailPasswordDto.getEmail());
-        user.setPassword(changeEmailPasswordDto.getPassword());  // Ideally, password should be encrypted
-
-        UserEntity updatedUser = userRepository.save(user);
-        return userMapper.toUserProfileDto(updatedUser);
-    }
 }

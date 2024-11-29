@@ -24,12 +24,6 @@ public class FeedController {
         return ResponseEntity.ok(feedService.createPost(createdPost));
     }
 
-    @GetMapping("/awsd")
-    public ResponseEntity<List<FetchPostsDto>> getAllPosts() {
-        List<FetchPostsDto> postDtos = feedService.getAllPosts();
-        return ResponseEntity.ok(postDtos);
-    }
-
     @GetMapping("")
     public PageResponse<FetchPostsDto> getPosts(
             @Valid @ModelAttribute FeedSearchCriteria criteria) {
