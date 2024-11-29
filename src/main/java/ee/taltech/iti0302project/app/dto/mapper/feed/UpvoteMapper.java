@@ -1,7 +1,6 @@
 package ee.taltech.iti0302project.app.dto.mapper.feed;
 
 import ee.taltech.iti0302project.app.dto.feed.UpvoteDto;
-import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

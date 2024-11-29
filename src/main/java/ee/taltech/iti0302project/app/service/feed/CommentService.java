@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -25,7 +24,6 @@ public class CommentService {
     private final CommentMapper commentMapper;
 
     public CommentDto createComment(CommentDto commentDto) {
-        System.out.println(commentDto);
         PostEntity post = postRepository.findById(commentDto.getPostId())
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
