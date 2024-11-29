@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class PostDto {
+public class CreatePostDto {
 
     private UUID userId;
     private String title;

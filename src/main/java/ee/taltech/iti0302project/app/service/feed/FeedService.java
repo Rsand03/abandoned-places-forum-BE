@@ -1,8 +1,8 @@
 package ee.taltech.iti0302project.app.service.feed;
 
 import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
+import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
-import ee.taltech.iti0302project.app.dto.feed.PostDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
@@ -36,7 +36,7 @@ public class FeedService {
     private final UserRepository userRepository;
     private final Random random = new Random();
 
-    public PostDto createPost(PostDto createdPost) {
+    public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -49,13 +49,6 @@ public class FeedService {
         postRepository.save(entity);
 
         return postMapper.toDto(entity);
-    }
-
-    public List<FetchPostsDto> getAllPosts() {
-        List<PostEntity> posts = postRepository.findAll();
-        return posts.stream()
-                .map(fetchPostsMapper::toDto)
-                .toList();
     }
 
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria) {
@@ -87,10 +80,14 @@ public class FeedService {
         Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<PostEntity> postPage = postRepository.findAll(spec, pageable);
-        logger.info("Post Page: {}", postPage.getContent());
+        List<FetchPostsDto> content = postRepository.findPostsWithCounts(spec, pageable);
 
-        List<FetchPostsDto> content = postPage.map(fetchPostsMapper::toDto).getContent();
-        return new PageResponse<>(content, postPage.getNumber(), postPage.getSize(), postPage.getTotalElements(), postPage.getTotalPages());
+        int totalElements = content.size();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+        int fromIndex = pageNumber * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+        content = content.subList(fromIndex, toIndex);
+
+        return new PageResponse<>(content, pageNumber, pageSize, totalElements, totalPages);
     }
 }
