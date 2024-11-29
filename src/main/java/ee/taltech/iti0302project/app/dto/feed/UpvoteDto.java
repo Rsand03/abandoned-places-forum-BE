@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Data
 public class UpvoteDto {
-    private Integer id;
-    private Integer postId;
+    private Long id;
+    private Long postId;
     private UUID userId;
 }

@@ -14,7 +14,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long>, JpaSpec
 
     @Query("SELECT new ee.taltech.iti0302project.app.dto.feed.FetchPostsDto(" +
             "p.id, p.title, p.body, p.locationId, p.createdBy.username, p.createdAt, " +
-            "COUNT(DISTINCT u.id), COUNT(DISTINCT c.id)) " +
+            "COUNT(DISTINCT u.id), COUNT(DISTINCT c.id), false) " +
             "FROM PostEntity p " +
             "LEFT JOIN p.upvotes u " +
             "LEFT JOIN p.comments c " +

@@ -22,7 +22,7 @@ public class UpvoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UpvoteDto> getUpvoteById(@PathVariable Integer id) {
+    public ResponseEntity<UpvoteDto> getUpvoteById(@PathVariable Long id) {
         return ResponseEntity.ok(upvoteService.getUpvoteById(id));
     }
 
@@ -38,13 +38,13 @@ public class UpvoteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUpvote(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteUpvote(@PathVariable Long id) {
         upvoteService.deleteUpvote(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/byPost/{postId}")
-    public ResponseEntity<List<UpvoteDto>> getUpvotesByPostId(@PathVariable Integer postId) {
+    public ResponseEntity<List<UpvoteDto>> getUpvotesByPostId(@PathVariable Long postId) {
         List<UpvoteDto> upvotes = upvoteService.getUpvotesByPostId(postId);
         return ResponseEntity.ok(upvotes);
     }

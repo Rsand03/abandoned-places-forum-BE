@@ -36,7 +36,7 @@ public class FeedController {
             @RequestHeader("Authorization") String authHeader) {
         UUID userId = extractUserIdFromToken(authHeader);
 
-        return feedService.findPosts(criteria);
+        return feedService.findPosts(criteria, userId);
     }
 
     private UUID extractUserIdFromToken(String authHeader) {

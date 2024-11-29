@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 public class FetchPostsDto {
 
-    private Integer id;
+    private Long id;
     private String title;
     private String body;
     private UUID locationId;
@@ -18,4 +18,5 @@ public class FetchPostsDto {
     private LocalDate createdAt;
     private Long likeCount;
     private Long commentCount;
+    private boolean hasUpvoted;
 }
