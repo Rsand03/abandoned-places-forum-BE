@@ -52,25 +52,9 @@ public class FeedService {
     }
 
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria, UUID currentUserId) {
-        Specification<PostEntity> spec = Specification.where(null);
+        Specification<PostEntity> spec = addSpecifications(criteria);
 
         logger.info("Search Criteria: {}", criteria);
-
-        if (criteria.createdDateFrom() != null || criteria.createdDateTo() != null) {
-            spec = spec.and(PostSpecifications.postedBetween(criteria.createdDateFrom(), criteria.createdDateTo()));
-        }
-
-        if (criteria.title() != null && !criteria.title().isEmpty()) {
-            spec = spec.and(PostSpecifications.hasTitle(criteria.title()));
-        }
-
-        if (criteria.body() != null && !criteria.body().isEmpty()) {
-            spec = spec.and(PostSpecifications.hasBody(criteria.body()));
-        }
-
-        if (criteria.createdByUsername() != null && !criteria.createdByUsername().isEmpty()) {
-            spec = spec.and(PostSpecifications.createdByUsername(criteria.createdByUsername()));
-        }
 
         String sortBy = criteria.sortBy() != null ? criteria.sortBy() : "id";
         String direction = criteria.sortDirection() != null ? criteria.sortDirection().toUpperCase() : "DESC";
@@ -81,7 +65,7 @@ public class FeedService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         Page<PostEntity> entityPage = postRepository.findAll(spec, pageable);
-        logger.info("Post Page:" + entityPage.getContent());
+        logger.info("Post Page: {}", entityPage.getContent());
 
         List<FetchPostsDto> dtoList = entityPage.getContent().stream()
                 .map(post -> {
@@ -100,6 +84,28 @@ public class FeedService {
                 entityPage.getTotalElements(),
                 entityPage.getTotalPages()
         );
+    }
+
+    private Specification<PostEntity> addSpecifications(FeedSearchCriteria criteria) {
+        Specification<PostEntity> spec = Specification.where(null);
+
+        if (criteria.createdDateFrom() != null || criteria.createdDateTo() != null) {
+            spec = spec.and(PostSpecifications.postedBetween(criteria.createdDateFrom(), criteria.createdDateTo()));
+        }
+
+        if (criteria.title() != null && !criteria.title().isEmpty()) {
+            spec = spec.and(PostSpecifications.hasTitle(criteria.title()));
+        }
+
+        if (criteria.body() != null && !criteria.body().isEmpty()) {
+            spec = spec.and(PostSpecifications.hasBody(criteria.body()));
+        }
+
+        if (criteria.createdByUsername() != null && !criteria.createdByUsername().isEmpty()) {
+            spec = spec.and(PostSpecifications.createdByUsername(criteria.createdByUsername()));
+        }
+
+        return spec;
     }
 
     public boolean hasUserUpvotedPost(Long postId, UUID userId) {

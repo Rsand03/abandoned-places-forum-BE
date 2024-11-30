@@ -47,6 +47,7 @@ public class FeedController {
         String token = authHeader.substring(7);  // Remove "Bearer " prefix
 
         try {
+            @SuppressWarnings("deprecation")
             Claims claims = Jwts.parser()
                     .setSigningKey(key)
                     .build()
