@@ -3,6 +3,7 @@ package ee.taltech.iti0302project.app.service.feed;
 import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
 import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
+import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
@@ -13,6 +14,7 @@ import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.specifications.PostSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,6 +34,7 @@ public class FeedService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final UserRepository userRepository;
+    private final FetchPostsMapper fetchPostsMapper;
 
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
@@ -77,20 +80,26 @@ public class FeedService {
         Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        List<FetchPostsDto> content = postRepository.findPostsWithCounts(spec, pageable);
+        Page<PostEntity> entityPage = postRepository.findAll(spec, pageable);
+        logger.info("Post Page:" + entityPage.getContent());
 
-        for (FetchPostsDto postDto : content) {
-            boolean hasUpvoted = hasUserUpvotedPost(postDto.getId(), currentUserId);
-            postDto.setHasUpvoted(hasUpvoted);
-        }
+        List<FetchPostsDto> dtoList = entityPage.getContent().stream()
+                .map(post -> {
+                    FetchPostsDto dto = fetchPostsMapper.toDto(post);
+                    dto.setLikeCount((long) (post.getUpvotes() != null ? post.getUpvotes().size() : 0));
+                    dto.setCommentCount((long) (post.getComments() != null ? post.getComments().size() : 0));
+                    dto.setHasUpvoted(hasUserUpvotedPost(post.getId(), currentUserId));
+                    return dto;
+                })
+                .toList();
 
-        int totalElements = content.size();
-        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
-        int fromIndex = pageNumber * pageSize;
-        int toIndex = Math.min(fromIndex + pageSize, totalElements);
-        content = content.subList(fromIndex, toIndex);
-
-        return new PageResponse<>(content, pageNumber, pageSize, totalElements, totalPages);
+        return new PageResponse<>(
+                dtoList,
+                entityPage.getNumber(),
+                entityPage.getSize(),
+                entityPage.getTotalElements(),
+                entityPage.getTotalPages()
+        );
     }
 
     public boolean hasUserUpvotedPost(Long postId, UUID userId) {
