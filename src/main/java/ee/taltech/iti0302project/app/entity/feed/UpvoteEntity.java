@@ -13,10 +13,10 @@ import java.util.UUID;
 public class UpvoteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "post_id", nullable = false)
-    private Integer postId;
+    private Long postId;
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;

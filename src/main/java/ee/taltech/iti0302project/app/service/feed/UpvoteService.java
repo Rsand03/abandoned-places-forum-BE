@@ -20,7 +20,7 @@ public class UpvoteService {
         return upvoteMapper.toDtoList(upvoteRepository.findAll());
     }
 
-    public UpvoteDto getUpvoteById(Integer id) {
+    public UpvoteDto getUpvoteById(Long id) {
         return upvoteMapper.toDto(upvoteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Upvote not found with id: " + id)));
     }
@@ -53,11 +53,11 @@ public class UpvoteService {
         return upvoteMapper.toDto(upvote);
     }
 
-    public void deleteUpvote(Integer id) {
+    public void deleteUpvote(Long id) {
         upvoteRepository.deleteById(id);
     }
 
-    public List<UpvoteDto> getUpvotesByPostId(Integer postId) {
+    public List<UpvoteDto> getUpvotesByPostId(Long postId) {
         List<UpvoteEntity> upvotes = upvoteRepository.findByPostId(postId);
         return upvoteMapper.toDtoList(upvotes);
     }

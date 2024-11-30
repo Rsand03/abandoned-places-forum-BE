@@ -8,7 +8,7 @@ import java.util.UUID;
 @Data
 public class CommentDto {
 
-    private Integer id;
+    private Long id;
     private String body;
     private Long postId;
     private UUID createdById;

@@ -1,7 +1,6 @@
 package ee.taltech.iti0302project.app.controller.profile;
 
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
-import ee.taltech.iti0302project.app.dto.profile.ChangeEmailPasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
 import ee.taltech.iti0302project.app.service.profile.ProfileService;

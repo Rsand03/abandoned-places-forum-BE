@@ -1,11 +1,11 @@
 package ee.taltech.iti0302project.app.service.feed;
 
 import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
+import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
-import ee.taltech.iti0302project.app.dto.feed.PostDto;
-import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
+import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.pagination.PageResponse;
 import ee.taltech.iti0302project.app.repository.UserRepository;
@@ -13,7 +13,6 @@ import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.specifications.PostSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Random;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -32,11 +31,9 @@ public class FeedService {
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
-    private final FetchPostsMapper fetchPostsMapper;
     private final UserRepository userRepository;
-    private final Random random = new Random();
 
-    public PostDto createPost(PostDto createdPost) {
+    public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -51,14 +48,7 @@ public class FeedService {
         return postMapper.toDto(entity);
     }
 
-    public List<FetchPostsDto> getAllPosts() {
-        List<PostEntity> posts = postRepository.findAll();
-        return posts.stream()
-                .map(fetchPostsMapper::toDto)
-                .toList();
-    }
-
-    public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria) {
+    public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria, UUID currentUserId) {
         Specification<PostEntity> spec = Specification.where(null);
 
         logger.info("Search Criteria: {}", criteria);
@@ -87,10 +77,32 @@ public class FeedService {
         Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<PostEntity> postPage = postRepository.findAll(spec, pageable);
-        logger.info("Post Page: {}", postPage.getContent());
+        List<FetchPostsDto> content = postRepository.findPostsWithCounts(spec, pageable);
 
-        List<FetchPostsDto> content = postPage.map(fetchPostsMapper::toDto).getContent();
-        return new PageResponse<>(content, postPage.getNumber(), postPage.getSize(), postPage.getTotalElements(), postPage.getTotalPages());
+        for (FetchPostsDto postDto : content) {
+            boolean hasUpvoted = hasUserUpvotedPost(postDto.getId(), currentUserId);
+            postDto.setHasUpvoted(hasUpvoted);
+        }
+
+        int totalElements = content.size();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+        int fromIndex = pageNumber * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+        content = content.subList(fromIndex, toIndex);
+
+        return new PageResponse<>(content, pageNumber, pageSize, totalElements, totalPages);
+    }
+
+    public boolean hasUserUpvotedPost(Long postId, UUID userId) {
+        PostEntity post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        for (UpvoteEntity upvote : post.getUpvotes()) {
+            if (upvote.getUserId().equals(userId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

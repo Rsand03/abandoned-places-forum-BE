@@ -9,10 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UpvoteRepository extends JpaRepository<UpvoteEntity, Integer> {
-    boolean existsByPostIdAndUserId(Integer postId, UUID userId);
+public interface UpvoteRepository extends JpaRepository<UpvoteEntity, Long> {
+    boolean existsByPostIdAndUserId(Long postId, UUID userId);
 
-    List<UpvoteEntity> findByPostId(Integer postId);
+    List<UpvoteEntity> findByPostId(Long postId);
 
-    Optional<UpvoteEntity> findByPostIdAndUserId(Integer postId, UUID userId);
+    Optional<UpvoteEntity> findByPostIdAndUserId(Long postId, UUID userId);
 }
