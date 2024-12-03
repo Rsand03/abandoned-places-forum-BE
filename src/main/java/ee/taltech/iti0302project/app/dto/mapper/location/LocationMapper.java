@@ -18,7 +18,6 @@ public interface LocationMapper {
 
     List<LocationResponseDto> toDtoList(List<LocationEntity> locationEntityList);
 
-    @Mapping(source = "createdByUserUuid", target = "createdBy")
     LocationEntity toEntity(LocationCreateDto locationCreateDto);
 
 }
