@@ -10,9 +10,16 @@ public class LocationSpecifications {
 
     private LocationSpecifications() {}
 
-    public static Specification<LocationEntity> hasCreatedBy(UUID userId) {
-        return (root, query, cb) ->
-                userId == null ? null : cb.equal(root.get("createdBy"), userId);
+    public static Specification<LocationEntity> isPublicOrHasCreatedBy(UUID userId) {
+        return (root, query, cb) -> {
+            if (userId == null) {
+                return cb.isTrue(root.get("isPublic"));
+            }
+            return cb.or(
+                    cb.equal(root.get("createdBy"), userId),
+                    cb.isTrue(root.get("isPublic"))
+            );
+        };
     }
 
     public static Specification<LocationEntity> hasMainCategory(Long mainCategoryId) {

@@ -52,10 +52,12 @@ public class LocationController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<LocationResponseDto>> getAllLocations(@Valid @ModelAttribute LocationCriteria criteria) {
-        if (criteria.getUserId() == null) {
-            return ResponseEntity.ok(locationService.getAllLocations());
-        }
+    public ResponseEntity<List<LocationResponseDto>> getFilteredLocations(
+            @Valid @ModelAttribute LocationCriteria criteria,
+            @RequestHeader("Authorization") String authHeader) {
+
+        UUID userId = authService.extractUserIdFromToken(authHeader);
+        criteria.setUserId(userId);
         return locationService.getFilteredLocations(criteria)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());

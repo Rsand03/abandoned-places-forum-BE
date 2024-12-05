@@ -63,7 +63,7 @@ public class LocationService {
                 .map(criteria -> {
             Specification<LocationEntity> spec = Specification.where(null);
 
-            spec = spec.and(LocationSpecifications.hasCreatedBy(criteria.getUserId()));
+            spec = spec.and(LocationSpecifications.isPublicOrHasCreatedBy(criteria.getUserId()));
             if (criteria.getMainCategoryId() != null) {
                 spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getMainCategoryId()));
             }
@@ -120,9 +120,10 @@ public class LocationService {
         return Optional.of(createdDto)
 
                 .filter(dto -> userId != null && userRepository.existsById(userId))
-
                 .filter(dto -> dto.getSubCategoryIds().stream()
-                        .allMatch(x -> x != null && locationCategoryRepository.existsById(x)))
+                        .allMatch(x -> x != null
+                                && locationCategoryRepository.existsById(x)
+                                && !x.equals(dto.getMainCategoryId())))
                 .filter(dto -> locationConditionRepository.existsById(dto.getConditionId()))
                 .filter(dto -> locationStatusRepository.existsById(dto.getStatusId()))
                 .filter(dto -> locationCategoryRepository.existsById(dto.getMainCategoryId()));
