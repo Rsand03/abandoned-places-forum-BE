@@ -55,7 +55,6 @@ public class LocationController {
     public ResponseEntity<List<LocationResponseDto>> getFilteredLocations(
             @Valid @ModelAttribute LocationCriteria criteria,
             @RequestHeader("Authorization") String authHeader) {
-
         UUID userId = authService.extractUserIdFromToken(authHeader);
         criteria.setUserId(userId);
         return locationService.getFilteredLocations(criteria)
@@ -64,10 +63,8 @@ public class LocationController {
     }
 
     @PostMapping("")
-    public ResponseEntity<LocationResponseDto> createLocation(
-            @Valid @RequestBody LocationCreateDto createdLocation,
-            @RequestHeader("Authorization") String authHeader) {
-
+    public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationCreateDto createdLocation,
+                                                              @RequestHeader("Authorization") String authHeader) {
         UUID userId = authService.extractUserIdFromToken(authHeader);
         return locationService.createLocation(createdLocation, userId)
                 .map(ResponseEntity::ok)
@@ -76,7 +73,8 @@ public class LocationController {
 
     @DeleteMapping("")
     public ResponseEntity<Void> deleteLocation(@RequestParam UUID locationId,
-                                               @RequestParam UUID userId) {
+                                               @RequestHeader("Authorization") String authHeader) {
+        UUID userId = authService.extractUserIdFromToken(authHeader);
         return locationService.deleteLocationByUuid(locationId, userId)
                 .isPresent() ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }

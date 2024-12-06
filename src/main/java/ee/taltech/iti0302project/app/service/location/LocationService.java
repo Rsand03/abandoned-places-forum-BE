@@ -46,9 +46,6 @@ public class LocationService {
     private final LocationConditionMapper conditionMapper;
     private final LocationStatusMapper statusMapper;
 
-    public List<LocationResponseDto> getAllLocations() {
-        return locationMapper.toDtoList(locationRepository.findAll());
-    }
 
     public LocationAttributesDto getLocationAttributes() {
         LocationAttributesDto attributesDto = new LocationAttributesDto();
@@ -83,11 +80,12 @@ public class LocationService {
         });
     }
 
-    public Optional<LocationResponseDto> deleteLocationByUuid(UUID uuid, UUID createdBy) {
-        return locationRepository.findById(uuid)
+    public Optional<LocationResponseDto> deleteLocationByUuid(UUID locationId, UUID createdBy) {
+        return locationRepository.findById(locationId)
                 .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
+                .filter(locationEntity -> !locationEntity.isPublic())
                 .map(locationEntity -> {
-                    locationRepository.deleteById(uuid);
+                    locationRepository.deleteById(locationId);
                     log.info("deleted location with id " + locationEntity.getId());
                     return locationMapper.toResponseDto(locationEntity);
                 });
