@@ -9,16 +9,12 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 public class LocationCreateDto {
 
     @NotNull
-    private UUID createdByUserUuid;
-
-    @NotNull
-    @Size(min = 5, max = 100)
+    @Size(min = 2, max = 100)
     private String name;
 
     @NotNull
@@ -53,9 +49,6 @@ public class LocationCreateDto {
     @Size(max = 255)
     private String additionalInformation;
 
-    @NotNull
-    @Min(value = 1)
-    @Max(value = 5000)
-    private Integer minRequiredPointsToView;
+    private Integer minRequiredPointsToView = 0;
 
 }

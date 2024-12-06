@@ -3,7 +3,11 @@ package ee.taltech.iti0302project.app.service.location;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
+import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
+import ee.taltech.iti0302project.app.dto.mapper.location.LocationCategoryMapper;
+import ee.taltech.iti0302project.app.dto.mapper.location.LocationConditionMapper;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
+import ee.taltech.iti0302project.app.dto.mapper.location.LocationStatusMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationConditionEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
@@ -38,9 +42,17 @@ public class LocationService {
     private final UserRepository userRepository;
 
     private final LocationMapper locationMapper;
+    private final LocationCategoryMapper categoryMapper;
+    private final LocationConditionMapper conditionMapper;
+    private final LocationStatusMapper statusMapper;
 
-    public List<LocationResponseDto> getAllLocations() {
-        return locationMapper.toDtoList(locationRepository.findAll());
+
+    public LocationAttributesDto getLocationAttributes() {
+        LocationAttributesDto attributesDto = new LocationAttributesDto();
+        attributesDto.setCategories(categoryMapper.toDtoList(locationCategoryRepository.findAll()));
+        attributesDto.setConditions(conditionMapper.toDtoList(locationConditionRepository.findAll()));
+        attributesDto.setStatuses(statusMapper.toDtoList(locationStatusRepository.findAll()));
+        return attributesDto;
     }
 
     public Optional<List<LocationResponseDto>> getFilteredLocations(LocationCriteria locationCriteria) {
@@ -48,7 +60,7 @@ public class LocationService {
                 .map(criteria -> {
             Specification<LocationEntity> spec = Specification.where(null);
 
-            spec = spec.and(LocationSpecifications.hasCreatedBy(criteria.getUserId()));
+            spec = spec.and(LocationSpecifications.isPublicOrHasCreatedBy(criteria.getUserId()));
             if (criteria.getMainCategoryId() != null) {
                 spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getMainCategoryId()));
             }
@@ -68,18 +80,19 @@ public class LocationService {
         });
     }
 
-    public Optional<LocationResponseDto> deleteLocationByUuid(UUID uuid, UUID createdBy) {
-        return locationRepository.findById(uuid)
+    public Optional<LocationResponseDto> deleteLocationByUuid(UUID locationId, UUID createdBy) {
+        return locationRepository.findById(locationId)
                 .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
+                .filter(locationEntity -> !locationEntity.isPublic())
                 .map(locationEntity -> {
-                    locationRepository.deleteById(uuid);
+                    locationRepository.deleteById(locationId);
                     log.info("deleted location with id " + locationEntity.getId());
                     return locationMapper.toResponseDto(locationEntity);
                 });
     }
 
-    public Optional<LocationResponseDto> createLocation(LocationCreateDto createdDto) {
-        return validateLocationCreateDto(createdDto)
+    public Optional<LocationResponseDto> createLocation(LocationCreateDto createdDto, UUID userId) {
+        return validateLocationCreateDto(createdDto, userId)
                 .map(dto -> {
                     LocationEntity createdEntity = locationMapper.toEntity(dto);
 
@@ -91,6 +104,7 @@ public class LocationService {
                     LocationStatusEntity status = locationStatusRepository.findById(dto.getStatusId())
                             .orElseThrow(() -> new EntityNotFoundException("Status not found"));
 
+                    createdEntity.setCreatedBy(userId);
                     createdEntity.setMainCategory(mainCategory);
                     createdEntity.setSubCategories(subCategories);
                     createdEntity.setCondition(condition);
@@ -100,14 +114,17 @@ public class LocationService {
                 });
     }
 
-    private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto createdDto) {
+    private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto createdDto, UUID userId) {
         return Optional.of(createdDto)
+
+                .filter(dto -> userId != null && userRepository.existsById(userId))
                 .filter(dto -> dto.getSubCategoryIds().stream()
-                        .allMatch(x -> x != null && locationCategoryRepository.existsById(x)))
+                        .allMatch(x -> x != null
+                                && locationCategoryRepository.existsById(x)
+                                && !x.equals(dto.getMainCategoryId())))
                 .filter(dto -> locationConditionRepository.existsById(dto.getConditionId()))
                 .filter(dto -> locationStatusRepository.existsById(dto.getStatusId()))
-                .filter(dto -> locationCategoryRepository.existsById(dto.getMainCategoryId()))
-                .filter(dto -> userRepository.existsById(dto.getCreatedByUserUuid()));
+                .filter(dto -> locationCategoryRepository.existsById(dto.getMainCategoryId()));
     }
 
     private Optional<LocationCriteria> validateLocationCriteria(LocationCriteria validatedCriteria) {

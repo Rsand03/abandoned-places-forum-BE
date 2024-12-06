@@ -6,24 +6,29 @@ import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -59,7 +64,6 @@ public class AuthService {
 
         return new AuthenticationResponseDto(token, user.getId(), user.getUsername(), user.getRole(), user.getPoints());
     }
-
 
     public AuthenticationResponseDto authenticateUser(UserLoginDto userLoginDto) {
         logger.info("Authenticating user with username: {}", userLoginDto.getUsername());
@@ -99,6 +103,27 @@ public class AuthService {
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(key)
                 .compact();
+    }
+
+    public UUID extractUserIdFromToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);  // Remove "Bearer " prefix
+
+        try {
+            @SuppressWarnings("deprecation")
+            Claims claims = Jwts.parser()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return UUID.fromString(claims.get("userId", String.class));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+        }
     }
 
 }
