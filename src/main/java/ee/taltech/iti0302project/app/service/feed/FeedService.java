@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -49,6 +50,12 @@ public class FeedService {
         postRepository.save(entity);
 
         return postMapper.toDto(entity);
+    }
+
+    public Optional<FetchPostsDto> getPostById(Long postId) {
+        Optional<PostEntity> postEntityOptional = postRepository.findById(postId);
+
+        return postEntityOptional.map(fetchPostsMapper::toDto);
     }
 
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria, UUID currentUserId) {
