@@ -134,4 +134,10 @@ public class LocationService {
                 .filter(criteria -> userRepository.existsById(criteria.getUserId()));
     }
 
+    public Optional<LocationResponseDto> getLocationById(UUID locationId) {
+        return locationRepository.findById(locationId)
+                .map(locationMapper::toResponseDto);
+    }
+
+
 }
