@@ -10,4 +10,5 @@ public class CreatePostDto {
     private UUID userId;
     private String title;
     private String body;
+    private UUID locationId;
 }
