@@ -7,10 +7,12 @@ import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
+import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.pagination.PageResponse;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.feed.PostRepository;
+import ee.taltech.iti0302project.app.repository.location.LocationRepository;
 import ee.taltech.iti0302project.app.specifications.PostSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ public class FeedService {
     private final PostMapper postMapper;
     private final UserRepository userRepository;
     private final FetchPostsMapper fetchPostsMapper;
+    private final LocationRepository locationRepository;
 
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
@@ -42,13 +46,25 @@ public class FeedService {
 
         PostEntity entity = postMapper.toEntity(createdPost);
 
-        entity.setCreatedBy(user);
+        LocationEntity location = locationRepository.findById(entity.getLocationId())
+                .orElseThrow(() -> new RuntimeException("Location not found"));
 
+        if (!location.isPublic()) {
+            throw new RuntimeException("Location is not public"); // TODO: replace this with a custom exception
+        }
+
+        entity.setCreatedBy(user);
         entity.setCreatedAt(LocalDate.now());
 
         postRepository.save(entity);
 
         return postMapper.toDto(entity);
+    }
+
+    public Optional<FetchPostsDto> getPostById(Long postId) {
+        Optional<PostEntity> postEntityOptional = postRepository.findById(postId);
+
+        return postEntityOptional.map(fetchPostsMapper::toDto);
     }
 
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria, UUID currentUserId) {

@@ -39,12 +39,23 @@ public class FeedController {
         return feedService.findPosts(criteria, userId);
     }
 
+    @GetMapping("/{postId}")
+    public ResponseEntity<FetchPostsDto> getPostById(
+            @PathVariable Long postId,
+            @RequestHeader("Authorization") String authHeader) {
+        UUID userId = extractUserIdFromToken(authHeader);
+
+        return feedService.getPostById(postId)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+    }
+
     private UUID extractUserIdFromToken(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
         }
 
-        String token = authHeader.substring(7);  // Remove "Bearer " prefix
+        String token = authHeader.substring(7);
 
         try {
             @SuppressWarnings("deprecation")
