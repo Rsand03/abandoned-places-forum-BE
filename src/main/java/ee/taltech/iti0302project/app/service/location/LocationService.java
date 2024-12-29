@@ -8,10 +8,7 @@ import ee.taltech.iti0302project.app.dto.mapper.location.LocationCategoryMapper;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationConditionMapper;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationStatusMapper;
-import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
-import ee.taltech.iti0302project.app.entity.location.LocationConditionEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
-import ee.taltech.iti0302project.app.entity.location.LocationStatusEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
@@ -19,7 +16,6 @@ import ee.taltech.iti0302project.app.repository.location.LocationConditionReposi
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationSpecifications;
 import ee.taltech.iti0302project.app.repository.location.LocationStatusRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -59,26 +55,33 @@ public class LocationService {
     public Optional<List<LocationResponseDto>> getFilteredLocations(LocationCriteria locationCriteria) {
         return validateLocationCriteria(locationCriteria)
                 .map(criteria -> {
-            Specification<LocationEntity> spec = Specification.where(null);
+                    Specification<LocationEntity> spec = Specification.where(null);
 
-            spec = spec.and(LocationSpecifications.isPublicOrHasCreatedBy(criteria.getUserId()));
-            if (criteria.getMainCategoryId() != null) {
-                spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getMainCategoryId()));
-            }
-            if (!criteria.getSubCategoryIds().isEmpty()) {
-                spec = spec.and(LocationSpecifications.hasSubcategories(criteria.getSubCategoryIds()));
-            }
-            if (criteria.getConditionId() != null) {
-                spec = spec.and(LocationSpecifications.hasCondition(criteria.getConditionId()));
-            }
-            if (criteria.getStatusId() != null) {
-                spec = spec.and(LocationSpecifications.hasStatus(criteria.getStatusId()));
-            }
-            if (criteria.getMinRequiredPointsToView() != null) {
-                spec = spec.and(LocationSpecifications.minPointsToViewHigherThan(criteria.getMinRequiredPointsToView()));
-            }
-            return locationMapper.toDtoList(locationRepository.findAll(spec));
-        });
+                    spec = spec.and(LocationSpecifications.isPublicOrHasCreatedBy(criteria.getUserId()));
+                    if (criteria.getMainCategoryId() != null) {
+                        spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getMainCategoryId()));
+                    }
+                    if (!criteria.getSubCategoryIds().isEmpty()) {
+                        spec = spec.and(LocationSpecifications.hasSubcategories(criteria.getSubCategoryIds()));
+                    }
+                    if (criteria.getConditionId() != null) {
+                        spec = spec.and(LocationSpecifications.hasCondition(criteria.getConditionId()));
+                    }
+                    if (criteria.getStatusId() != null) {
+                        spec = spec.and(LocationSpecifications.hasStatus(criteria.getStatusId()));
+                    }
+                    if (criteria.getMinRequiredPointsToView() != null) {
+                        spec = spec.and(LocationSpecifications.minPointsToViewHigherThan(criteria.getMinRequiredPointsToView()));
+                    }
+                    return locationMapper.toDtoList(locationRepository.findAll(spec));
+                });
+    }
+
+    private Optional<LocationCriteria> validateLocationCriteria(LocationCriteria validatedCriteria) {
+        return Optional.of(validatedCriteria)
+                .filter(criteria -> criteria.getSubCategoryIds().stream()
+                        .noneMatch(x -> x == null || x < 1 || x > 15))
+                .filter(criteria -> userRepository.existsById(criteria.getUserId()));
     }
 
     public Optional<LocationResponseDto> deleteLocationByUuid(UUID locationId, UUID createdBy) {
@@ -111,7 +114,7 @@ public class LocationService {
                     log.info("Created location with id " + createdEntity.getId());
 
                     return locationMapper.toResponseDto(createdEntity);
-                }).orElseThrow(() -> new ApplicationException("Invalid params"));
+                }).orElseThrow(() -> new ApplicationException("Invalid user or subcategories"));
     }
 
     private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto createdDto) {
@@ -121,13 +124,6 @@ public class LocationService {
                         .allMatch(x -> x != null
                                 && locationCategoryRepository.existsById(x)
                                 && !x.equals(dto.getMainCategoryId())));
-    }
-
-    private Optional<LocationCriteria> validateLocationCriteria(LocationCriteria validatedCriteria) {
-        return Optional.of(validatedCriteria)
-                .filter(criteria -> criteria.getSubCategoryIds().stream()
-                        .noneMatch(x -> x == null || x < 1 || x > 15))
-                .filter(criteria -> userRepository.existsById(criteria.getUserId()));
     }
 
     public Optional<LocationResponseDto> getLocationById(UUID locationId) {

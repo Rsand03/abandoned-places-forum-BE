@@ -17,7 +17,7 @@ public class LocationCategoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String name;
 
     @Column(name = "color_hex")
