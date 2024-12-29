@@ -12,6 +12,7 @@ import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationConditionEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationStatusEntity;
+import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationConditionRepository;
@@ -91,40 +92,35 @@ public class LocationService {
                 });
     }
 
-    public Optional<LocationResponseDto> createLocation(LocationCreateDto createdDto, UUID userId) {
-        return validateLocationCreateDto(createdDto, userId)
+    public LocationResponseDto createLocation(LocationCreateDto locationCreateDto) {
+        return validateLocationCreateDto(locationCreateDto)
                 .map(dto -> {
-                    LocationEntity createdEntity = locationMapper.toEntity(dto);
+                    LocationEntity newLocationEntity = locationMapper.toEntity(dto);
 
-                    LocationCategoryEntity mainCategory = locationCategoryRepository.findById(dto.getMainCategoryId())
-                            .orElseThrow(() -> new EntityNotFoundException("Main category not found"));
-                    List<LocationCategoryEntity> subCategories = locationCategoryRepository.findAllById(dto.getSubCategoryIds());
-                    LocationConditionEntity condition = locationConditionRepository.findById(dto.getConditionId())
-                            .orElseThrow(() -> new EntityNotFoundException("Condition not found"));
-                    LocationStatusEntity status = locationStatusRepository.findById(dto.getStatusId())
-                            .orElseThrow(() -> new EntityNotFoundException("Status not found"));
+                    newLocationEntity.setCreatedBy(dto.getCreatedBy());
+                    newLocationEntity.setSubCategories(locationCategoryRepository.findAllById(dto.getSubCategoryIds()));
 
-                    createdEntity.setCreatedBy(userId);
-                    createdEntity.setMainCategory(mainCategory);
-                    createdEntity.setSubCategories(subCategories);
-                    createdEntity.setCondition(condition);
-                    createdEntity.setStatus(status);
+                    newLocationEntity.setMainCategory(locationCategoryRepository.findById(dto.getMainCategoryId())
+                            .orElseThrow(() -> new ApplicationException("Invalid main category id")));
+                    newLocationEntity.setCondition(locationConditionRepository.findById(dto.getConditionId())
+                            .orElseThrow(() -> new ApplicationException("Invalid condition id")));
+                    newLocationEntity.setStatus(locationStatusRepository.findById(dto.getStatusId())
+                            .orElseThrow(() -> new ApplicationException("Invalid status id")));
+
+                    LocationEntity createdEntity = locationRepository.save(newLocationEntity);
                     log.info("Created location with id " + createdEntity.getId());
-                    return locationMapper.toResponseDto(locationRepository.save(createdEntity));
-                });
+
+                    return locationMapper.toResponseDto(createdEntity);
+                }).orElseThrow(() -> new ApplicationException("Invalid params"));
     }
 
-    private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto createdDto, UUID userId) {
+    private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto createdDto) {
         return Optional.of(createdDto)
-
-                .filter(dto -> userId != null && userRepository.existsById(userId))
+                .filter(dto -> dto.getCreatedBy() != null && userRepository.existsById(dto.getCreatedBy()))
                 .filter(dto -> dto.getSubCategoryIds().stream()
                         .allMatch(x -> x != null
                                 && locationCategoryRepository.existsById(x)
-                                && !x.equals(dto.getMainCategoryId())))
-                .filter(dto -> locationConditionRepository.existsById(dto.getConditionId()))
-                .filter(dto -> locationStatusRepository.existsById(dto.getStatusId()))
-                .filter(dto -> locationCategoryRepository.existsById(dto.getMainCategoryId()));
+                                && !x.equals(dto.getMainCategoryId())));
     }
 
     private Optional<LocationCriteria> validateLocationCriteria(LocationCriteria validatedCriteria) {

@@ -55,12 +55,11 @@ public class LocationController {
     }
 
     @PostMapping("")
-    public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationCreateDto createdLocation,
+    public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationCreateDto locationCreateDto,
                                                               @RequestHeader("Authorization") String authHeader) {
         UUID userId = authService.extractUserIdFromToken(authHeader);
-        return locationService.createLocation(createdLocation, userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().build());
+        locationCreateDto.setCreatedBy(userId);
+        return ResponseEntity.ok(locationService.createLocation(locationCreateDto));
     }
 
     @DeleteMapping("")
@@ -73,9 +72,7 @@ public class LocationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LocationResponseDto> getLocationById(
-            @PathVariable UUID id,
-            @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromToken(authHeader);
+            @PathVariable UUID id) {
         return locationService.getLocationById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
