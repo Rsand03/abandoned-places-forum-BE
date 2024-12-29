@@ -14,12 +14,12 @@
 
     <include file="/db/changelog/user-changelog.xml"/>
     <include file="/db/changelog/location-changelog.xml"/>
-    <include file="/db/changelog/db.changelog-1.0.xml"/>
+    <include file="/db/changelog/feed-changelog.xml"/>
 
     <include file="/db/changelog/default-data-inserts/location-categories.xml"/>
     <include file="/db/changelog/default-data-inserts/location-conditions.xml"/>
     <include file="/db/changelog/default-data-inserts/location-statuses.xml"/>
-    <include file="/db/changelog/default-data-inserts/temporary-test-data/users.xml"/>
-    <include file="/db/changelog/default-data-inserts/temporary-test-data/locations.xml"/>
+    <include file="/db/changelog/temporary-test-data/users.xml"/>
+    <include file="/db/changelog/temporary-test-data/locations.xml"/>
 
 </databaseChangeLog>

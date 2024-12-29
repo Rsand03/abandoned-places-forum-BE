@@ -13,70 +13,74 @@
 
 
     <changeSet id="1" author="15-11-2024-rasand">
-
         <insert tableName="location_categories">
             <column name="id" value="1"/>
-            <column name="name" value="Administratiivhoone"/>
-            <column name="color_hex" value="#8E6D47"/>
+            <column name="name" value="Määramata"/>
+            <column name="color_hex" value="#CCCCCC"/>
         </insert>
         <insert tableName="location_categories">
             <column name="id" value="2"/>
+            <column name="name" value="Kontor"/>
+            <column name="color_hex" value="#8E6D47"/>
+        </insert>
+        <insert tableName="location_categories">
+            <column name="id" value="3"/>
             <column name="name" value="Arhiiv"/>
             <column name="color_hex" value="#C4B7A6"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="3"/>
+            <column name="id" value="4"/>
             <column name="name" value="Elumaja"/>
             <column name="color_hex" value="#BD67A8"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="4"/>
+            <column name="id" value="5"/>
             <column name="name" value="Hästi säilinud sisustus"/>
             <column name="color_hex" value="#106189"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="5"/>
+            <column name="id" value="6"/>
             <column name="name" value="Kool"/>
             <column name="color_hex" value="#A4A404"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="6"/>
+            <column name="id" value="7"/>
             <column name="name" value="Kõrgus"/>
             <column name="color_hex" value="#4CC2D7"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="7"/>
+            <column name="id" value="8"/>
             <column name="name" value="Ladu"/>
             <column name="color_hex" value="#8A1616"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="8"/>
+            <column name="id" value="9"/>
             <column name="name" value="Maa-alune"/>
             <column name="color_hex" value="#000000"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="9"/>
+            <column name="id" value="10"/>
             <column name="name" value="Militaar"/>
             <column name="color_hex" value="#072E0A"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="10"/>
+            <column name="id" value="11"/>
             <column name="name" value="Tööstus"/>
             <column name="color_hex" value="#501448"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="11"/>
+            <column name="id" value="12"/>
             <column name="name" value="Varemed"/>
             <column name="color_hex" value="#4D2401"/>
         </insert>
         <insert tableName="location_categories">
-            <column name="id" value="12"/>
+            <column name="id" value="13"/>
             <column name="name" value="Varjend"/>
             <column name="color_hex" value="#717171"/>
         </insert>
 
         <insert tableName="location_categories">
-            <column name="id" value="13"/>
+            <column name="id" value="14"/>
             <column name="name" value="Muu"/>
             <column name="color_hex" value="#21CF35"/>
         </insert>
