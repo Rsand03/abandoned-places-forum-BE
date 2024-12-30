@@ -2,6 +2,7 @@ package ee.taltech.iti0302project.app.service.location;
 
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
+import ee.taltech.iti0302project.app.dto.location.LocationPublishDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationCategoryMapper;
@@ -133,14 +134,17 @@ public class LocationService {
     }
 
 
-    public Optional<LocationResponseDto> publishLocation(UUID uuid, UUID createdBy, int minRequiredPoints) {
-        LocationEntity location = locationRepository.findById(uuid)
+    public Optional<LocationResponseDto> publishLocation(LocationPublishDto locationPublishDto, UUID createdBy) {
+        LocationEntity location = locationRepository.findById(locationPublishDto.getLocationId())
                 .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
                 .orElseThrow(() -> new ApplicationException("Location not found"));
         // TODO: add loc details to post
+
+        if (location.isPublic()) throw new ApplicationException("Location already public");
+
         List<LocationEntity> allLocations = locationRepository.findAll();
         for (LocationEntity otherLocation : allLocations) {
-            if (!otherLocation.getId().equals(uuid)) {
+            if (!otherLocation.getId().equals(locationPublishDto.getLocationId())) {
                 double distance = calculateDistance(
                         location.getLat(),
                         location.getLon(),
@@ -154,7 +158,7 @@ public class LocationService {
         }
 
         location.setPublic(true);
-        location.setMinRequiredPointsToView(minRequiredPoints);
+        location.setMinRequiredPointsToView(locationPublishDto.getMinRequiredPointsToView());
 
         locationRepository.save(location);
 
