@@ -133,4 +133,43 @@ public class LocationService {
     }
 
 
+    public Optional<LocationResponseDto> publishLocation(UUID uuid, UUID createdBy, int minRequiredPoints) {
+        LocationEntity location = locationRepository.findById(uuid)
+                .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
+                .orElseThrow(() -> new ApplicationException("Location not found"));
+        // TODO: add loc details to post
+        List<LocationEntity> allLocations = locationRepository.findAll();
+        for (LocationEntity otherLocation : allLocations) {
+            if (!otherLocation.getId().equals(uuid)) {
+                double distance = calculateDistance(
+                        location.getLat(),
+                        location.getLon(),
+                        otherLocation.getLat(),
+                        otherLocation.getLon()
+                );
+                if (distance < 50) {
+                    throw new ApplicationException("Location is less than 50 meters away from another location.");
+                }
+            }
+        }
+
+        location.setPublic(true);
+        location.setMinRequiredPointsToView(minRequiredPoints);
+
+        locationRepository.save(location);
+
+        return Optional.of(locationMapper.toResponseDto(location));
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int EARTH_RADIUS = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return EARTH_RADIUS * c * 1000;
+    }
+
 }

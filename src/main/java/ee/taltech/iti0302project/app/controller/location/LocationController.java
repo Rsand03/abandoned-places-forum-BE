@@ -79,5 +79,18 @@ public class LocationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/publishLocation")
+    public ResponseEntity<LocationResponseDto> publishLocation(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam UUID locationId,
+            @RequestParam int minRequiredPoints
+    ) {
+        UUID userId = authService.extractUserIdFromToken(authHeader);
+
+        // Call service to publish location
+        return locationService.publishLocation(locationId, userId, minRequiredPoints)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
 }
