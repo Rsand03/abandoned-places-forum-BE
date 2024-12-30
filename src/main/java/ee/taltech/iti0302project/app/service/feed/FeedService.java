@@ -9,6 +9,7 @@ import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
+import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.pagination.PageResponse;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.feed.PostRepository;
@@ -50,7 +51,7 @@ public class FeedService {
                 .orElseThrow(() -> new RuntimeException("Location not found"));
 
         if (!location.isPublic()) {
-            throw new RuntimeException("Location is not public"); // TODO: replace this with a custom exception
+            throw new ApplicationException("Location is not public");
         }
 
         entity.setCreatedBy(user);

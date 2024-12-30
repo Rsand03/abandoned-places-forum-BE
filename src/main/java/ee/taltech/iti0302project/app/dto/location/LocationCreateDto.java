@@ -56,6 +56,4 @@ public class LocationCreateDto {
     @Size(max = 255)
     private String additionalInformation;
 
-    private Integer minRequiredPointsToView = 0;
-
 }

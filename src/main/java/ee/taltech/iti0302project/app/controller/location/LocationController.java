@@ -62,18 +62,19 @@ public class LocationController {
         return ResponseEntity.ok(locationService.createLocation(locationCreateDto));
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<Void> deleteLocation(@RequestParam UUID locationId,
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLocation(@PathVariable UUID id,
                                                @RequestHeader("Authorization") String authHeader) {
         UUID userId = authService.extractUserIdFromToken(authHeader);
-        return locationService.deleteLocationByUuid(locationId, userId)
+        return locationService.deleteLocationByUuid(id, userId)
                 .isPresent() ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LocationResponseDto> getLocationById(
-            @PathVariable UUID id) {
-        return locationService.getLocationById(id)
+    public ResponseEntity<LocationResponseDto> getLocationById(@PathVariable UUID id,
+                                                               @RequestHeader("Authorization") String authHeader) {
+        UUID userId = authService.extractUserIdFromToken(authHeader);
+        return locationService.getLocationById(id, userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

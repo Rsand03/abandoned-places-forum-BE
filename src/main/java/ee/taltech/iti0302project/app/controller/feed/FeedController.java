@@ -43,7 +43,6 @@ public class FeedController {
     public ResponseEntity<FetchPostsDto> getPostById(
             @PathVariable Long postId,
             @RequestHeader("Authorization") String authHeader) {
-        UUID userId = extractUserIdFromToken(authHeader);
 
         return feedService.getPostById(postId)
                 .map(ResponseEntity::ok)

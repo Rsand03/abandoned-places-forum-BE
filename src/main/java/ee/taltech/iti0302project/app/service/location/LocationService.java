@@ -126,8 +126,9 @@ public class LocationService {
                                 && !x.equals(dto.getMainCategoryId())));
     }
 
-    public Optional<LocationResponseDto> getLocationById(UUID locationId) {
+    public Optional<LocationResponseDto> getLocationById(UUID locationId, UUID userId) {
         return locationRepository.findById(locationId)
+                .filter(x -> x.isPublic() || x.getCreatedBy().equals(userId))
                 .map(locationMapper::toResponseDto);
     }
 
