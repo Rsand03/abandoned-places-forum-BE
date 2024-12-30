@@ -16,22 +16,26 @@
 
         <insert tableName="location_conditions">
             <column name="id" value="1"/>
-            <column name="name" value="Eluohtlik"/>
+            <column name="name" value="Määramata"/>
         </insert>
         <insert tableName="location_conditions">
             <column name="id" value="2"/>
-            <column name="name" value="Ohtlik"/>
+            <column name="name" value="Eluohtlik"/>
         </insert>
         <insert tableName="location_conditions">
             <column name="id" value="3"/>
-            <column name="name" value="Keskpärane"/>
+            <column name="name" value="Ohtlik"/>
         </insert>
         <insert tableName="location_conditions">
             <column name="id" value="4"/>
-            <column name="name" value="Hea"/>
+            <column name="name" value="Keskpärane"/>
         </insert>
         <insert tableName="location_conditions">
             <column name="id" value="5"/>
+            <column name="name" value="Hea"/>
+        </insert>
+        <insert tableName="location_conditions">
+            <column name="id" value="6"/>
             <column name="name" value="Väga hea"/>
         </insert>
     </changeSet>

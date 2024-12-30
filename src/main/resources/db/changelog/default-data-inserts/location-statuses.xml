@@ -16,30 +16,34 @@
 
         <insert tableName="location_statuses">
             <column name="id" value="1"/>
-            <column name="name" value="Lammutatud"/>
+            <column name="name" value="Määramata"/>
         </insert>
         <insert tableName="location_statuses">
             <column name="id" value="2"/>
-            <column name="name" value="Renoveeritud"/>
+            <column name="name" value="Lammutatud"/>
         </insert>
         <insert tableName="location_statuses">
             <column name="id" value="3"/>
-            <column name="name" value="Vabalt ligipääsetav"/>
+            <column name="name" value="Renoveeritud"/>
         </insert>
         <insert tableName="location_statuses">
             <column name="id" value="4"/>
-            <column name="name" value="Raskesti ligipääsetav"/>
+            <column name="name" value="Vabalt ligipääsetav"/>
         </insert>
         <insert tableName="location_statuses">
             <column name="id" value="5"/>
-            <column name="name" value="Suletud"/>
+            <column name="name" value="Raskesti ligipääsetav"/>
         </insert>
         <insert tableName="location_statuses">
             <column name="id" value="6"/>
-            <column name="name" value="Korraldatakse ekskursioone"/>
+            <column name="name" value="Suletud"/>
         </insert>
         <insert tableName="location_statuses">
             <column name="id" value="7"/>
+            <column name="name" value="Korraldatakse ekskursioone"/>
+        </insert>
+        <insert tableName="location_statuses">
+            <column name="id" value="8"/>
             <column name="name" value="Omaniku loal ligipääsetav"/>
         </insert>
     </changeSet>

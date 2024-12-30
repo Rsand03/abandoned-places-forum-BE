@@ -30,6 +30,23 @@
             </column>
         </insert>
 
+        <insert tableName="users">
+            <column name="id" value="fdee620f-550e-4e88-9d6e-638ab6e678be">
+            </column>
+            <column name="username" value="admin">
+            </column>
+            <column name="password" value="$2a$10$WOvxC2uiaVcC/rZG7qQkAOlAXYk3us3oboWyhik/zkKCaRergCN5K">
+            </column>
+            <column name="email" value="admin@tested.com">
+            </column>
+            <column name="role" value="ADMIN">
+            </column>
+            <column name="points" value="0">
+            </column>
+            <column name="created_at" value="2024-11-17 02:53:28.693946">
+            </column>
+        </insert>
+
     </changeSet>
 
 </databaseChangeLog>

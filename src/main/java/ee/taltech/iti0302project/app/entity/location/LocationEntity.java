@@ -9,7 +9,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-@Getter @Setter
+@Getter
+@Setter
 @Entity
 @Table(name = "locations")
 public class LocationEntity {

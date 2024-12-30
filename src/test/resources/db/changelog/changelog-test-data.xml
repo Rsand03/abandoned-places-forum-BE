@@ -12,14 +12,6 @@
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
 
-    <include file="/db/changelog/user-changelog.xml"/>
-    <include file="/db/changelog/location-changelog.xml"/>
-    <include file="/db/changelog/feed-changelog.xml"/>
-
-    <include file="/db/changelog/default-data-inserts/location-categories.xml"/>
-    <include file="/db/changelog/default-data-inserts/location-conditions.xml"/>
-    <include file="/db/changelog/default-data-inserts/location-statuses.xml"/>
-    <include file="/db/changelog/temporary-test-data/users.xml"/>
-    <include file="/db/changelog/temporary-test-data/locations.xml"/>
+    <include file="/db/changelog/changelog-master.xml"/>
 
 </databaseChangeLog>

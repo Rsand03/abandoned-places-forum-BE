@@ -1,4 +1,4 @@
-package ee.taltech.iti0302lessons;
+package ee.taltech.iti0302project.test;
 
 import ee.taltech.iti0302project.Iti0302Application;
 import org.junit.jupiter.api.Test;
