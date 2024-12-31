@@ -3,6 +3,7 @@ package ee.taltech.iti0302project.app.service.feed;
 import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
 import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
+import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
@@ -86,10 +87,28 @@ public class FeedService {
 
         List<FetchPostsDto> dtoList = entityPage.getContent().stream()
                 .map(post -> {
+                    LocationEntity locationEntity = locationRepository.findById(post.getLocationId())
+                            .orElseThrow(() -> new ApplicationException("Location not found"));
+
                     FetchPostsDto dto = fetchPostsMapper.toDto(post);
                     dto.setLikeCount((long) (post.getUpvotes() != null ? post.getUpvotes().size() : 0));
                     dto.setCommentCount((long) (post.getComments() != null ? post.getComments().size() : 0));
                     dto.setHasUpvoted(hasUserUpvotedPost(post.getId(), currentUserId));
+
+                    dto.setLocation(new LocationResponseDto(
+                            locationEntity.getId(),
+                            locationEntity.getName(),
+                            locationEntity.getLon(),
+                            locationEntity.getLat(),
+                            locationEntity.getMainCategory(),
+                            locationEntity.getSubCategories(),
+                            locationEntity.getCondition().getName(),
+                            locationEntity.getStatus().getName(),
+                            locationEntity.getAdditionalInformation(),
+                            locationEntity.isPublic(),
+                            locationEntity.isPendingPublicationApproval(),
+                            locationEntity.getMinRequiredPointsToView()
+                    ));
                     return dto;
                 })
                 .toList();

@@ -2,12 +2,14 @@ package ee.taltech.iti0302project.app.dto.location;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 import java.util.UUID;
 
 @Data
+@AllArgsConstructor
 public class LocationResponseDto {
 
     private UUID id;
