@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 public class LocationResponseDto {
 
     private UUID id;

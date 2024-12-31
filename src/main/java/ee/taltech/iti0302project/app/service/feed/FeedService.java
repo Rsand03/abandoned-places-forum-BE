@@ -95,20 +95,22 @@ public class FeedService {
                     dto.setCommentCount((long) (post.getComments() != null ? post.getComments().size() : 0));
                     dto.setHasUpvoted(hasUserUpvotedPost(post.getId(), currentUserId));
 
-                    dto.setLocation(new LocationResponseDto(
-                            locationEntity.getId(),
-                            locationEntity.getName(),
-                            locationEntity.getLon(),
-                            locationEntity.getLat(),
-                            locationEntity.getMainCategory(),
-                            locationEntity.getSubCategories(),
-                            locationEntity.getCondition().getName(),
-                            locationEntity.getStatus().getName(),
-                            locationEntity.getAdditionalInformation(),
-                            locationEntity.isPublic(),
-                            locationEntity.isPendingPublicationApproval(),
-                            locationEntity.getMinRequiredPointsToView()
-                    ));
+                    LocationResponseDto locationResponseDto = new LocationResponseDto();
+
+                    locationResponseDto.setId(locationEntity.getId());
+                    locationResponseDto.setName(locationEntity.getName());
+                    locationResponseDto.setLon(locationEntity.getLon());
+                    locationResponseDto.setLat(locationEntity.getLat());
+                    locationResponseDto.setMainCategory(locationEntity.getMainCategory());
+                    locationResponseDto.setSubCategories(locationEntity.getSubCategories());
+                    locationResponseDto.setCondition(locationEntity.getCondition().getName());
+                    locationResponseDto.setStatus(locationEntity.getStatus().getName());
+                    locationResponseDto.setAdditionalInformation(locationEntity.getAdditionalInformation());
+                    locationResponseDto.setPublic(locationEntity.isPublic());
+                    locationResponseDto.setPendingPublicationApproval(locationEntity.isPendingPublicationApproval());
+                    locationResponseDto.setMinRequiredPointsToView(locationEntity.getMinRequiredPointsToView());
+
+                    dto.setLocation(locationResponseDto);
                     return dto;
                 })
                 .toList();
