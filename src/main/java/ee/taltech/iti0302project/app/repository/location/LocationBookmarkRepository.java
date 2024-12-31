@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface LocationBookmarkRepository extends JpaRepository<LocationBookmarkEntity, UUID> {
-    boolean existsByLocationIdAndCreatedBy(UUID locationId, UUID createdBy);
+    boolean existsByIdAndCreatedBy(UUID id, UUID createdBy);
 
-    void deleteByLocationIdAndCreatedBy(UUID locationId, UUID createdBy);
+    void deleteByIdAndCreatedBy(UUID id, UUID createdBy);
 
     List<LocationBookmarkEntity> findByCreatedBy(UUID createdBy);
 

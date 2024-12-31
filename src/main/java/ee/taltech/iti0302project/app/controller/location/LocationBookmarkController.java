@@ -40,9 +40,9 @@ public class LocationBookmarkController {
 
     @DeleteMapping("")
     public ResponseEntity<Void> deleteLocationBookmark(
-            @RequestParam UUID locationId,
+            @RequestParam UUID bookmarkId,
             @RequestParam UUID userId) {
-        locationBookmarkService.deleteLocationBookmarkByUuid(locationId, userId);
+        locationBookmarkService.deleteLocationBookmarkByUuid(bookmarkId, userId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -65,13 +65,13 @@ public class LocationBookmarkService {
     }
 
     @Transactional
-    public void deleteLocationBookmarkByUuid(UUID locationId, UUID userId) {
-        boolean exists = locationBookmarkRepository.existsByLocationIdAndCreatedBy(locationId, userId);
+    public void deleteLocationBookmarkByUuid(UUID bookmarkId, UUID userId) {
+        boolean exists = locationBookmarkRepository.existsByIdAndCreatedBy(bookmarkId, userId);
         if (!exists) {
-            throw new EntityNotFoundException("Bookmark not found for locationId: " + locationId
+            throw new EntityNotFoundException("Bookmark not found for bookmarkId: " + bookmarkId
                     + " and userId: " + userId);
         }
 
-        locationBookmarkRepository.deleteByLocationIdAndCreatedBy(locationId, userId);
+        locationBookmarkRepository.deleteByIdAndCreatedBy(bookmarkId, userId);
     }
 }
