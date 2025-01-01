@@ -24,7 +24,7 @@ public class LocationBookmarkController {
 
     @GetMapping("")
     public ResponseEntity<List<LocationBookmarkDto>> getLocationBookmarks(
-            @RequestParam(value = "userId", required = true) UUID userId,
+            @RequestParam(value = "userId") UUID userId,
             @RequestParam(value = "locationId", required = false) Optional<UUID> locationId
     ) {
         List<LocationBookmarkDto> bookmarks = locationBookmarkService.getLocationBookmarksByUserAndLocation(userId, locationId);
