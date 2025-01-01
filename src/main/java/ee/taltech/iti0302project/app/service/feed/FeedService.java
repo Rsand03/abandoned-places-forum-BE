@@ -6,6 +6,7 @@ import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
+import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
@@ -41,6 +42,7 @@ public class FeedService {
     private final UserRepository userRepository;
     private final FetchPostsMapper fetchPostsMapper;
     private final LocationRepository locationRepository;
+    private final LocationMapper locationMapper;
 
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
@@ -95,22 +97,9 @@ public class FeedService {
                     dto.setCommentCount((long) (post.getComments() != null ? post.getComments().size() : 0));
                     dto.setHasUpvoted(hasUserUpvotedPost(post.getId(), currentUserId));
 
-                    LocationResponseDto locationResponseDto = new LocationResponseDto();
-
-                    locationResponseDto.setId(locationEntity.getId());
-                    locationResponseDto.setName(locationEntity.getName());
-                    locationResponseDto.setLon(locationEntity.getLon());
-                    locationResponseDto.setLat(locationEntity.getLat());
-                    locationResponseDto.setMainCategory(locationEntity.getMainCategory());
-                    locationResponseDto.setSubCategories(locationEntity.getSubCategories());
-                    locationResponseDto.setCondition(locationEntity.getCondition().getName());
-                    locationResponseDto.setStatus(locationEntity.getStatus().getName());
-                    locationResponseDto.setAdditionalInformation(locationEntity.getAdditionalInformation());
-                    locationResponseDto.setPublic(locationEntity.isPublic());
-                    locationResponseDto.setPendingPublicationApproval(locationEntity.isPendingPublicationApproval());
-                    locationResponseDto.setMinRequiredPointsToView(locationEntity.getMinRequiredPointsToView());
-
+                    LocationResponseDto locationResponseDto = locationMapper.toResponseDto(locationEntity);
                     dto.setLocation(locationResponseDto);
+
                     return dto;
                 })
                 .toList();
