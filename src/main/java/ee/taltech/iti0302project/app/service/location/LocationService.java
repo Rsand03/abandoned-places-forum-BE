@@ -130,7 +130,7 @@ public class LocationService {
     public LocationResponseDto editExistingLocation(LocationEditDto locationCreateDto) {
         return validateLocationEditDto(locationCreateDto)
                 .map(dto -> {
-                    LocationEntity prevLocationEntity = locationRepository.findById(dto.getLocationId())
+                    LocationEntity prevLocationEntity = locationRepository.findById(dto.getId())
                             .orElseThrow(() -> new ApplicationException("Invalid location id"));
 
                     prevLocationEntity.setName(dto.getName());
@@ -154,7 +154,7 @@ public class LocationService {
     private Optional<LocationEditDto> validateLocationEditDto(LocationEditDto locationEditDto) {
         return Optional.of(locationEditDto)
                 .filter(dto -> dto.getEditingUserId() != null && userRepository.existsById(dto.getEditingUserId()))
-                .filter(dto -> locationRepository.findById(dto.getLocationId())
+                .filter(dto -> locationRepository.findById(dto.getId())
                         .filter(location -> location.getCreatedBy().equals(dto.getEditingUserId()))
                         .map(location -> !location.isPublic())
                         .orElse(false))

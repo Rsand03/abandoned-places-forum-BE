@@ -18,7 +18,7 @@ public class LocationEditDto {
     private UUID editingUserId;
 
     @NotNull
-    private UUID locationId;
+    private UUID id;
 
     @NotNull
     @Size(min = 2, max = 100)
