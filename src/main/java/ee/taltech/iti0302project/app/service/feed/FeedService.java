@@ -3,8 +3,10 @@ package ee.taltech.iti0302project.app.service.feed;
 import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
 import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
+import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
+import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
@@ -40,6 +42,7 @@ public class FeedService {
     private final UserRepository userRepository;
     private final FetchPostsMapper fetchPostsMapper;
     private final LocationRepository locationRepository;
+    private final LocationMapper locationMapper;
 
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
@@ -86,10 +89,17 @@ public class FeedService {
 
         List<FetchPostsDto> dtoList = entityPage.getContent().stream()
                 .map(post -> {
+                    LocationEntity locationEntity = locationRepository.findById(post.getLocationId())
+                            .orElseThrow(() -> new ApplicationException("Location not found"));
+
                     FetchPostsDto dto = fetchPostsMapper.toDto(post);
                     dto.setLikeCount((long) (post.getUpvotes() != null ? post.getUpvotes().size() : 0));
                     dto.setCommentCount((long) (post.getComments() != null ? post.getComments().size() : 0));
                     dto.setHasUpvoted(hasUserUpvotedPost(post.getId(), currentUserId));
+
+                    LocationResponseDto locationResponseDto = locationMapper.toResponseDto(locationEntity);
+                    dto.setLocation(locationResponseDto);
+
                     return dto;
                 })
                 .toList();
