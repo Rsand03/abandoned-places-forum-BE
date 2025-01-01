@@ -1,5 +1,6 @@
 package ee.taltech.iti0302project.app.service.location;
 
+import ee.taltech.iti0302project.app.dto.location.bookmark.BookmarkType;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreateDto;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationBookmarkMapper;
@@ -65,13 +66,16 @@ public class LocationBookmarkService {
     }
 
     @Transactional
-    public void deleteLocationBookmarkByUuid(UUID bookmarkId, UUID userId) {
-        boolean exists = locationBookmarkRepository.existsByIdAndCreatedBy(bookmarkId, userId);
+    public void deleteLocationBookmark(UUID userId, UUID locationId, BookmarkType bookmarkType) {
+        boolean exists = locationBookmarkRepository.existsByCreatedByAndLocationIdAndType(userId, locationId,
+                String.valueOf(bookmarkType));
+
         if (!exists) {
-            throw new EntityNotFoundException("Bookmark not found for bookmarkId: " + bookmarkId
-                    + " and userId: " + userId);
+            throw new EntityNotFoundException("Bookmark not found for locationId: " + locationId
+                    + " and userId: " + userId + " and type: " + bookmarkType);
         }
 
-        locationBookmarkRepository.deleteByIdAndCreatedBy(bookmarkId, userId);
+        locationBookmarkRepository.deleteByCreatedByAndLocationIdAndType(userId, locationId,
+                String.valueOf(bookmarkType));
     }
 }

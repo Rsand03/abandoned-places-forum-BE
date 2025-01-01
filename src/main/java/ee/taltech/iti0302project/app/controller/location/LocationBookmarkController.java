@@ -1,5 +1,6 @@
 package ee.taltech.iti0302project.app.controller.location;
 
+import ee.taltech.iti0302project.app.dto.location.bookmark.BookmarkType;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreateDto;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.service.location.LocationBookmarkService;
@@ -40,9 +41,10 @@ public class LocationBookmarkController {
 
     @DeleteMapping("")
     public ResponseEntity<Void> deleteLocationBookmark(
-            @RequestParam UUID bookmarkId,
-            @RequestParam UUID userId) {
-        locationBookmarkService.deleteLocationBookmarkByUuid(bookmarkId, userId);
+            @RequestParam UUID userId,
+            @RequestParam UUID locationId,
+            @RequestParam BookmarkType bookmarkType) {
+        locationBookmarkService.deleteLocationBookmark(userId, locationId, bookmarkType);
         return ResponseEntity.noContent().build();
     }
 }
