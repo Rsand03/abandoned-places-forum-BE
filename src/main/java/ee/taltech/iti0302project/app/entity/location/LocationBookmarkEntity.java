@@ -28,6 +28,10 @@ public class LocationBookmarkEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 
-    @Column(name = "location_id", nullable = false)
+    @Column(name = "location_id", nullable = false, insertable = false, updatable = false)
     private UUID locationId;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private LocationEntity location;
 }
