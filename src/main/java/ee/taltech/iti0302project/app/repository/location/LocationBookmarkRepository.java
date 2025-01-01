@@ -14,4 +14,6 @@ public interface LocationBookmarkRepository extends JpaRepository<LocationBookma
     List<LocationBookmarkEntity> findByCreatedBy(UUID createdBy);
 
     List<LocationBookmarkEntity> findByCreatedByAndLocationId(UUID createdBy, UUID locationId);
+
+    void deleteAllByLocationIdAndCreatedBy(UUID locationId, UUID createdBy);
 }
