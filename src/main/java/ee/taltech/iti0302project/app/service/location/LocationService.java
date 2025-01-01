@@ -70,6 +70,10 @@ public class LocationService {
                     if (criteria.getMinRequiredPointsToView() != null) {
                         spec = spec.and(LocationSpecifications.minPointsToViewHigherThan(criteria.getMinRequiredPointsToView()));
                     }
+
+                    if (criteria.getBookmarkTypes() != null) {
+                        spec = spec.and(LocationSpecifications.hasBookmarkTypes(criteria.getBookmarkTypes()));
+                    }
                     return locationMapper.toDtoList(locationRepository.findAll(spec));
                 });
     }

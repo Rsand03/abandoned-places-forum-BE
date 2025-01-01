@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.app.repository.location;
 
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -51,4 +52,15 @@ public class LocationSpecifications {
                 min == null ? null : cb.greaterThanOrEqualTo(root.get("minRequiredPointsToView"), min);
     }
 
+    public static Specification<LocationEntity> hasBookmarkTypes(List<String> bookmarkTypes) {
+        return (root, query, cb) -> {
+            if (bookmarkTypes == null || bookmarkTypes.isEmpty()) {
+                return null;
+            }
+
+            return root.join("bookmarks", JoinType.INNER)
+                    .get("type")
+                    .in(bookmarkTypes);
+        };
+    }
 }
