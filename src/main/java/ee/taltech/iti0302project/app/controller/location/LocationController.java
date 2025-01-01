@@ -1,5 +1,6 @@
 package ee.taltech.iti0302project.app.controller.location;
 
+import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationConditionDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
@@ -60,6 +61,14 @@ public class LocationController {
         UUID userId = authService.extractUserIdFromToken(authHeader);
         locationCreateDto.setCreatedBy(userId);
         return ResponseEntity.ok(locationService.createLocation(locationCreateDto));
+    }
+
+    @PatchMapping("")
+    public ResponseEntity<LocationResponseDto> editLocation(@Valid @RequestBody LocationEditDto locationEditDto,
+                                                            @RequestHeader("Authorization") String authHeader) {
+        UUID userId = authService.extractUserIdFromToken(authHeader);
+        locationEditDto.setEditingUserId(userId);
+        return ResponseEntity.ok(locationService.editExistingLocation(locationEditDto));
     }
 
     @DeleteMapping("/{id}")

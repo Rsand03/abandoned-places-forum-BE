@@ -2,6 +2,7 @@ package ee.taltech.iti0302project.app.service.location;
 
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
+import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationCategoryMapper;
@@ -117,9 +118,46 @@ public class LocationService {
                 }).orElseThrow(() -> new ApplicationException("Invalid user or subcategories"));
     }
 
-    private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto createdDto) {
-        return Optional.of(createdDto)
+    private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto locationCreateDto) {
+        return Optional.of(locationCreateDto)
                 .filter(dto -> dto.getCreatedBy() != null && userRepository.existsById(dto.getCreatedBy()))
+                .filter(dto -> dto.getSubCategoryIds().stream()
+                        .allMatch(x -> x != null
+                                && locationCategoryRepository.existsById(x)
+                                && !x.equals(dto.getMainCategoryId())));
+    }
+
+    public LocationResponseDto editExistingLocation(LocationEditDto locationCreateDto) {
+        return validateLocationEditDto(locationCreateDto)
+                .map(dto -> {
+                    LocationEntity prevLocationEntity = locationRepository.findById(dto.getLocationId())
+                            .orElseThrow(() -> new ApplicationException("Invalid location id"));
+
+                    prevLocationEntity.setName(dto.getName());
+                    prevLocationEntity.setSubCategories(locationCategoryRepository.findAllById(dto.getSubCategoryIds()));
+                    prevLocationEntity.setMainCategory(locationCategoryRepository.findById(dto.getMainCategoryId())
+                            .orElseThrow(() -> new ApplicationException("Invalid main category id")));
+                    prevLocationEntity.setCondition(locationConditionRepository.findById(dto.getConditionId())
+                            .orElseThrow(() -> new ApplicationException("Invalid condition id")));
+                    prevLocationEntity.setStatus(locationStatusRepository.findById(dto.getStatusId())
+                            .orElseThrow(() -> new ApplicationException("Invalid status id")));
+                    prevLocationEntity.setAdditionalInformation(dto.getAdditionalInformation());
+
+                    LocationEntity editedEntity = locationRepository.save(prevLocationEntity);
+
+                    log.info("Edited location with id " + editedEntity.getId());
+
+                    return locationMapper.toResponseDto(editedEntity);
+                }).orElseThrow(() -> new ApplicationException("Invalid user, subcategories or unauthorized to edit"));
+    }
+
+    private Optional<LocationEditDto> validateLocationEditDto(LocationEditDto locationEditDto) {
+        return Optional.of(locationEditDto)
+                .filter(dto -> dto.getEditingUserId() != null && userRepository.existsById(dto.getEditingUserId()))
+                .filter(dto -> locationRepository.findById(dto.getLocationId())
+                        .filter(location -> location.getCreatedBy().equals(dto.getEditingUserId()))
+                        .map(location -> !location.isPublic())
+                        .orElse(false))
                 .filter(dto -> dto.getSubCategoryIds().stream()
                         .allMatch(x -> x != null
                                 && locationCategoryRepository.existsById(x)
