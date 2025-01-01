@@ -138,7 +138,6 @@ public class LocationService {
         LocationEntity location = locationRepository.findById(locationPublishDto.getLocationId())
                 .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
                 .orElseThrow(() -> new ApplicationException("Location not found"));
-        // TODO: add loc details to post
 
         if (location.isPublic()) throw new ApplicationException("Location already public");
 
