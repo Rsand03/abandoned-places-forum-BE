@@ -68,7 +68,7 @@ public class LocationBookmarkService {
     @Transactional
     public void deleteLocationBookmark(UUID userId, UUID locationId, BookmarkType bookmarkType) {
         boolean exists = locationBookmarkRepository.existsByCreatedByAndLocationIdAndType(userId, locationId,
-                String.valueOf(bookmarkType));
+                bookmarkType.getLabel());
 
         if (!exists) {
             throw new EntityNotFoundException("Bookmark not found for locationId: " + locationId
@@ -76,6 +76,6 @@ public class LocationBookmarkService {
         }
 
         locationBookmarkRepository.deleteByCreatedByAndLocationIdAndType(userId, locationId,
-                String.valueOf(bookmarkType));
+                bookmarkType.getLabel());
     }
 }
