@@ -33,4 +33,8 @@ public class LocationCriteria {
     @Max(value = 500)
     private Integer minRequiredPointsToView;
 
+    @Size(max = 50)
+    private List<String> bookmarkTypes = new ArrayList<>();
+
+
 }
