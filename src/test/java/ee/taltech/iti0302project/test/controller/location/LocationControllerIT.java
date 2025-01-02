@@ -160,7 +160,7 @@ class LocationControllerIT {
     }
 
     @Test
-    void editLocation_publicLocation_isNotEdited() throws Exception {
+    void editLocation_publicLocation_badRequest() throws Exception {
         defaultLocationEditDto.setId(UUID.fromString("a59b74f9-d7fc-4c8e-bf47-2b060276421e"));
         mvc.perform((patch("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)
@@ -170,7 +170,7 @@ class LocationControllerIT {
     }
 
     @Test
-    void editLocation_privateLocationButDifferentCreatedBy_isNotEdited() throws Exception {
+    void editLocation_privateLocationButDifferentCreatedBy_badRequest() throws Exception {
         defaultLocationEditDto.setId(UUID.fromString("d43d3e9b-f1c3-467e-b70d-b9906d8507f2"));
         mvc.perform((patch("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)
@@ -180,7 +180,7 @@ class LocationControllerIT {
     }
 
     @Test
-    void editLocation_locationDoesNotExist_isNotEditedOrAdded() throws Exception {
+    void editLocation_locationDoesNotExist_badRequest() throws Exception {
         defaultLocationEditDto.setId(UUID.fromString("d43d3e9b-1a2b-467e-b70d-b9906d8507f2"));
         mvc.perform((patch("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)
@@ -192,7 +192,7 @@ class LocationControllerIT {
     }
 
     @Test
-    void editLocation_nullName_isNotEdited() throws Exception {
+    void editLocation_nullName_badRequest() throws Exception {
         defaultLocationEditDto.setName(null);
         mvc.perform((patch("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)
@@ -202,7 +202,7 @@ class LocationControllerIT {
     }
 
     @Test
-    void editLocation_invalidSubCategoryId_isNotEdited() throws Exception {
+    void editLocation_invalidSubCategoryId_badRequest() throws Exception {
         defaultLocationEditDto.setSubCategoryIds(List.of(8L, 26L));
         mvc.perform((patch("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)
