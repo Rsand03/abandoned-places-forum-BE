@@ -50,6 +50,10 @@ public class FeedService {
 
         PostEntity entity = postMapper.toEntity(createdPost);
 
+        if (entity.getLocationId() == null) {
+            throw new ApplicationException("Location is not added");
+        }
+
         LocationEntity location = locationRepository.findById(entity.getLocationId())
                 .orElseThrow(() -> new ApplicationException("Location not found"));
 
