@@ -46,12 +46,12 @@ public class FeedService {
 
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ApplicationException("User not found"));
 
         PostEntity entity = postMapper.toEntity(createdPost);
 
         LocationEntity location = locationRepository.findById(entity.getLocationId())
-                .orElseThrow(() -> new RuntimeException("Location not found"));
+                .orElseThrow(() -> new ApplicationException("Location not found"));
 
         if (!location.isPublic()) {
             throw new ApplicationException("Location is not public");
@@ -137,7 +137,7 @@ public class FeedService {
 
     public boolean hasUserUpvotedPost(Long postId, UUID userId) {
         PostEntity post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ApplicationException("Post not found"));
 
         for (UpvoteEntity upvote : post.getUpvotes()) {
             if (upvote.getUserId().equals(userId)) {
