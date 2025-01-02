@@ -33,6 +33,8 @@ import java.util.UUID;
 @Slf4j
 public class LocationService {
 
+    public static final long PRIVATE_LOCATIONS_PER_USER = 250;  // add to application.properties (in server too)
+
     private final LocationRepository locationRepository;
     private final LocationCategoryRepository locationCategoryRepository;
     private final LocationConditionRepository locationConditionRepository;
@@ -44,7 +46,7 @@ public class LocationService {
     private final LocationConditionMapper conditionMapper;
     private final LocationStatusMapper statusMapper;
 
-
+    @Transactional(readOnly = true)
     public LocationAttributesDto getLocationAttributes() {
         LocationAttributesDto attributesDto = new LocationAttributesDto();
         attributesDto.setCategories(categoryMapper.toDtoList(locationCategoryRepository.findAll()));
@@ -53,6 +55,14 @@ public class LocationService {
         return attributesDto;
     }
 
+    @Transactional(readOnly = true)
+    public Optional<LocationResponseDto> getLocationById(UUID locationId, UUID userId) {
+        return locationRepository.findById(locationId)
+                .filter(x -> x.isPublic() || x.getCreatedBy().equals(userId))
+                .map(locationMapper::toResponseDto);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<List<LocationResponseDto>> getFilteredLocations(LocationCriteria locationCriteria) {
         return validateLocationCriteria(locationCriteria)
                 .map(criteria -> {
@@ -96,6 +106,7 @@ public class LocationService {
                 });
     }
 
+    // Replace error message strings with constants used both in service and testing
     public LocationResponseDto createLocation(LocationCreateDto locationCreateDto) {
         return validateLocationCreateDto(locationCreateDto)
                 .map(dto -> {
@@ -121,6 +132,8 @@ public class LocationService {
     private Optional<LocationCreateDto> validateLocationCreateDto(LocationCreateDto locationCreateDto) {
         return Optional.of(locationCreateDto)
                 .filter(dto -> dto.getCreatedBy() != null && userRepository.existsById(dto.getCreatedBy()))
+                .filter(dto -> PRIVATE_LOCATIONS_PER_USER > locationRepository
+                        .countByIsPublicFalseAndCreatedBy(dto.getCreatedBy()))
                 .filter(dto -> dto.getSubCategoryIds().stream()
                         .allMatch(x -> x != null
                                 && locationCategoryRepository.existsById(x)
@@ -163,12 +176,5 @@ public class LocationService {
                                 && locationCategoryRepository.existsById(x)
                                 && !x.equals(dto.getMainCategoryId())));
     }
-
-    public Optional<LocationResponseDto> getLocationById(UUID locationId, UUID userId) {
-        return locationRepository.findById(locationId)
-                .filter(x -> x.isPublic() || x.getCreatedBy().equals(userId))
-                .map(locationMapper::toResponseDto);
-    }
-
 
 }
