@@ -204,7 +204,7 @@ class AuthControllerIT {
 
     @Test
     void register_invalidTooLongEmail_error() throws Exception {
-        registerDto.setEmail("51charseee@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.ee");
+        registerDto.setEmail("a51charsemail@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.ee");
 
         mvc.perform((post("/api/public/auth/register")
                         .content(objectMapper.writeValueAsString(registerDto))
