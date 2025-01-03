@@ -1,11 +1,11 @@
 package ee.taltech.iti0302project.app.controller.location;
 
-import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
-import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
-import ee.taltech.iti0302project.app.dto.location.attributes.LocationConditionDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
+import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
+import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
+import ee.taltech.iti0302project.app.dto.location.attributes.LocationConditionDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationStatusDto;
 import ee.taltech.iti0302project.app.service.auth.AuthService;
 import ee.taltech.iti0302project.app.service.location.LocationConditionService;
@@ -87,6 +87,5 @@ public class LocationController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
 
 }

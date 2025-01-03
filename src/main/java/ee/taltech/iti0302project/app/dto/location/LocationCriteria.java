@@ -31,6 +31,6 @@ public class LocationCriteria {
 
     @Min(value = 0)
     @Max(value = 500)
-    private Integer minRequiredPointsToView;
+    private Long minRequiredPointsToView;
 
 }

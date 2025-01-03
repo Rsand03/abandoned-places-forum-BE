@@ -37,6 +37,7 @@ class LocationControllerIT {
     @Autowired
     private AuthService authService;
     private String userUserAuthToken;
+    private String adminAdminAuthToken;
 
 
     private LocationEditDto defaultLocationEditDto;
@@ -48,6 +49,9 @@ class LocationControllerIT {
         dto.setUsername("user");
         dto.setPassword("user");
         userUserAuthToken = authService.authenticateUser(dto).getToken();
+        dto.setUsername("admin");
+        dto.setPassword("admin");
+        adminAdminAuthToken = authService.authenticateUser(dto).getToken();
     }
 
     @BeforeEach
@@ -96,11 +100,19 @@ class LocationControllerIT {
     }
 
     @Test
-    void getFilteredLocations_noParams_returnsAllPublicLocationsAndLocationsCreatedByUser() throws Exception {
+    void getFilteredLocations_noParamsUser_locationsCreatedByUserAndPublicLocationsBasedOnPoints() throws Exception {
         mvc.perform((get("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(4));
+    }
+
+    @Test
+    void getFilteredLocations_noParamsAdmin_locationsCreatedByAdminAndPublicLocationsBasedOnPoints() throws Exception {
+        mvc.perform((get("/api/locations")
+                        .header("Authorization", "Bearer " + adminAdminAuthToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
     }
 
 
