@@ -31,7 +31,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/public/register")
+    @PostMapping("/public/auth/register")
     public ResponseEntity<AuthResponseDto> registerUser(@Valid @RequestBody UserRegisterDto userRegisterDto) {
 
         AuthResponseDto response = authService.registerUser(userRegisterDto);
@@ -39,7 +39,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/public/login")
+    @PostMapping("/public/auth/login")
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto) {
         AuthResponseDto response = authService.authenticateUser(userLoginDto);
         return ResponseEntity.ok(response);

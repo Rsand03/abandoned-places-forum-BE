@@ -45,13 +45,14 @@ class LocationControllerIT {
 
     @BeforeEach
     void authTokenSetup() {
-        UserLoginDto dto = new UserLoginDto();
-        dto.setUsername("user");
-        dto.setPassword("user");
-        userUserAuthToken = authService.authenticateUser(dto).getToken();
-        dto.setUsername("admin");
-        dto.setPassword("admin");
-        adminAdminAuthToken = authService.authenticateUser(dto).getToken();
+        UserLoginDto loginDto = UserLoginDto.builder()
+                .username("user")
+                .password("user")
+                .build();
+        userUserAuthToken = authService.authenticateUser(loginDto).getToken();
+        loginDto.setUsername("admin");
+        loginDto.setPassword("admin");
+        adminAdminAuthToken = authService.authenticateUser(loginDto).getToken();
     }
 
     @BeforeEach

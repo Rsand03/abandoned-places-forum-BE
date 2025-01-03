@@ -1,12 +1,12 @@
 package ee.taltech.iti0302project.app.dto.auth;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.UUID;
 
+@Builder
 @Data
-@AllArgsConstructor
 public class AuthResponseDto {
     private String token;
     private UUID userId;

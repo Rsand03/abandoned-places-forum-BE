@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -55,10 +54,12 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String jwtToken = generateJwtToken(user);
+        String token = generateJwtToken(user);
+        AuthResponseDto authResponseDto = userMapper.toAuthResponseDto(user);
+        authResponseDto.setToken(token);
 
         log.info("User registered and saved with ID: {}", user.getId());
-        return new AuthResponseDto(jwtToken, user.getId(), user.getUsername(), user.getRole(), user.getPoints());
+        return authResponseDto;
     }
 
     @Transactional(readOnly = true)
@@ -76,10 +77,12 @@ public class AuthService {
             throw new ApplicationException("Incorrect password for user: " + userLoginDto.getUsername());
         }
 
-        String jwtToken = generateJwtToken(user);
+        String token = generateJwtToken(user);
+        AuthResponseDto authResponseDto = userMapper.toAuthResponseDto(user);
+        authResponseDto.setToken(token);
 
         log.info("User authenticated successfully with username: {}", userLoginDto.getUsername());
-        return new AuthResponseDto(jwtToken, user.getId(), user.getUsername(), user.getRole(), user.getPoints());
+        return authResponseDto;
     }
 
     private String generateJwtToken(UserEntity user) {
@@ -102,13 +105,13 @@ public class AuthService {
             throw new AuthException("Missing or invalid Authorization header");
         }
 
-        String jwtToken = authHeader.substring(7);  // Remove "Bearer " prefix
+        String token = authHeader.substring(7);  // Remove "Bearer " prefix
 
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
-                    .parseSignedClaims(jwtToken)
+                    .parseSignedClaims(token)
                     .getPayload();
 
             return UUID.fromString(claims.get("userId", String.class));
