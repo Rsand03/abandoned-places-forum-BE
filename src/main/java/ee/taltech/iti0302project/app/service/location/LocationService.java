@@ -101,7 +101,7 @@ public class LocationService {
 
         if (dto.getCreatedBy() == null || !userRepository.existsById(dto.getCreatedBy())) {
             throw new ApplicationException("Invalid user");
-        } else if (PRIVATE_LOCATIONS_PER_USER <= locationRepository.countByIsPublicFalseAndCreatedBy(dto.getCreatedBy())) {
+        } else if (locationRepository.countByIsPublicFalseAndCreatedBy(dto.getCreatedBy()) >= PRIVATE_LOCATIONS_PER_USER) {
             throw new ApplicationException("User exceeded maximum amount of private locations");
         } else if (dto.getSubCategoryIds().contains(dto.getMainCategoryId())) {
             throw new ApplicationException("Duplicate of main category in subcategories");

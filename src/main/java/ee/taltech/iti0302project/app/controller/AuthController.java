@@ -10,13 +10,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/register")
+    // Remove "/auth" endpoints once FE is updated
+    @PostMapping("/auth/register")
+    public ResponseEntity<AuthResponseDto> registerUserToBeRemoved(@Valid @RequestBody UserRegisterDto userRegisterDto) {
+
+        AuthResponseDto response = authService.registerUser(userRegisterDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/auth/login")
+    public ResponseEntity<AuthResponseDto> loginToBeRemoved(@Valid @RequestBody UserLoginDto userLoginDto) {
+            AuthResponseDto response = authService.authenticateUser(userLoginDto);
+            return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/public/register")
     public ResponseEntity<AuthResponseDto> registerUser(@Valid @RequestBody UserRegisterDto userRegisterDto) {
 
         AuthResponseDto response = authService.registerUser(userRegisterDto);
@@ -24,9 +39,9 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/public/login")
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto) {
-            AuthResponseDto response = authService.authenticateUser(userLoginDto);
-            return ResponseEntity.ok(response);
+        AuthResponseDto response = authService.authenticateUser(userLoginDto);
+        return ResponseEntity.ok(response);
     }
 }
