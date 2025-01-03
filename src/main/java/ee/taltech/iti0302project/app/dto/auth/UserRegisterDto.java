@@ -1,10 +1,32 @@
 package ee.taltech.iti0302project.app.dto.auth;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class UserRegisterDto {
+
+    @NotNull
+    @Size(min = 3, max = 30)
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._\\-\\s]+$",
+            message = "Username can only contain letters, numbers, spaces and special characters: '.', '_', and '-'."
+    )
     private String username;
-    private String email;
+
+    @NotNull
+    @Size(min = 4, max = 30)
+    @Pattern(
+            regexp = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"|,.<>?/`~]+$",
+            message = "Password can only contain letters, numbers and special characters: !@#$%^&*()_+-=[]{};':\"|,.<>?/`~"
+    )
     private String password;
+
+    @Pattern(
+            regexp = "[^@ \\t\\r\\n]+@[^@ \\t\\r\\n]+\\.[^@ \\t\\r\\n]+",
+            message = "Invalid email")
+    private String email;
+
 }

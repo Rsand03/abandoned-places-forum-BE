@@ -27,6 +27,12 @@ public class GlobalErrorHandler {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Object> handleAuthException(AuthException ex) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
         log.warn("Validation error: {}", ex.getMessage());
