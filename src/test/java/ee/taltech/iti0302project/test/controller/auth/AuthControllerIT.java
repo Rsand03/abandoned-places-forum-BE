@@ -9,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +26,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class AuthControllerIT {
 
+    private static final String USER_USER_ID = "e71a1997-5f06-4b3b-b5cd-bbbcec65d68d";
+    private static final String USER_USER_EMAIL = "test@tested.com";
+    private static final String ADMIN_ADMIN_UUID = "fdee620f-550e-4e88-9d6e-638ab6e678be";
+
+
+    private static final String USERNAME_SIZE_ERROR_MESSAGE = "size must be between 3 and 30";
+    private static final String PASSWORD_SIZE_ERROR_MESSAGE = "size must be between 4 and 30";
+    private static final String EMAIL_SIZE_ERROR_MESSAGE = "size must be between 0 and 50";
+
+    private static final String USERNAME_INVALID_CHAR_ERROR_MSG = "Username can only contain letters," +
+            " numbers, spaces and special characters: '.', '_', and '-'.";
+    private static final String PASSWORD_INVALID_CHAR_ERROR_MSG = "Password can only contain letters," +
+            " numbers and special characters: !@#$%^&*()_+-=[]{};':\"|,.<>?/`~";
+
+
     @Autowired
     private AuthService authService;
 
@@ -29,22 +48,17 @@ class AuthControllerIT {
     private MockMvc mvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private UserRegisterDto userUserRegisterDto;
-    private UserRegisterDto adminUserRegisterDto;
-
+    private UserRegisterDto registerDto;
     private UserLoginDto userUserLoginDto;
     private UserLoginDto adminUserLoginDto;
 
 
     @BeforeEach
     void setup() {
-        userUserRegisterDto = UserRegisterDto.builder()
-                .username("user")
-                .password("user")
-                .build();
-        adminUserRegisterDto = UserRegisterDto.builder()
-                .username("admin")
-                .password("admin")
+        registerDto = UserRegisterDto.builder()
+                .username("valid username")
+                .password("validPassword")
+                .email("valid@taltech.ee")
                 .build();
         userUserLoginDto = UserLoginDto.builder()
                 .username("user")
@@ -54,16 +68,211 @@ class AuthControllerIT {
                 .password("admin").build();
     }
 
-
     @Test
-    void login_regularUser_successful() throws Exception {
-        mvc.perform((post("/api/public/auth/login")
-                        .content(objectMapper.writeValueAsString(userUserRegisterDto))
+    void register_successful() throws Exception {
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
                         .contentType("application/json")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.token").isString())
-                .andExpect(jsonPath("$.userId").value("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"))
+                .andExpect(jsonPath("$.userId").isNotEmpty())
+                .andExpect(jsonPath("$.userId").isString())
+                .andExpect(jsonPath("$.username").value("valid username"))
+                .andExpect(jsonPath("$.role").value("USER"))
+                .andExpect(jsonPath("$.points").value(0));
+    }
+
+    @Test
+    void register_returnsValidAndParseableJwt() throws Exception {
+        // Perform the login request and capture the result
+        MvcResult result = mvc.perform(post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseJson = result.getResponse().getContentAsString();
+
+        String token = objectMapper.readTree(responseJson).get("token").asText();
+        String authHeader = "Bearer " + token;
+
+        UUID userIdFromToken = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userIdFromResponse = UUID.fromString(objectMapper.readTree(responseJson).get("userId").asText());
+
+        assertEquals(userIdFromResponse, userIdFromToken);
+    }
+
+    @Test
+    void register_nullUsername_error() throws Exception {
+        registerDto.setUsername(null);
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.username").value("must not be null"));
+    }
+
+    @Test
+    void register_invalidTooShortUsername_error() throws Exception {
+        registerDto.setUsername("aa");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.username").value(USERNAME_SIZE_ERROR_MESSAGE));
+    }
+
+    @Test
+    void register_invalidTooLongUsername_error() throws Exception {
+        registerDto.setUsername("long long long long long long long long long long long");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.username").value(USERNAME_SIZE_ERROR_MESSAGE));
+    }
+
+    @Test
+    void register_invalidCharacterUsername_error() throws Exception {
+        registerDto.setUsername("\uD83D\uDC4D\uD83D\uDC4D\uD83D\uDC96\uD83D\uDC96");  // ascii emoji
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.username").value(USERNAME_INVALID_CHAR_ERROR_MSG));
+    }
+
+    @Test
+    void register_nullPassword_error() throws Exception {
+        registerDto.setPassword(null);
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password").value("must not be null"));
+    }
+
+    @Test
+    void register_invalidTooShortPassword_error() throws Exception {
+        registerDto.setPassword("aa");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password").value(PASSWORD_SIZE_ERROR_MESSAGE));
+    }
+
+    @Test
+    void register_invalidTooLongPassword_error() throws Exception {
+        registerDto.setPassword("toolongtoolongtoolongtoolongtoolong");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password").value(PASSWORD_SIZE_ERROR_MESSAGE));
+    }
+
+    @Test
+    void register_invalidCharacterPassword_error() throws Exception {
+        registerDto.setPassword("invalid space");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password").value(PASSWORD_INVALID_CHAR_ERROR_MSG));
+    }
+
+    @Test
+    void register_nullEmail_error() throws Exception {
+        registerDto.setEmail(null);
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value("must not be null"));
+    }
+
+    @Test
+    void register_invalidTooLongEmail_error() throws Exception {
+        registerDto.setEmail("51charseee@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.ee");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value(EMAIL_SIZE_ERROR_MESSAGE));
+    }
+
+    @Test
+    void register_invalidEmail_error() throws Exception {
+        registerDto.setEmail("ivalid@invalid.");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value("Invalid email"));
+    }
+
+    @Test
+    void register_usernameAlreadyInUse_error() throws Exception {
+        registerDto.setUsername("user");
+        registerDto.setPassword("user");
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Username is already in use."));
+    }
+
+    @Test
+    void register_emailAlreadyInUse_error() throws Exception {
+        registerDto.setEmail(USER_USER_EMAIL);
+
+        mvc.perform((post("/api/public/auth/register")
+                        .content(objectMapper.writeValueAsString(registerDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Email is already in use."));
+    }
+
+    @Test
+    void login_returnsValidAndParseableJwt() throws Exception {
+        // Perform the login request and capture the result
+        MvcResult result = mvc.perform(post("/api/public/auth/login")
+                        .content(objectMapper.writeValueAsString(userUserLoginDto))
+                        .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseJson = result.getResponse().getContentAsString();
+        String token = objectMapper.readTree(responseJson).get("token").asText();
+        String authHeader = "Bearer " + token;
+
+        UUID userIdFromToken = authService.extractUserIdFromAuthHeader(authHeader);
+        assertEquals(UUID.fromString(USER_USER_ID), userIdFromToken);
+    }
+
+    @Test
+    void login_regularUser_successful() throws Exception {
+        mvc.perform((post("/api/public/auth/login")
+                        .content(objectMapper.writeValueAsString(userUserLoginDto))
+                        .contentType("application/json")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andExpect(jsonPath("$.token").isString())
+                .andExpect(jsonPath("$.userId").value(USER_USER_ID))
                 .andExpect(jsonPath("$.username").value("user"))
                 .andExpect(jsonPath("$.role").value("USER"))
                 .andExpect(jsonPath("$.points").value(0));
@@ -77,10 +286,32 @@ class AuthControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.token").isString())
-                .andExpect(jsonPath("$.userId").value("fdee620f-550e-4e88-9d6e-638ab6e678be"))
+                .andExpect(jsonPath("$.userId").value(ADMIN_ADMIN_UUID))
                 .andExpect(jsonPath("$.username").value("admin"))
                 .andExpect(jsonPath("$.role").value("ADMIN"))
                 .andExpect(jsonPath("$.points").value(0));
+    }
+
+    @Test
+    void login_userDoesNotExist_error() throws Exception {
+        userUserLoginDto.setUsername("nonexistent");
+
+        mvc.perform((post("/api/public/auth/login")
+                        .content(objectMapper.writeValueAsString(userUserLoginDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Incorrect username or password"));
+    }
+
+    @Test
+    void login_wrongPassword_error() throws Exception {
+        userUserLoginDto.setPassword("wrongPassword");
+
+        mvc.perform((post("/api/public/auth/login")
+                        .content(objectMapper.writeValueAsString(userUserLoginDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Incorrect username or password"));
     }
 
 }

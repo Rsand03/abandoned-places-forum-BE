@@ -26,9 +26,12 @@ public class UserRegisterDto {
     )
     private String password;
 
+    @NotNull
+    @Size(max = 50)
     @Pattern(
-            regexp = "[^@ \\t\\r\\n]+@[^@ \\t\\r\\n]+\\.[^@ \\t\\r\\n]+",
-            message = "Invalid email")
+            regexp = "[a-zA-Z]+[(a-zA-Z0-9-\\\\_.!)]*[(a-zA-Z0-9)]+@[(a-zA-Z)]+\\.[(a-zA-Z)]{2,3}",
+            message = "Invalid email"
+    )
     private String email;
 
 }

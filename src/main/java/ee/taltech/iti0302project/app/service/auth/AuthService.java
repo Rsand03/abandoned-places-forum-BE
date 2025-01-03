@@ -27,7 +27,7 @@ import java.util.UUID;
 @Slf4j
 public class AuthService {
 
-    public static final int JWT_EXPIRATION_TIME_MILLISECONDS = 1000 * 60 * 60 * 24;
+    private static final int JWT_EXPIRATION_TIME_MILLISECONDS = 1000 * 60 * 60 * 24;
 
     private final UserMapper userMapper;
     private final UserRepository userRepository;
@@ -69,12 +69,12 @@ public class AuthService {
         UserEntity user = userRepository.findByUsername(userLoginDto.getUsername())
                 .orElseGet(() -> {
                     log.info("User not found: " + userLoginDto.getUsername());
-                    throw new ApplicationException("User not found");
+                    throw new ApplicationException("Incorrect username or password");
                 });
 
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             log.info("Authentication failed: Incorrect password for user {}", userLoginDto.getUsername());
-            throw new ApplicationException("Incorrect password for user: " + userLoginDto.getUsername());
+            throw new ApplicationException("Incorrect username or password");
         }
 
         String token = generateJwtToken(user);
@@ -100,7 +100,7 @@ public class AuthService {
                 .compact();
     }
 
-    public UUID extractUserIdFromToken(String authHeader) {
+    public UUID extractUserIdFromAuthHeader(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new AuthException("Missing or invalid Authorization header");
         }

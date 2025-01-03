@@ -48,7 +48,7 @@ public class LocationController {
     public ResponseEntity<List<LocationResponseDto>> getFilteredLocations(
             @Valid @ModelAttribute LocationCriteria criteria,
             @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromToken(authHeader);
+        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
         criteria.setUserId(userId);
         return locationService.getFilteredLocations(criteria)
                 .map(ResponseEntity::ok)
@@ -58,7 +58,7 @@ public class LocationController {
     @PostMapping("")
     public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationCreateDto locationCreateDto,
                                                               @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromToken(authHeader);
+        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
         locationCreateDto.setCreatedBy(userId);
         return ResponseEntity.ok(locationService.createLocation(locationCreateDto));
     }
@@ -66,7 +66,7 @@ public class LocationController {
     @PatchMapping("")
     public ResponseEntity<LocationResponseDto> editLocation(@Valid @RequestBody LocationEditDto locationEditDto,
                                                             @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromToken(authHeader);
+        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
         locationEditDto.setEditingUserId(userId);
         return ResponseEntity.ok(locationService.editExistingLocation(locationEditDto));
     }
@@ -74,7 +74,7 @@ public class LocationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLocation(@PathVariable UUID id,
                                                @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromToken(authHeader);
+        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
         return locationService.deleteLocationByUuid(id, userId)
                 .isPresent() ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
@@ -82,7 +82,7 @@ public class LocationController {
     @GetMapping("/{id}")
     public ResponseEntity<LocationResponseDto> getLocationById(@PathVariable UUID id,
                                                                @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromToken(authHeader);
+        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
         return locationService.getLocationById(id, userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
