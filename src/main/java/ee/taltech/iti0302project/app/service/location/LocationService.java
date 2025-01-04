@@ -68,13 +68,13 @@ public class LocationService {
     public Optional<List<LocationResponseDto>> getFilteredLocations(LocationCriteria locationCriteria) {
         return validateLocationCriteria(locationCriteria)
                 .map(criteria -> {
-                    locationCriteria.setMinRequiredPointsToView(userRepository.findUserPointsById(locationCriteria.getUserId()));
+                    locationCriteria.setUserPoints(userRepository.findUserPointsById(locationCriteria.getUserId()));
 
                     Specification<LocationEntity> spec = Specification.where(null);
 
                     spec = spec.and(LocationSpecifications.hasCreatedByOrIsPublicAndUserHasEnoughPoints(
                             criteria.getUserId(),
-                            criteria.getMinRequiredPointsToView())
+                            criteria.getUserPoints())
                     );
 
                     if (criteria.getMainCategoryId() != null) {

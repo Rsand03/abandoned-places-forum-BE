@@ -1,5 +1,6 @@
 package ee.taltech.iti0302project.app.dto.auth;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,7 @@ import lombok.Data;
 
 @Builder
 @Data
+@Schema(description = "DTO for logging in")
 public class UserLoginDto {
 
     @NotNull

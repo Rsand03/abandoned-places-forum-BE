@@ -1,5 +1,6 @@
 package ee.taltech.iti0302project.app.dto.auth;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -8,8 +9,10 @@ import lombok.Data;
 
 @Builder
 @Data
+@Schema(description = "DTO for registering a new user")
 public class UserRegisterDto {
 
+    @Schema(description = "New user's username")
     @NotNull
     @Size(min = 3, max = 30)
     @Pattern(
@@ -18,6 +21,7 @@ public class UserRegisterDto {
     )
     private String username;
 
+    @Schema(description = "New user's password")
     @NotNull
     @Size(min = 4, max = 30)
     @Pattern(
@@ -26,6 +30,7 @@ public class UserRegisterDto {
     )
     private String password;
 
+    @Schema(description = "New user's email")
     @NotNull
     @Size(max = 50)
     @Pattern(
