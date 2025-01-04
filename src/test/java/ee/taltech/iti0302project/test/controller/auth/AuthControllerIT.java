@@ -115,7 +115,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidTooShortUsername_error() throws Exception {
+    void register_tooShortUsername_error() throws Exception {
         registerDto.setUsername("aa");
 
         mvc.perform((post("/api/public/auth/register")
@@ -126,7 +126,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidTooLongUsername_error() throws Exception {
+    void register_tooLongUsername_error() throws Exception {
         registerDto.setUsername("long long long long long long long long long long long");
 
         mvc.perform((post("/api/public/auth/register")
@@ -159,7 +159,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidTooShortPassword_error() throws Exception {
+    void register_tooShortPassword_error() throws Exception {
         registerDto.setPassword("aa");
 
         mvc.perform((post("/api/public/auth/register")
@@ -170,7 +170,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidTooLongPassword_error() throws Exception {
+    void register_tooLongPassword_error() throws Exception {
         registerDto.setPassword("toolongtoolongtoolongtoolongtoolong");
 
         mvc.perform((post("/api/public/auth/register")
@@ -203,7 +203,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidTooLongEmail_error() throws Exception {
+    void register_tooLongEmail_error() throws Exception {
         registerDto.setEmail("a51charsemail@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.ee");
 
         mvc.perform((post("/api/public/auth/register")

@@ -52,10 +52,10 @@ public class AuthService {
         user.setPoints(0);
         user.setRole("USER");
 
-        userRepository.save(user);
+        UserEntity savedUser = userRepository.save(user);
 
-        String token = generateJwtToken(user);
-        AuthResponseDto authResponseDto = userMapper.toAuthResponseDto(user);
+        String token = generateJwtToken(savedUser);
+        AuthResponseDto authResponseDto = userMapper.toAuthResponseDto(savedUser);
         authResponseDto.setToken(token);
 
         log.info("User registered and saved with ID: {}", user.getId());

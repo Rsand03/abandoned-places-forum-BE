@@ -82,8 +82,8 @@ class LocationServiceTest {
     private LocationStatusEntity defaultStatus;
     private LocationCreateDto defaultLocationCreateDto;
 
-    private LocationEntity locationCreatedFromEntity;
-    private LocationEntity createdLocationEntity;
+    private LocationEntity locationEntitySavedToRepository;
+    private LocationEntity locationEntityReceivedFromRepository;
     private LocationResponseDto locationResponseDto;
 
 
@@ -110,8 +110,8 @@ class LocationServiceTest {
                 .statusId(defaultStatus.getId())
                 .build();
 
-        locationCreatedFromEntity = new LocationEntity();
-        createdLocationEntity = new LocationEntity();
+        locationEntitySavedToRepository = new LocationEntity();
+        locationEntityReceivedFromRepository = new LocationEntity();
         locationResponseDto = new LocationResponseDto();
     }
 
@@ -144,7 +144,7 @@ class LocationServiceTest {
         defaultLocationCreateDto.getSubCategoryIds().forEach(id ->
                 given(locationCategoryRepository.existsById(id)).willReturn(true));
 
-        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationCreatedFromEntity);
+        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationEntitySavedToRepository);
 
         given(locationCategoryRepository.findAllById(defaultLocationCreateDto.getSubCategoryIds()))
                 .willReturn(defaultSubCategories);
@@ -156,24 +156,24 @@ class LocationServiceTest {
                 .willReturn(Optional.of(defaultStatus));
 
 
-        given(locationRepository.save(locationCreatedFromEntity)).willReturn(createdLocationEntity);
-        createdLocationEntity.setMainCategory(defaultMainCategory);
-        createdLocationEntity.setSubCategories(defaultSubCategories);
-        createdLocationEntity.setCondition(defaultCondition);
-        createdLocationEntity.setStatus(defaultStatus);
+        given(locationRepository.save(locationEntitySavedToRepository)).willReturn(locationEntityReceivedFromRepository);
+        locationEntityReceivedFromRepository.setMainCategory(defaultMainCategory);
+        locationEntityReceivedFromRepository.setSubCategories(defaultSubCategories);
+        locationEntityReceivedFromRepository.setCondition(defaultCondition);
+        locationEntityReceivedFromRepository.setStatus(defaultStatus);
 
-        given(locationMapper.toResponseDto(createdLocationEntity)).willReturn(locationResponseDto);
-        locationResponseDto.setMainCategory(createdLocationEntity.getMainCategory());
-        locationResponseDto.setSubCategories(createdLocationEntity.getSubCategories());
-        locationResponseDto.setCondition(createdLocationEntity.getCondition().getName());
-        locationResponseDto.setStatus(createdLocationEntity.getStatus().getName());
+        given(locationMapper.toResponseDto(locationEntityReceivedFromRepository)).willReturn(locationResponseDto);
+        locationResponseDto.setMainCategory(locationEntityReceivedFromRepository.getMainCategory());
+        locationResponseDto.setSubCategories(locationEntityReceivedFromRepository.getSubCategories());
+        locationResponseDto.setCondition(locationEntityReceivedFromRepository.getCondition().getName());
+        locationResponseDto.setStatus(locationEntityReceivedFromRepository.getStatus().getName());
 
         // When
         LocationResponseDto result = locationService.createLocation(defaultLocationCreateDto);
 
         // Then
         assertEquals(defaultSubCategories, result.getSubCategories());
-        verify(locationRepository, times(1)).save(locationCreatedFromEntity);
+        verify(locationRepository, times(1)).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -185,7 +185,7 @@ class LocationServiceTest {
         defaultLocationCreateDto.getSubCategoryIds().forEach(id ->
                 given(locationCategoryRepository.existsById(id)).willReturn(true));
 
-        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationCreatedFromEntity);
+        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationEntitySavedToRepository);
 
         given(locationCategoryRepository.findAllById(defaultLocationCreateDto.getSubCategoryIds()))
                 .willReturn(List.of());
@@ -197,24 +197,24 @@ class LocationServiceTest {
                 .willReturn(Optional.of(defaultStatus));
 
 
-        given(locationRepository.save(locationCreatedFromEntity)).willReturn(createdLocationEntity);
-        createdLocationEntity.setMainCategory(defaultMainCategory);
-        createdLocationEntity.setSubCategories(List.of());
-        createdLocationEntity.setCondition(defaultCondition);
-        createdLocationEntity.setStatus(defaultStatus);
+        given(locationRepository.save(locationEntitySavedToRepository)).willReturn(locationEntityReceivedFromRepository);
+        locationEntityReceivedFromRepository.setMainCategory(defaultMainCategory);
+        locationEntityReceivedFromRepository.setSubCategories(List.of());
+        locationEntityReceivedFromRepository.setCondition(defaultCondition);
+        locationEntityReceivedFromRepository.setStatus(defaultStatus);
 
-        given(locationMapper.toResponseDto(createdLocationEntity)).willReturn(locationResponseDto);
-        locationResponseDto.setMainCategory(createdLocationEntity.getMainCategory());
-        locationResponseDto.setSubCategories(createdLocationEntity.getSubCategories());
-        locationResponseDto.setCondition(createdLocationEntity.getCondition().getName());
-        locationResponseDto.setStatus(createdLocationEntity.getStatus().getName());
+        given(locationMapper.toResponseDto(locationEntityReceivedFromRepository)).willReturn(locationResponseDto);
+        locationResponseDto.setMainCategory(locationEntityReceivedFromRepository.getMainCategory());
+        locationResponseDto.setSubCategories(locationEntityReceivedFromRepository.getSubCategories());
+        locationResponseDto.setCondition(locationEntityReceivedFromRepository.getCondition().getName());
+        locationResponseDto.setStatus(locationEntityReceivedFromRepository.getStatus().getName());
 
         // When
         LocationResponseDto result = locationService.createLocation(defaultLocationCreateDto);
 
         // Then
         assertEquals(List.of(), result.getSubCategories());
-        verify(locationRepository, times(1)).save(locationCreatedFromEntity);
+        verify(locationRepository, times(1)).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -229,7 +229,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid user");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -244,7 +244,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid user");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -278,7 +278,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("User exceeded maximum amount of private locations");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -297,7 +297,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Duplicate of main category in subcategories");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -318,7 +318,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid subcategories");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -339,7 +339,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid subcategories");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -351,7 +351,7 @@ class LocationServiceTest {
         defaultLocationCreateDto.getSubCategoryIds().forEach(id ->
                 given(locationCategoryRepository.existsById(id)).willReturn(true));
 
-        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationCreatedFromEntity);
+        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationEntitySavedToRepository);
 
         given(locationCategoryRepository.findAllById(defaultLocationCreateDto.getSubCategoryIds()))
                 .willReturn(defaultSubCategories);
@@ -365,7 +365,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid main category id");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -378,7 +378,7 @@ class LocationServiceTest {
         defaultLocationCreateDto.getSubCategoryIds().forEach(id ->
                 given(locationCategoryRepository.existsById(id)).willReturn(true));
 
-        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationCreatedFromEntity);
+        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationEntitySavedToRepository);
 
         given(locationCategoryRepository.findAllById(defaultLocationCreateDto.getSubCategoryIds()))
                 .willReturn(defaultSubCategories);
@@ -394,7 +394,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid condition id");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
     @Test
@@ -406,7 +406,7 @@ class LocationServiceTest {
         defaultLocationCreateDto.getSubCategoryIds().forEach(id ->
                 given(locationCategoryRepository.existsById(id)).willReturn(true));
 
-        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationCreatedFromEntity);
+        given(locationMapper.toEntity(defaultLocationCreateDto)).willReturn(locationEntitySavedToRepository);
 
         given(locationCategoryRepository.findAllById(defaultLocationCreateDto.getSubCategoryIds()))
                 .willReturn(defaultSubCategories);
@@ -424,7 +424,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid status id");
-        verify(locationRepository, never()).save(locationCreatedFromEntity);
+        verify(locationRepository, never()).save(locationEntitySavedToRepository);
     }
 
 
