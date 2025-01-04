@@ -38,9 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -173,7 +172,8 @@ class LocationServiceTest {
 
         // Then
         assertEquals(defaultSubCategories, result.getSubCategories());
-        verify(locationRepository, times(1)).save(locationEntitySavedToRepository);
+        then(locationRepository).should(times(1)).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -214,7 +214,8 @@ class LocationServiceTest {
 
         // Then
         assertEquals(List.of(), result.getSubCategories());
-        verify(locationRepository, times(1)).save(locationEntitySavedToRepository);
+        then(locationRepository).should(times(1)).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -229,7 +230,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid user");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -244,7 +245,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid user");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -262,6 +263,7 @@ class LocationServiceTest {
                 .isInstanceOf(ApplicationException.class)
                 .extracting(Throwable::getMessage)
                 .isNotEqualTo("User exceeded maximum amount of private locations");
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -278,7 +280,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("User exceeded maximum amount of private locations");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -297,7 +299,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Duplicate of main category in subcategories");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -318,7 +320,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid subcategories");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -339,7 +341,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid subcategories");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -365,7 +367,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid main category id");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -394,7 +396,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid condition id");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -424,7 +426,7 @@ class LocationServiceTest {
         assertThat(thrown)
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("Invalid status id");
-        verify(locationRepository, never()).save(locationEntitySavedToRepository);
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
 
@@ -439,28 +441,8 @@ class LocationServiceTest {
 
         // then
         assertFalse(result.isPresent());
-        verify(locationRepository, times(1)).deleteById(deletedLocation.getId());
-    }
-
-    @Test
-    void deleteLocationByUuid_moreLocationsInRepository_onlyOneIsDeleted() {
-        // given
-        LocationEntity extraLocation = new LocationEntity();
-        extraLocation.setId(UUID.randomUUID());
-        extraLocation.setCreatedBy(UUID.randomUUID());
-        extraLocation.setPublic(false);
-
-        given(locationRepository.findById(deletedLocation.getId())).willReturn(Optional.of(deletedLocation));
-
-        // when
-        Optional<LocationResponseDto> result = locationService
-                .deleteLocationByUuid(deletedLocation.getId(), deletedLocation.getCreatedBy());
-
-        // then
-        assertFalse(result.isPresent());
-        verify(locationRepository, times(1)).deleteById(deletedLocation.getId());
-        verify(locationRepository, never()).deleteById(extraLocation.getId());
-        verify(locationRepository, never()).deleteAll();
+        then(locationRepository).should(times(1)).deleteById(deletedLocation.getId());
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -475,7 +457,7 @@ class LocationServiceTest {
 
         // then
         assertFalse(result.isPresent());
-        verify(locationRepository, never()).deleteById(deletedLocation.getId());
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -494,7 +476,7 @@ class LocationServiceTest {
 
         // then
         assertFalse(result.isPresent());
-        verify(locationRepository, never()).deleteById(deletedLocation.getId());
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
 
@@ -540,8 +522,9 @@ class LocationServiceTest {
         assertEquals(List.of(), result.getConditions());
         assertEquals(statusDtoList, result.getStatuses());
 
-        verify(locationCategoryRepository, times(1)).findAll();
-        verify(locationConditionRepository, times(1)).findAll();
-        verify(locationStatusRepository, times(1)).findAll();
+        then(locationCategoryRepository).should(times(1)).findAll();
+        then(locationConditionRepository).should(times(1)).findAll();
+        then(locationStatusRepository).should(times(1)).findAll();
+        then(locationRepository).shouldHaveNoMoreInteractions();
     }
 }
