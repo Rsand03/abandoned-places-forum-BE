@@ -3,6 +3,7 @@ package ee.taltech.iti0302project.app.controller.location;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
 import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
+import ee.taltech.iti0302project.app.dto.location.LocationPublishDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationConditionDto;
@@ -84,6 +85,18 @@ public class LocationController {
                                                                @RequestHeader("Authorization") String authHeader) {
         UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
         return locationService.getLocationById(id, userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/publishLocation")
+    public ResponseEntity<LocationResponseDto> publishLocation(
+            @RequestBody LocationPublishDto locationPublishDto,
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
+
+        return locationService.publishLocation(locationPublishDto, userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
