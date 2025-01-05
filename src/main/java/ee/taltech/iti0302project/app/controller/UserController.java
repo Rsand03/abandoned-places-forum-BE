@@ -3,6 +3,7 @@ package ee.taltech.iti0302project.app.controller;
 import ee.taltech.iti0302project.app.dto.UserCriteria;
 import ee.taltech.iti0302project.app.dto.UserDto;
 import ee.taltech.iti0302project.app.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/users")
 @AllArgsConstructor
+@Tag(name = "Unused?")
 public class UserController {
 
     private UserService userService;
