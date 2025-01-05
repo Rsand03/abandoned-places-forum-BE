@@ -2,7 +2,7 @@ package ee.taltech.iti0302project.test.controller.auth;
 
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.auth.UserRegisterDto;
-import ee.taltech.iti0302project.app.service.auth.AuthService;
+import ee.taltech.iti0302project.app.service.auth.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ class AuthControllerIT {
 
 
     @Autowired
-    private AuthService authService;
+    private JwtService jwtService;
 
     @Autowired
     private MockMvc mvc;
@@ -85,7 +85,6 @@ class AuthControllerIT {
 
     @Test
     void register_returnsValidAndParseableJwt() throws Exception {
-        // Perform the login request and capture the result
         MvcResult result = mvc.perform(post("/api/public/auth/register")
                         .content(objectMapper.writeValueAsString(registerDto))
                         .contentType("application/json"))
@@ -97,7 +96,7 @@ class AuthControllerIT {
         String token = objectMapper.readTree(responseJson).get("token").asText();
         String authHeader = "Bearer " + token;
 
-        UUID userIdFromToken = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userIdFromToken = jwtService.extractUserIdFromAuthHeader(authHeader);
         UUID userIdFromResponse = UUID.fromString(objectMapper.readTree(responseJson).get("userId").asText());
 
         assertEquals(userIdFromResponse, userIdFromToken);
@@ -249,7 +248,6 @@ class AuthControllerIT {
 
     @Test
     void login_returnsValidAndParseableJwt() throws Exception {
-        // Perform the login request and capture the result
         MvcResult result = mvc.perform(post("/api/public/auth/login")
                         .content(objectMapper.writeValueAsString(userUserLoginDto))
                         .contentType("application/json"))
@@ -260,7 +258,7 @@ class AuthControllerIT {
         String token = objectMapper.readTree(responseJson).get("token").asText();
         String authHeader = "Bearer " + token;
 
-        UUID userIdFromToken = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userIdFromToken = jwtService.extractUserIdFromAuthHeader(authHeader);
         assertEquals(UUID.fromString(USER_USER_ID), userIdFromToken);
     }
 
@@ -299,7 +297,7 @@ class AuthControllerIT {
         mvc.perform((post("/api/public/auth/login")
                         .content(objectMapper.writeValueAsString(userUserLoginDto))
                         .contentType("application/json")))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Incorrect username or password"));
     }
 
@@ -310,7 +308,7 @@ class AuthControllerIT {
         mvc.perform((post("/api/public/auth/login")
                         .content(objectMapper.writeValueAsString(userUserLoginDto))
                         .contentType("application/json")))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Incorrect username or password"));
     }
 

@@ -8,7 +8,7 @@ import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationConditionDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationStatusDto;
-import ee.taltech.iti0302project.app.service.auth.AuthService;
+import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.location.LocationConditionService;
 import ee.taltech.iti0302project.app.service.location.LocationService;
 import ee.taltech.iti0302project.app.service.location.LocationStatusService;
@@ -19,7 +19,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +42,7 @@ public class LocationController {
     private final LocationConditionService locationConditionService;
     private final LocationStatusService locationStatusService;
     private final LocationService locationService;
-    private final AuthService authService;
+    private final JwtService jwtService;
 
     @Operation(summary = "Retrieve all location conditions")
     @ApiResponse(responseCode = "200", description = "Retrieved all location conditions")
@@ -64,7 +72,7 @@ public class LocationController {
     public ResponseEntity<List<LocationResponseDto>> getFilteredLocations(
             @Valid @ParameterObject LocationCriteria criteria,
             @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         criteria.setUserId(userId);
         return locationService.getFilteredLocations(criteria)
                 .map(ResponseEntity::ok)
@@ -76,7 +84,7 @@ public class LocationController {
     @PostMapping("")
     public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationCreateDto locationCreateDto,
                                                               @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         locationCreateDto.setCreatedBy(userId);
         return ResponseEntity.ok(locationService.createLocation(locationCreateDto));
     }
@@ -86,7 +94,7 @@ public class LocationController {
     @PatchMapping("")
     public ResponseEntity<LocationResponseDto> editLocation(@Valid @RequestBody LocationEditDto locationEditDto,
                                                             @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         locationEditDto.setEditingUserId(userId);
         return ResponseEntity.ok(locationService.editExistingLocation(locationEditDto));
     }
@@ -96,7 +104,7 @@ public class LocationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLocation(@PathVariable UUID id,
                                                @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         return locationService.deleteLocationByUuid(id, userId)
                 .isPresent() ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
@@ -106,7 +114,7 @@ public class LocationController {
     @GetMapping("/{id}")
     public ResponseEntity<LocationResponseDto> getLocationById(@PathVariable UUID id,
                                                                @RequestHeader("Authorization") String authHeader) {
-        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         return locationService.getLocationById(id, userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -119,7 +127,7 @@ public class LocationController {
             @RequestBody LocationPublishDto locationPublishDto,
             @RequestHeader("Authorization") String authHeader
     ) {
-        UUID userId = authService.extractUserIdFromAuthHeader(authHeader);
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
 
         return locationService.publishLocation(locationPublishDto, userId)
                 .map(ResponseEntity::ok)
