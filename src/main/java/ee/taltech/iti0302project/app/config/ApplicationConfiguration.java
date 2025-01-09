@@ -16,18 +16,19 @@ import java.security.NoSuchAlgorithmException;
 @EnableScheduling
 public class ApplicationConfiguration {
 
-    @Value("${JWT_SECRET_KEY:#{null}}")
-    private String jwtSecretKey;
+    @Value("${LOCAL_JWT_SECRET_KEY:#{null}}")
+    private String localJwtSecretKey;
 
     @Bean
     public SecretKey jwtKey() throws NoSuchAlgorithmException {
-        if (jwtSecretKey == null || jwtSecretKey.isEmpty()) {
+        // Jwt tokens become invalid after each backend restart - deployed to server
+        if (localJwtSecretKey == null || localJwtSecretKey.isEmpty()) {
             return Jwts.SIG.HS256.key().build();
         }
 
-        // Jwt tokens remain valid even after restarting backend
+        // Jwt tokens remain valid even after restarting backend - local testing
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hashedKey = digest.digest(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
+        byte[] hashedKey = digest.digest(localJwtSecretKey.getBytes(StandardCharsets.UTF_8));
 
         return new SecretKeySpec(hashedKey, "HmacSHA256");
     }
