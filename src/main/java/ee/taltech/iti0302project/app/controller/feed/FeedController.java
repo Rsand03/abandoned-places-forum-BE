@@ -6,16 +6,11 @@ import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.pagination.PageResponse;
 import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.feed.FeedService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.crypto.SecretKey;
 import java.util.UUID;
 
 @RestController
@@ -24,7 +19,6 @@ import java.util.UUID;
 public class FeedController {
 
     private final FeedService feedService;
-    private final SecretKey key;
     private final JwtService jwtService;
 
     @PostMapping("/createPost")
