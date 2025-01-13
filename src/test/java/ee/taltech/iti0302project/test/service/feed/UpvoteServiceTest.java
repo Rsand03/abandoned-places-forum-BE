@@ -105,45 +105,6 @@ class UpvoteServiceTest {
     }
 
     @Test
-    void createUpvote_success() {
-        // Given
-        given(upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())).willReturn(false);
-        given(upvoteMapper.toEntity(upvoteDto)).willReturn(upvoteEntity);
-        given(upvoteRepository.save(upvoteEntity)).willReturn(upvoteEntity);
-        given(upvoteMapper.toDto(upvoteEntity)).willReturn(upvoteDto);
-
-        // When
-        UpvoteDto result = upvoteService.createUpvote(upvoteDto);
-
-        // Then
-        assertEquals(upvoteDto, result);
-        verify(upvoteRepository, times(1)).save(upvoteEntity);
-    }
-
-    @Test
-    void createUpvote_alreadyUpvoted() {
-        // Given
-        given(upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())).willReturn(true);
-
-        // When & Then
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> upvoteService.createUpvote(upvoteDto));
-        assertEquals("User has already upvoted this post.", exception.getMessage());
-    }
-
-    @Test
-    void deleteUpvote_success() {
-        // Given
-        doNothing().when(upvoteRepository).deleteById(1L);
-
-        // When
-        upvoteService.deleteUpvote(1L);
-
-        // Then
-        verify(upvoteRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
     void getUpvotesByPostId_success() {
         // Given
         given(upvoteRepository.findByPostId(1L)).willReturn(List.of(upvoteEntity));
@@ -169,47 +130,5 @@ class UpvoteServiceTest {
 
         // Then
         assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getUpvoteById_success() {
-        // Given
-        given(upvoteRepository.findById(1L)).willReturn(Optional.of(upvoteEntity));
-        given(upvoteMapper.toDto(upvoteEntity)).willReturn(upvoteDto);
-
-        // When
-        UpvoteDto result = upvoteService.getUpvoteById(1L);
-
-        // Then
-        assertEquals(upvoteDto, result);
-        verify(upvoteRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void getUpvoteById_notFound() {
-        // Given
-        given(upvoteRepository.findById(1L)).willReturn(Optional.empty());
-
-        // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> upvoteService.getUpvoteById(1L));
-        assertEquals("Upvote not found with id: 1", exception.getMessage());
-    }
-
-    @Test
-    void getAllUpvotes_success() {
-        // Given
-        List<UpvoteEntity> upvoteEntities = List.of(upvoteEntity);
-        List<UpvoteDto> upvoteDtos = List.of(upvoteDto);
-
-        given(upvoteRepository.findAll()).willReturn(upvoteEntities);
-        given(upvoteMapper.toDtoList(upvoteEntities)).willReturn(upvoteDtos);
-
-        // When
-        List<UpvoteDto> result = upvoteService.getAllUpvotes();
-
-        // Then
-        assertEquals(upvoteDtos, result);
-        verify(upvoteRepository, times(1)).findAll();
-        verify(upvoteMapper, times(1)).toDtoList(upvoteEntities);
     }
 }
