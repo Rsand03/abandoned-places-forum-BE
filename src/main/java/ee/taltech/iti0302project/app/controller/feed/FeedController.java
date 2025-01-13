@@ -4,6 +4,7 @@ import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
 import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.pagination.PageResponse;
+import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.feed.FeedService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -24,6 +25,7 @@ public class FeedController {
 
     private final FeedService feedService;
     private final SecretKey key;
+    private final JwtService jwtService;
 
     @PostMapping("/createPost")
     public ResponseEntity<CreatePostDto> createPost(@RequestBody CreatePostDto createdPost) {
@@ -34,7 +36,7 @@ public class FeedController {
     public PageResponse<FetchPostsDto> getPosts(
             @Valid @ModelAttribute FeedSearchCriteria criteria,
             @RequestHeader("Authorization") String authHeader) {
-        UUID userId = extractUserIdFromToken(authHeader);
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
 
         return feedService.findPosts(criteria, userId);
     }
@@ -43,31 +45,10 @@ public class FeedController {
     public ResponseEntity<FetchPostsDto> getPostById(
             @PathVariable Long postId,
             @RequestHeader("Authorization") String authHeader) {
-
+        // TODO: decide what to do with authHeader here
         return feedService.getPostById(postId)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-    }
-
-    private UUID extractUserIdFromToken(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
-        }
-
-        String token = authHeader.substring(7);
-
-        try {
-            @SuppressWarnings("deprecation")
-            Claims claims = Jwts.parser()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            return UUID.fromString(claims.get("userId", String.class));
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
-        }
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }

@@ -13,5 +13,29 @@
 
 
     <include file="/db/changelog/changelog-master.xml"/>
+    
+    <changeSet id="test-data" author="13-01-2024-mjanov">
+        <insert tableName="posts">
+            <column name="title" value="testTitle" />
+            <column name="body" value="testBody" />
+            <column name="location_id" value="a59b74f9-d7fc-4c8e-bf47-2b060276421e" />
+            <column name="created_by" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d" />
+            <column name="created_at" value="2024-11-16T10:00:00" />
+        </insert>
+        <insert tableName="posts">
+            <column name="title" value="testTitle1" />
+            <column name="body" value="testBody1" />
+            <column name="location_id" value="a59b74f9-d7fc-4c8e-bf47-2b060276421e" />
+            <column name="created_by" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d" />
+            <column name="created_at" value="2024-11-16T10:00:00" />
+        </insert>
+        <insert tableName="posts">
+            <column name="title" value="testTitle2" />
+            <column name="body" value="testBody2" />
+            <column name="location_id" value="a59b74f9-d7fc-4c8e-bf47-2b060276421e" />
+            <column name="created_by" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d" />
+            <column name="created_at" value="2024-11-16T10:00:00" />
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>

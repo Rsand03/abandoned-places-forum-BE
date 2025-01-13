@@ -3,8 +3,6 @@ package ee.taltech.iti0302project.test.controller.feed;
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.service.auth.AuthService;
-import ee.taltech.iti0302project.app.service.feed.FeedService;
-import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -31,34 +28,31 @@ public class FeedControllerIT {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private FeedService feedService;
+    private String userUserAuthToken;
 
-    private String userAuthToken;
-    private UUID userId;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup() {
-        UserLoginDto dto = new UserLoginDto();
-        dto.setUsername("user");
-        dto.setPassword("user");
-        userAuthToken = authService.authenticateUser(dto).getToken();
+    void authTokenSetup() {
+        UserLoginDto loginDto = UserLoginDto.builder()
+                .username("user")
+                .password("user")
+                .build();
+        userUserAuthToken = authService.authenticateUser(loginDto).getToken();
+        loginDto.setUsername("admin");
+        loginDto.setPassword("admin");
     }
 
     @Test
     void createPost_isCreated() throws Exception {
-        // Given
         CreatePostDto postDto = new CreatePostDto();
         postDto.setTitle("Test Post");
         postDto.setBody("This is a test post");
         postDto.setUserId(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"));
         postDto.setLocationId(UUID.fromString("a59b74f9-d7fc-4c8e-bf47-2b060276421e"));
 
-        // When & Then
         mvc.perform(post("/api/feed/createPost")
-                        .header("Authorization", "Bearer " + userAuthToken)
+                        .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(postDto))
                         .contentType("application/json"))
                 .andExpect(status().isOk())
@@ -67,12 +61,14 @@ public class FeedControllerIT {
     }
 
     @Test
-    void getPosts_returnsPosts() throws Exception {
+    void getPosts_returnsOnePost() throws Exception {
         // When & Then
         mvc.perform(get("/api/feed")
-                        .header("Authorization", "Bearer " + userAuthToken)
+                        .header("Authorization", "Bearer " + userUserAuthToken)
                         .param("page", "0")
-                        .param("pageSize", "10"))
+                        .param("pageSize", "10")
+                        .param("title", "testTitle1")
+                        .param("body", "testBody1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(1))
                 .andExpect(jsonPath("$.content.length()").value(1));
@@ -80,15 +76,13 @@ public class FeedControllerIT {
 
     @Test
     void getPostById_isFound() throws Exception {
-        // Given
-        Long postId = 0L;
+        Long postId = 1L;
 
-        // When & Then
         mvc.perform(get("/api/feed/{postId}", postId)
-                        .header("Authorization", "Bearer " + userAuthToken))
+                        .header("Authorization", "Bearer " + userUserAuthToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test Post"))
-                .andExpect(jsonPath("$.body").value("This is a test post"));
+                .andExpect(jsonPath("$.title").value("testTitle"))
+                .andExpect(jsonPath("$.body").value("testBody"));
     }
 
     @Test
@@ -98,25 +92,40 @@ public class FeedControllerIT {
 
         // When & Then
         mvc.perform(get("/api/feed/{postId}", postId)
-                        .header("Authorization", "Bearer " + userAuthToken))
+                        .header("Authorization", "Bearer " + userUserAuthToken))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    void getPosts_noResults() throws Exception {
-        // Given
-        FeedSearchCriteria searchCriteria = new FeedSearchCriteria("Test", "test", UUID.randomUUID(),
-                "test", LocalDate.of(2023, 5, 30),
-                LocalDate.of(2024, 5, 30), "id", "DEC", 0, 10);
-
-        // When & Then
+    void getPosts_getsResults() throws Exception {
         mvc.perform(get("/api/feed")
-                        .header("Authorization", "Bearer " + userAuthToken)
+                        .header("Authorization", "Bearer " + userUserAuthToken)
                         .param("page", "0")
-                        .param("pageSize", "10"))
+                        .param("pageSize", "10")
+                        .param("title", "testTitle")
+                        .param("body", "testBody"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.content.length()").value(3));
+    }
+
+    @Test
+    void getPosts_noResults() throws Exception {
+        mvc.perform(get("/api/feed")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10")
+                        .param("title", "notExisting")
+                        .param("body", "notExisting"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(0))
                 .andExpect(jsonPath("$.content.length()").value(0));
+    }
+
+    @Test
+    void shouldReturnForbidden_whenAuthorizationHeaderIsMissing() throws Exception {
+        mvc.perform(get("/api/feed"))
+                .andExpect(status().isForbidden());
     }
 }
 
