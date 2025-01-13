@@ -85,10 +85,8 @@ public class FeedControllerIT {
 
     @Test
     void getPostById_notFound() throws Exception {
-        // Given
         Long postId = 999L;
 
-        // When & Then
         mvc.perform(get("/api/feed/{postId}", postId)
                         .header("Authorization", "Bearer " + userUserAuthToken))
                 .andExpect(status().isNotFound());

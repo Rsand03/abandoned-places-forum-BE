@@ -3,7 +3,6 @@ package ee.taltech.iti0302project.test.controller.feed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.feed.CommentDto;
-import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.service.auth.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
