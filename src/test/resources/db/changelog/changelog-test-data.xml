@@ -65,6 +65,10 @@
             <column name="user_id" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d" />
         </insert>
         <insert tableName="upvotes">
+            <column name="post_id" value="1" />
+            <column name="user_id" value="fdee620f-550e-4e88-9d6e-638ab6e678be" />
+        </insert>
+        <insert tableName="upvotes">
             <column name="post_id" value="2" />
             <column name="user_id" value="e71a1997-5f06-4b3b-b5cd-bbbcec65d68d" />
         </insert>

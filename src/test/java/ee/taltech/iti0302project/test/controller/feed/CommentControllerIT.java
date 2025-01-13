@@ -42,8 +42,6 @@ public class CommentControllerIT {
                 .password("user")
                 .build();
         userUserAuthToken = authService.authenticateUser(loginDto).getToken();
-        loginDto.setUsername("admin");
-        loginDto.setPassword("admin");
     }
 
     @Test
