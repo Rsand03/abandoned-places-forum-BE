@@ -174,7 +174,7 @@ public class LocationService {
                 .filter(locationEntity -> locationEntity.getCreatedBy().equals(userId))
                 .filter(locationEntity -> !locationEntity.isPublic())
                 .map(locationEntity -> {
-                    locationBookmarkRepository.deleteAllByLocationIdAndCreatedBy(locationId, userId);
+                    locationBookmarkRepository.deleteAllByLocationAndCreatedBy(locationEntity, userId);
                     locationRepository.deleteById(locationId);
                     log.info("deleted location with id " + locationEntity.getId());
                     return locationMapper.toResponseDto(locationEntity);
