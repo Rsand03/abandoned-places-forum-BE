@@ -3,7 +3,6 @@ package ee.taltech.iti0302project.app.controller.location;
 import ee.taltech.iti0302project.app.dto.location.bookmark.BookmarkType;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreateDto;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
-import ee.taltech.iti0302project.app.service.auth.AuthService;
 import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.location.LocationBookmarkService;
 import jakarta.validation.Valid;
