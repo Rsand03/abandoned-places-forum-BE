@@ -3,12 +3,14 @@ package ee.taltech.iti0302project.app.controller.profile;
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
+import ee.taltech.iti0302project.app.exception.ForbiddenException;
 import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.profile.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +37,13 @@ public class ProfileController {
     public ResponseEntity<UserProfileDto> getUserProfile(
             @PathVariable UUID userId,
             @RequestHeader("Authorization") String authHeader) {
-        jwtService.validateUserIdAgainstJwtUserId(authHeader, userId);
+
+        try {
+            jwtService.validateUserIdAgainstJwtUserId(authHeader, userId);
+        } catch(ForbiddenException errorResponse) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
 
         UserProfileDto userProfileDTO = userService.getUserProfile(userId);
         return ResponseEntity.ok(userProfileDTO);
@@ -48,7 +56,12 @@ public class ProfileController {
             @PathVariable UUID userId,
             @RequestBody ChangeEmailDto changeEmailDto,
             @RequestHeader("Authorization") String authHeader) {
-        jwtService.validateUserIdAgainstJwtUserId(authHeader, userId);
+
+        try {
+            jwtService.validateUserIdAgainstJwtUserId(authHeader, userId);
+        } catch(ForbiddenException errorResponse) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         UserProfileDto updatedUser = userService.updateEmail(userId, changeEmailDto);
         return ResponseEntity.ok(updatedUser);
@@ -61,7 +74,12 @@ public class ProfileController {
             @PathVariable UUID userId,
             @RequestBody ChangePasswordDto changePasswordDto,
             @RequestHeader("Authorization") String authHeader) {
-        jwtService.validateUserIdAgainstJwtUserId(authHeader, userId);
+
+        try {
+            jwtService.validateUserIdAgainstJwtUserId(authHeader, userId);
+        } catch(ForbiddenException errorResponse) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         UserProfileDto updatedUser = userService.updatePassword(userId, changePasswordDto);
         return ResponseEntity.ok(updatedUser);

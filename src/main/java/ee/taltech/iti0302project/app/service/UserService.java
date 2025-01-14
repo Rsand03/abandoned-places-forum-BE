@@ -2,6 +2,7 @@ package ee.taltech.iti0302project.app.service;
 
 import ee.taltech.iti0302project.app.dto.UserCriteria;
 import ee.taltech.iti0302project.app.dto.UserDto;
+import ee.taltech.iti0302project.app.dto.mapper.user.UserMapper;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.UserSpecifications;
@@ -23,6 +24,7 @@ import java.util.List;
 public class UserService {
 
     private UserRepository userRespoitory;
+    private UserMapper userMapper;
 
     public Page<UserDto> findUsers(UserCriteria criteria) {
         Specification<UserEntity> spec = Specification.where(null);
@@ -37,21 +39,9 @@ public class UserService {
     }
 
     private Page<UserDto> toUserDtoPage(Page<UserEntity> userEntityPage) {
-        List<UserDto> userDtos = userEntityPage.getContent().stream()
-                .map(this::convertToDto)
-                .toList();
+        List<UserDto> userDtos = userMapper.toDtoList(userEntityPage.getContent());
 
         return new PageImpl<>(userDtos, userEntityPage.getPageable(), userEntityPage.getTotalElements());
     }
-
-    private UserDto convertToDto(UserEntity userEntity) {
-        UserDto userDto = new UserDto();
-        userDto.setUsername(userEntity.getUsername());
-        userDto.setId(userEntity.getId());
-        userDto.setCreatedAt(userEntity.getCreatedAt());
-        userDto.setPoints(userEntity.getPoints());
-        userDto.setRole(userEntity.getRole());
-        return userDto;
-    }
-
 }
+
