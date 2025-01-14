@@ -31,10 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
@@ -110,10 +107,18 @@ class FeedServiceTest {
                 10
         );
 
-        fetchPostsDto = new FetchPostsDto(
-                1L, "Title", "Body", userId, "Username", LocalDate.now(),
-                5L, 10L, false, new LocationResponseDto()
-        );
+        fetchPostsDto = FetchPostsDto.builder()
+                .id(1L)
+                .title("Title")
+                .body("Body")
+                .createdByUsername("Username")
+                .createdAt(LocalDate.now())
+                .likeCount(5L)
+                .commentCount(10L)
+                .hasUpvoted(false)
+                .location(new LocationResponseDto())
+                .locationId(UUID.randomUUID()).build();
+
 
         locationResponseDto = new LocationResponseDto();
     }
@@ -177,18 +182,19 @@ class FeedServiceTest {
     void getPostById_returnsPost() {
         // Given
         Long postId = 1L;
-        FetchPostsDto fetchPostsDto = new FetchPostsDto(
-                1L,
-                "Sample Title",
-                "Sample Body",
-                UUID.randomUUID(),
-                "username",
-                LocalDate.now(),
-                10L,
-                5L,
-                false,
-                new LocationResponseDto()
-        );
+
+        fetchPostsDto = FetchPostsDto.builder()
+                .id(1L)
+                .title("Sample Title")
+                .body("Sample Body")
+                .createdByUsername("username")
+                .createdAt(LocalDate.now())
+                .likeCount(10L)
+                .commentCount(5L)
+                .hasUpvoted(false)
+                .location(new LocationResponseDto())
+                .locationId(UUID.randomUUID()).build();
+
         given(postRepository.findById(postId)).willReturn(Optional.of(postEntity));
         given(fetchPostsMapper.toDto(postEntity)).willReturn(fetchPostsDto);
 
