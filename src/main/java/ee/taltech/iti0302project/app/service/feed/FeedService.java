@@ -3,8 +3,10 @@ package ee.taltech.iti0302project.app.service.feed;
 import ee.taltech.iti0302project.app.criteria.FeedSearchCriteria;
 import ee.taltech.iti0302project.app.dto.feed.CreatePostDto;
 import ee.taltech.iti0302project.app.dto.feed.FetchPostsDto;
+import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.FetchPostsMapper;
 import ee.taltech.iti0302project.app.dto.mapper.feed.PostMapper;
+import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
@@ -40,15 +42,20 @@ public class FeedService {
     private final UserRepository userRepository;
     private final FetchPostsMapper fetchPostsMapper;
     private final LocationRepository locationRepository;
+    private final LocationMapper locationMapper;
 
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ApplicationException("User not found"));
 
         PostEntity entity = postMapper.toEntity(createdPost);
 
+        if (entity.getLocationId() == null) {
+            throw new ApplicationException("Location is not added");
+        }
+
         LocationEntity location = locationRepository.findById(entity.getLocationId())
-                .orElseThrow(() -> new RuntimeException("Location not found"));
+                .orElseThrow(() -> new ApplicationException("Location not found"));
 
         if (!location.isPublic()) {
             throw new ApplicationException("Location is not public");
@@ -86,10 +93,17 @@ public class FeedService {
 
         List<FetchPostsDto> dtoList = entityPage.getContent().stream()
                 .map(post -> {
+                    LocationEntity locationEntity = locationRepository.findById(post.getLocationId())
+                            .orElseThrow(() -> new ApplicationException("Location not found"));
+
                     FetchPostsDto dto = fetchPostsMapper.toDto(post);
                     dto.setLikeCount((long) (post.getUpvotes() != null ? post.getUpvotes().size() : 0));
                     dto.setCommentCount((long) (post.getComments() != null ? post.getComments().size() : 0));
                     dto.setHasUpvoted(hasUserUpvotedPost(post.getId(), currentUserId));
+
+                    LocationResponseDto locationResponseDto = locationMapper.toResponseDto(locationEntity);
+                    dto.setLocation(locationResponseDto);
+
                     return dto;
                 })
                 .toList();
@@ -127,7 +141,7 @@ public class FeedService {
 
     public boolean hasUserUpvotedPost(Long postId, UUID userId) {
         PostEntity post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ApplicationException("Post not found"));
 
         for (UpvoteEntity upvote : post.getUpvotes()) {
             if (upvote.getUserId().equals(userId)) {

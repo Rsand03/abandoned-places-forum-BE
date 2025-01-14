@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -48,7 +48,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5174", "http://localhost:5173", "http://tiim32.zapto.org"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
         source.registerCorsConfiguration("/api/**", config);

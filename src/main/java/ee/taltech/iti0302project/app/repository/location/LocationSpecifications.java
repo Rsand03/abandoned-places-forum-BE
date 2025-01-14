@@ -9,18 +9,18 @@ import java.util.UUID;
 
 public class LocationSpecifications {
 
-    private LocationSpecifications() {}
+    private LocationSpecifications() {
+    }
 
-    public static Specification<LocationEntity> isPublicOrHasCreatedBy(UUID userId) {
-        return (root, query, cb) -> {
-            if (userId == null) {
-                return cb.isTrue(root.get("isPublic"));
-            }
-            return cb.or(
-                    cb.equal(root.get("createdBy"), userId),
-                    cb.isTrue(root.get("isPublic"))
-            );
-        };
+    public static Specification<LocationEntity> hasCreatedByOrIsPublicAndUserHasEnoughPoints(UUID userId, Long minPoints) {
+        return (root, query, cb) ->
+                cb.or(
+                        cb.equal(root.get("createdBy"), userId),
+                        cb.and(
+                                cb.isTrue(root.get("isPublic")),
+                                cb.lessThanOrEqualTo(root.get("minRequiredPointsToView"), minPoints)
+                        )
+                );
     }
 
     public static Specification<LocationEntity> hasMainCategory(Long mainCategoryId) {
@@ -45,11 +45,6 @@ public class LocationSpecifications {
     public static Specification<LocationEntity> hasStatus(Long statusId) {
         return (root, query, cb) ->
                 statusId == null ? null : cb.equal(root.get("status").get("id"), statusId);
-    }
-
-    public static Specification<LocationEntity> minPointsToViewHigherThan(Integer min) {
-        return (root, query, cb) ->
-                min == null ? null : cb.greaterThanOrEqualTo(root.get("minRequiredPointsToView"), min);
     }
 
     public static Specification<LocationEntity> hasBookmarkTypes(List<String> bookmarkTypes) {

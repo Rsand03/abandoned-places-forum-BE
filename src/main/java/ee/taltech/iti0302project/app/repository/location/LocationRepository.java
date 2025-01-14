@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface LocationRepository extends JpaRepository<LocationEntity, UUID>,
         JpaSpecificationExecutor<LocationEntity> {
 
+    long countByIsPublicFalseAndCreatedBy(UUID createdBy);
+
 }

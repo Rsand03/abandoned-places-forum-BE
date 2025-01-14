@@ -2,6 +2,7 @@ package ee.taltech.iti0302project.test.controller.location;
 
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
+import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
 import ee.taltech.iti0302project.app.service.auth.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,20 +32,42 @@ class LocationControllerIT {
 
     @Autowired
     private MockMvc mvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private AuthService authService;
     private String userUserAuthToken;
+    private String adminAdminAuthToken;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+
+    private LocationEditDto defaultLocationEditDto;
+
 
     @BeforeEach
-    void setup() {
-        UserLoginDto dto = new UserLoginDto();
-        dto.setUsername("user");
-        dto.setPassword("user");
-        userUserAuthToken = authService.authenticateUser(dto).getToken();
+    void authTokenSetup() {
+        UserLoginDto loginDto = UserLoginDto.builder()
+                .username("user")
+                .password("user")
+                .build();
+        userUserAuthToken = authService.authenticateUser(loginDto).getToken();
+        loginDto.setUsername("admin");
+        loginDto.setPassword("admin");
+        adminAdminAuthToken = authService.authenticateUser(loginDto).getToken();
     }
+
+    @BeforeEach
+    void locationEditDtoSetup() {
+        defaultLocationEditDto = LocationEditDto.builder()
+                .id(UUID.fromString("53ce8219-45fd-4c00-8ba5-7b84d29d7617"))
+                .name("Updated")
+                .mainCategoryId(9L)
+                .subCategoryIds(List.of(1L, 2L))
+                .conditionId(4L)
+                .statusId(4L)
+                .additionalInformation("Updated additional")
+                .build();
+    }
+
 
     @Test
     void getLocationAttributes() throws Exception {
@@ -64,6 +89,7 @@ class LocationControllerIT {
                 .andExpect(jsonPath("$[1].name").value("Lammutatud"));
     }
 
+
     @Test
     void getFilteredLocations_filterByMainCategory() throws Exception {
         mvc.perform((get("/api/locations")
@@ -75,12 +101,21 @@ class LocationControllerIT {
     }
 
     @Test
-    void getFilteredLocations_noParams_returnsAllPublicLocationsAndLocationsCreatedByUser() throws Exception {
+    void getFilteredLocations_noParamsUser_locationsCreatedByUserAndPublicLocationsBasedOnPoints() throws Exception {
         mvc.perform((get("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(4));
     }
+
+    @Test
+    void getFilteredLocations_noParamsAdmin_locationsCreatedByAdminAndPublicLocationsBasedOnPoints() throws Exception {
+        mvc.perform((get("/api/locations")
+                        .header("Authorization", "Bearer " + adminAdminAuthToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
 
     @Test
     void createLocation_isCreated() throws Exception {
@@ -120,6 +155,76 @@ class LocationControllerIT {
                 .andExpect(status().isBadRequest());
     }
 
+
+    @Test
+    void editLocation_allFieldsAreChanged() throws Exception {
+        mvc.perform((patch("/api/locations")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .content(objectMapper.writeValueAsString(defaultLocationEditDto))
+                        .contentType("application/json")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mainCategory.id").value(9L))
+                .andExpect(jsonPath("$.condition").value("Keskpärane"))
+                .andExpect(jsonPath("$.status").value("Vabalt ligipääsetav"))
+                .andExpect(jsonPath("$.subCategories.length()").value(2))
+                .andExpect(jsonPath("$.subCategories[0].id").value(1L))
+                .andExpect(jsonPath("$.name").value("Updated"))
+                .andExpect(jsonPath("$.additionalInformation").value("Updated additional"));
+    }
+
+    @Test
+    void editLocation_publicLocation_badRequest() throws Exception {
+        defaultLocationEditDto.setId(UUID.fromString("a59b74f9-d7fc-4c8e-bf47-2b060276421e"));
+        mvc.perform((patch("/api/locations")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .content(objectMapper.writeValueAsString(defaultLocationEditDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void editLocation_privateLocationButDifferentCreatedBy_badRequest() throws Exception {
+        defaultLocationEditDto.setId(UUID.fromString("d43d3e9b-f1c3-467e-b70d-b9906d8507f2"));
+        mvc.perform((patch("/api/locations")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .content(objectMapper.writeValueAsString(defaultLocationEditDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void editLocation_locationDoesNotExist_badRequest() throws Exception {
+        defaultLocationEditDto.setId(UUID.fromString("d43d3e9b-1a2b-467e-b70d-b9906d8507f2"));
+        mvc.perform((patch("/api/locations")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .content(objectMapper.writeValueAsString(defaultLocationEditDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Invalid user, subcategories or unauthorized to edit"));
+    }
+
+    @Test
+    void editLocation_nullName_badRequest() throws Exception {
+        defaultLocationEditDto.setName(null);
+        mvc.perform((patch("/api/locations")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .content(objectMapper.writeValueAsString(defaultLocationEditDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void editLocation_invalidSubCategoryId_badRequest() throws Exception {
+        defaultLocationEditDto.setSubCategoryIds(List.of(8L, 26L));
+        mvc.perform((patch("/api/locations")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .content(objectMapper.writeValueAsString(defaultLocationEditDto))
+                        .contentType("application/json")))
+                .andExpect(status().isBadRequest());
+    }
+
+
     @Test
     void deleteLocation_isDeleted() throws Exception {
         mvc.perform((delete("/api/locations/{id}", "53ce8219-45fd-4c00-8ba5-7b84d29d7617")
@@ -147,6 +252,7 @@ class LocationControllerIT {
                         .header("Authorization", "Bearer " + userUserAuthToken)))
                 .andExpect(status().isNotFound());
     }
+
 
     @Test
     void getLocationById_privateLocationOfUser_isFound() throws Exception {
