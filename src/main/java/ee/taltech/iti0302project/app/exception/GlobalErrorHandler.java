@@ -34,7 +34,7 @@ public class GlobalErrorHandler {
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<Object> handleForbiddenException(UnauthorizedException ex) {
+    public ResponseEntity<Object> handleForbiddenException(ForbiddenException ex) {
         log.warn(ex.getMessage());
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.FORBIDDEN);
     }

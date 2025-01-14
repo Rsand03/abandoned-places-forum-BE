@@ -5,15 +5,16 @@ import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
 import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
 import ee.taltech.iti0302project.app.dto.location.LocationPublishDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
-import ee.taltech.iti0302project.app.dto.location.attributes.LocationAttributesDto;
-import ee.taltech.iti0302project.app.dto.mapper.location.LocationCategoryMapper;
-import ee.taltech.iti0302project.app.dto.mapper.location.LocationConditionMapper;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
-import ee.taltech.iti0302project.app.dto.mapper.location.LocationStatusMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
-import ee.taltech.iti0302project.app.repository.location.*;
+import ee.taltech.iti0302project.app.repository.location.LocationBookmarkRepository;
+import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
+import ee.taltech.iti0302project.app.repository.location.LocationConditionRepository;
+import ee.taltech.iti0302project.app.repository.location.LocationRepository;
+import ee.taltech.iti0302project.app.repository.location.LocationSpecifications;
+import ee.taltech.iti0302project.app.repository.location.LocationStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,19 +41,7 @@ public class LocationService {
     private final LocationBookmarkRepository locationBookmarkRepository;
 
     private final LocationMapper locationMapper;
-    private final LocationCategoryMapper categoryMapper;
-    private final LocationConditionMapper conditionMapper;
-    private final LocationStatusMapper statusMapper;
 
-    @Transactional(readOnly = true)
-    public LocationAttributesDto getLocationAttributes() {
-        LocationAttributesDto attributesDto = new LocationAttributesDto();
-
-        attributesDto.setCategories(categoryMapper.toDtoList(locationCategoryRepository.findAll()));
-        attributesDto.setConditions(conditionMapper.toDtoList(locationConditionRepository.findAll()));
-        attributesDto.setStatuses(statusMapper.toDtoList(locationStatusRepository.findAll()));
-        return attributesDto;
-    }
 
     @Transactional(readOnly = true)
     public Optional<LocationResponseDto> getLocationById(UUID locationId, UUID userId) {

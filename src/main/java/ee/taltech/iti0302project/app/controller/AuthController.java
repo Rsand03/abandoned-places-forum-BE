@@ -20,21 +20,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // Remove "/auth" endpoints once FE is updated
-    @PostMapping("/auth/register")
-    public ResponseEntity<AuthResponseDto> registerUserToBeRemoved(@Valid @RequestBody UserRegisterDto userRegisterDto) {
-
-        AuthResponseDto response = authService.registerUser(userRegisterDto);
-
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/auth/login")
-    public ResponseEntity<AuthResponseDto> loginToBeRemoved(@Valid @RequestBody UserLoginDto userLoginDto) {
-            AuthResponseDto response = authService.authenticateUser(userLoginDto);
-            return ResponseEntity.ok(response);
-    }
-
     @Operation(summary = "Register a new user")
     @ApiResponse(responseCode = "200", description = "User registered and jwt retrieved")
     @PostMapping("/public/auth/register")

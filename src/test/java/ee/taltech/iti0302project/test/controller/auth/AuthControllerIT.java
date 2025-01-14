@@ -103,7 +103,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_nullUsername_error() throws Exception {
+    void register_nullUsername_badRequest() throws Exception {
         registerDto.setUsername(null);
 
         mvc.perform((post("/api/public/auth/register")
@@ -114,7 +114,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_tooShortUsername_error() throws Exception {
+    void register_tooShortUsername_badRequest() throws Exception {
         registerDto.setUsername("aa");
 
         mvc.perform((post("/api/public/auth/register")
@@ -125,7 +125,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_tooLongUsername_error() throws Exception {
+    void register_tooLongUsername_badRequest() throws Exception {
         registerDto.setUsername("long long long long long long long long long long long");
 
         mvc.perform((post("/api/public/auth/register")
@@ -136,7 +136,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidCharacterUsername_error() throws Exception {
+    void register_invalidCharacterUsername_badRequest() throws Exception {
         registerDto.setUsername("\uD83D\uDC4D\uD83D\uDC4D\uD83D\uDC96\uD83D\uDC96");  // ascii emoji
 
         mvc.perform((post("/api/public/auth/register")
@@ -147,7 +147,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_nullPassword_error() throws Exception {
+    void register_nullPassword_badRequest() throws Exception {
         registerDto.setPassword(null);
 
         mvc.perform((post("/api/public/auth/register")
@@ -158,7 +158,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_tooShortPassword_error() throws Exception {
+    void register_tooShortPassword_badRequest() throws Exception {
         registerDto.setPassword("aa");
 
         mvc.perform((post("/api/public/auth/register")
@@ -169,7 +169,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_tooLongPassword_error() throws Exception {
+    void register_tooLongPassword_badRequest() throws Exception {
         registerDto.setPassword("toolongtoolongtoolongtoolongtoolong");
 
         mvc.perform((post("/api/public/auth/register")
@@ -180,7 +180,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidCharacterPassword_error() throws Exception {
+    void register_invalidCharacterPassword_badRequest() throws Exception {
         registerDto.setPassword("invalid space");
 
         mvc.perform((post("/api/public/auth/register")
@@ -191,7 +191,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_nullEmail_error() throws Exception {
+    void register_nullEmail_badRequest() throws Exception {
         registerDto.setEmail(null);
 
         mvc.perform((post("/api/public/auth/register")
@@ -202,7 +202,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_tooLongEmail_error() throws Exception {
+    void register_tooLongEmail_badRequest() throws Exception {
         registerDto.setEmail("a51charsemail@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.ee");
 
         mvc.perform((post("/api/public/auth/register")
@@ -213,7 +213,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_invalidEmail_error() throws Exception {
+    void register_invalidEmail_badRequest() throws Exception {
         registerDto.setEmail("ivalid@invalid.");
 
         mvc.perform((post("/api/public/auth/register")
@@ -224,7 +224,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_usernameAlreadyInUse_error() throws Exception {
+    void register_usernameAlreadyInUse_badRequest() throws Exception {
         registerDto.setUsername("user");
         registerDto.setPassword("user");
 
@@ -236,7 +236,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void register_emailAlreadyInUse_error() throws Exception {
+    void register_emailAlreadyInUse_badRequest() throws Exception {
         registerDto.setEmail(USER_USER_EMAIL);
 
         mvc.perform((post("/api/public/auth/register")
@@ -291,7 +291,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void login_userDoesNotExist_error() throws Exception {
+    void login_userDoesNotExist_unAuthorized() throws Exception {
         userUserLoginDto.setUsername("nonexistent");
 
         mvc.perform((post("/api/public/auth/login")
@@ -302,7 +302,7 @@ class AuthControllerIT {
     }
 
     @Test
-    void login_wrongPassword_error() throws Exception {
+    void login_wrongPassword_unAuthorized() throws Exception {
         userUserLoginDto.setPassword("wrongPassword");
 
         mvc.perform((post("/api/public/auth/login")
