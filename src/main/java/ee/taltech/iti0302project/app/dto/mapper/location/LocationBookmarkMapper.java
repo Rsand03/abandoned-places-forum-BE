@@ -10,7 +10,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LocationBookmarkMapper {
     @Mapping(source = "createdByUserUuid", target = "createdBy")
-    @Mapping(source = "locationId", target = "locationId")
+    @Mapping(source = "locationId", target = "location.id")
     @Mapping(source = "type", target = "type")
     LocationBookmarkEntity toEntity(LocationBookmarkCreateDto locationBookmarkCreateDto);
 

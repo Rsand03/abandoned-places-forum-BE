@@ -31,7 +31,7 @@ public class LocationBookmarkService {
         List<LocationBookmarkEntity> bookmarks;
 
         if (locationId.isPresent()) {
-            bookmarks = locationBookmarkRepository.findByCreatedByAndLocationId(userId, locationId.get());
+            bookmarks = locationBookmarkRepository.findByCreatedByAndLocation_Id(userId, locationId.get());
         } else {
             bookmarks = locationBookmarkRepository.findByCreatedBy(userId);
         }
@@ -44,9 +44,12 @@ public class LocationBookmarkService {
     public Optional<LocationBookmarkDto> createLocationBookmark(LocationBookmarkCreateDto locationBookmarkCreateDto) {
         validateLocationBookmark(locationBookmarkCreateDto);
 
+        LocationEntity locationEntity = locationRepository.findById(locationBookmarkCreateDto.getLocationId())
+                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
+
         LocationBookmarkEntity bookmarkEntity = locationBookmarkMapper.toEntity(locationBookmarkCreateDto);
 
-        bookmarkEntity.setLocationId(locationBookmarkCreateDto.getLocationId());
+        bookmarkEntity.setLocation(locationEntity);
         bookmarkEntity.setType(locationBookmarkCreateDto.getType().getLabel());
 
         LocationBookmarkEntity savedEntity = locationBookmarkRepository.save(bookmarkEntity);
@@ -67,7 +70,10 @@ public class LocationBookmarkService {
 
     @Transactional
     public void deleteLocationBookmark(UUID userId, UUID locationId, BookmarkType bookmarkType) {
-        boolean exists = locationBookmarkRepository.existsByCreatedByAndLocationIdAndType(userId, locationId,
+        LocationEntity locationEntity = locationRepository.findById(locationId)
+                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
+
+        boolean exists = locationBookmarkRepository.existsByCreatedByAndLocationAndType(userId, locationEntity,
                 bookmarkType.getLabel());
 
         if (!exists) {
@@ -75,7 +81,7 @@ public class LocationBookmarkService {
                     + " and userId: " + userId + " and type: " + bookmarkType);
         }
 
-        locationBookmarkRepository.deleteByCreatedByAndLocationIdAndType(userId, locationId,
+        locationBookmarkRepository.deleteByCreatedByAndLocationAndType(userId, locationEntity,
                 bookmarkType.getLabel());
     }
 }
