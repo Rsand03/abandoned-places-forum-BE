@@ -7,8 +7,5 @@ import java.util.UUID;
 
 @Data
 public class LocationBookmarkDto {
-    private UUID id;
     private String type;
-    private UUID locationId;
-    private LocalDateTime createdAt;
 }
