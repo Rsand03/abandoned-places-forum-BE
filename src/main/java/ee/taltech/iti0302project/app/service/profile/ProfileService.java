@@ -45,7 +45,7 @@ public class ProfileService {
 
     public UserProfileDto updatePassword(UUID userId, ChangePasswordDto changePasswordDto) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException(USER_NOT_FOUND_MSG));
+                .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MSG));
 
         if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
             throw new ApplicationException("Current password is incorrect");

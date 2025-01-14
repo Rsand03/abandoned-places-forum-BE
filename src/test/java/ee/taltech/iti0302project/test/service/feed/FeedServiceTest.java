@@ -55,10 +55,6 @@ class FeedServiceTest {
     private LocationRepository locationRepository;
     @Mock
     LocationMapper locationMapper;
-    @Mock
-    private Specification<PostEntity> specification;
-    @Mock
-    private Page<PostEntity> postEntityPage;
 
     @InjectMocks
     private FeedService feedService;
@@ -158,6 +154,23 @@ class FeedServiceTest {
 
         // When & Then
         assertThrows(ApplicationException.class, () -> feedService.createPost(createPostDto));
+    }
+
+    @Test
+    void createPost_throwsExceptionLocationNotAdded() {
+        // Given
+        createPostDto.setLocationId(null);
+        PostEntity postEntityWithNullLocation = new PostEntity();
+        postEntityWithNullLocation.setLocationId(null);
+
+        given(userRepository.findById(createPostDto.getUserId())).willReturn(Optional.of(userEntity));
+        given(postMapper.toEntity(createPostDto)).willReturn(postEntityWithNullLocation);
+
+        // When / Then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            feedService.createPost(createPostDto);
+        });
+        assertEquals("Location is not added", exception.getMessage());
     }
 
     @Test

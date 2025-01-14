@@ -6,7 +6,6 @@ import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.repository.feed.UpvoteRepository;
-import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.service.feed.UpvoteService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +28,6 @@ class UpvoteServiceTest {
     @Mock
     private UpvoteRepository upvoteRepository;
     @Mock
-    private PostRepository postRepository;
-    @Mock
     private UpvoteMapper upvoteMapper;
 
     @InjectMocks
@@ -38,16 +35,14 @@ class UpvoteServiceTest {
 
     private UpvoteDto upvoteDto;
     private UpvoteEntity upvoteEntity;
-    private PostEntity postEntity;
-    private UserEntity userEntity;
 
     @BeforeEach
     void setUp() {
         UUID userId = UUID.randomUUID();
-        userEntity = new UserEntity();
+        UserEntity userEntity = new UserEntity();
         userEntity.setId(userId);
 
-        postEntity = new PostEntity();
+        PostEntity postEntity = new PostEntity();
         postEntity.setId(1L);
 
         upvoteDto = new UpvoteDto();
@@ -115,7 +110,7 @@ class UpvoteServiceTest {
 
         // Then
         assertEquals(1, result.size());
-        assertEquals(upvoteDto, result.get(0));
+        assertEquals(upvoteDto, result.getFirst());
         verify(upvoteRepository, times(1)).findByPostId(1L);
     }
 
