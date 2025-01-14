@@ -45,9 +45,10 @@ class UpvoteServiceTest {
         PostEntity postEntity = new PostEntity();
         postEntity.setId(1L);
 
-        upvoteDto = new UpvoteDto();
-        upvoteDto.setPostId(1L);
-        upvoteDto.setUserId(userEntity.getId());
+        upvoteDto = UpvoteDto.builder()
+                .postId(1L)
+                .userId(userEntity.getId())
+                .build();
 
         upvoteEntity = new UpvoteEntity();
         upvoteEntity.setId(1L);

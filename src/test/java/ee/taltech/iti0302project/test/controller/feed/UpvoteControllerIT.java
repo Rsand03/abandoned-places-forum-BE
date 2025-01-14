@@ -45,8 +45,9 @@ public class UpvoteControllerIT {
     void createUpvote_isCreated() throws Exception {
         Long postId = 3L;
 
-        // TODO: Consider using builder
-        UpvoteDto upvoteDto = new UpvoteDto();
+        UpvoteDto upvoteDto = UpvoteDto.builder()
+                .postId(postId).build();
+
         upvoteDto.setPostId(postId);
 
         mvc.perform(post("/api/feed/upvotes", postId)
@@ -62,8 +63,9 @@ public class UpvoteControllerIT {
     void createUpvote_isRemoved() throws Exception {
         Long postId = 1L;
 
-        // TODO: Consider using builder
-        UpvoteDto upvoteDto = new UpvoteDto();
+        UpvoteDto upvoteDto = UpvoteDto.builder()
+                .postId(postId).build();
+
         upvoteDto.setPostId(postId);
 
         mvc.perform(post("/api/feed/upvotes", postId)
