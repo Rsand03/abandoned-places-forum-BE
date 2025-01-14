@@ -1,6 +1,8 @@
 package ee.taltech.iti0302project.app.repository.location;
 
+import ee.taltech.iti0302project.app.entity.location.LocationBookmarkEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -53,9 +55,9 @@ public class LocationSpecifications {
                 return null;
             }
 
-            return root.join("bookmarks", JoinType.INNER)
-                    .get("type")
-                    .in(bookmarkTypes);
+            Join<LocationEntity, LocationBookmarkEntity> bookmarksJoin = root.join("bookmarks", JoinType.INNER);
+
+            return cb.and(bookmarksJoin.get("type").in(bookmarkTypes));
         };
     }
 }
