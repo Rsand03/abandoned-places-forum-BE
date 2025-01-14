@@ -43,11 +43,11 @@ public class FeedControllerIT {
 
     @Test
     void createPost_isCreated() throws Exception {
-        CreatePostDto postDto = new CreatePostDto();
-        postDto.setTitle("Test Post");
-        postDto.setBody("This is a test post");
-        postDto.setUserId(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"));
-        postDto.setLocationId(UUID.fromString("a59b74f9-d7fc-4c8e-bf47-2b060276421e"));
+        CreatePostDto postDto = CreatePostDto.builder()
+                .title("Test Post")
+                .body("This is a test post")
+                .userId(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"))
+                .locationId(UUID.fromString("a59b74f9-d7fc-4c8e-bf47-2b060276421e")).build();
 
         mvc.perform(post("/api/feed/createPost")
                         .header("Authorization", "Bearer " + userUserAuthToken)

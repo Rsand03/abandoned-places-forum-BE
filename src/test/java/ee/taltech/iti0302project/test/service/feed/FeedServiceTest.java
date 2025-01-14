@@ -79,11 +79,11 @@ class FeedServiceTest {
         locationEntity.setId(locationId);
         locationEntity.setPublic(true);
 
-        createPostDto = new CreatePostDto();
-        createPostDto.setUserId(userEntity.getId());
-        createPostDto.setLocationId(locationEntity.getId());
-        createPostDto.setTitle("Test");
-        createPostDto.setBody("test");
+        createPostDto = CreatePostDto.builder()
+                .userId(userEntity.getId())
+                .locationId(locationEntity.getId())
+                .title("Test")
+                .body("test").build();
 
         postEntity = new PostEntity();
         postEntity.setId(1L);
