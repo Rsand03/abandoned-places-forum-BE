@@ -55,10 +55,10 @@ class CommentServiceTest {
         postEntity = new PostEntity();
         postEntity.setId(1L);
 
-        commentDto = new CommentDto();
-        commentDto.setPostId(1L);
-        commentDto.setCreatedById(userId);
-        commentDto.setBody("Test comment");
+        commentDto = CommentDto.builder()
+                .postId(1L)
+                .body("Test comment")
+                .createdById(userId).build();
 
         commentEntity = new CommentEntity();
         commentEntity.setId(1L);

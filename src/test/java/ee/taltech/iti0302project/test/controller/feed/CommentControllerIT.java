@@ -47,10 +47,10 @@ public class CommentControllerIT {
     void createComment_isCreated() throws Exception {
         Long postId = 1L;
 
-        CommentDto commentDto = new CommentDto();
-        commentDto.setBody("Test comment");
-        commentDto.setCreatedById(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"));
-        commentDto.setPostId(postId);
+        CommentDto commentDto = CommentDto.builder()
+                .body("Test comment")
+                .createdById(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"))
+                .postId(postId).build();
 
         mvc.perform(post("/api/feed/{postId}/comments", postId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
@@ -66,10 +66,10 @@ public class CommentControllerIT {
     void createComment_postNotFound() throws Exception {
         Long postId = 999L;
 
-        CommentDto commentDto = new CommentDto();
-        commentDto.setBody("Test comment");
-        commentDto.setCreatedById(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"));
-        commentDto.setPostId(postId);
+        CommentDto commentDto = CommentDto.builder()
+                .body("Test comment")
+                .createdByUsername("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d")
+                .postId(postId).build();
 
         mvc.perform(post("/api/feed/{postId}/comments", postId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
@@ -84,10 +84,11 @@ public class CommentControllerIT {
     void createComment_userNotFound() throws Exception {
         Long postId = 1L;
 
-        CommentDto commentDto = new CommentDto();
-        commentDto.setBody("Test comment");
-        commentDto.setCreatedById(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68f"));
-        commentDto.setPostId(postId);
+        CommentDto commentDto = CommentDto.builder()
+                .body("Test comment")
+                .createdByUsername("e71a1997-5f06-4b3b-b5cd-bbbcec65d68f")
+                .postId(postId).build();
+
 
         mvc.perform(post("/api/feed/{postId}/comments", postId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
