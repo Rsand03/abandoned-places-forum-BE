@@ -15,10 +15,7 @@ import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationStatusEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationConditionRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationStatusRepository;
+import ee.taltech.iti0302project.app.repository.location.*;
 import ee.taltech.iti0302project.app.service.location.LocationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +34,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 
 
@@ -50,6 +46,8 @@ class LocationServiceTest {
 
     @Mock
     private LocationRepository locationRepository;
+    @Mock
+    private LocationBookmarkRepository locationBookmarkRepository;
     @Mock
     private LocationCategoryRepository locationCategoryRepository;
     @Mock
@@ -445,6 +443,7 @@ class LocationServiceTest {
     void deleteLocationByUuid_isDeleted() {
         // given
         given(locationRepository.findById(deletedLocation.getId())).willReturn(Optional.of(deletedLocation));
+        willDoNothing().given(locationBookmarkRepository).deleteAllByLocationAndCreatedBy(deletedLocation, deletedLocation.getCreatedBy());
 
         // when
         Optional<LocationResponseDto> result = locationService
