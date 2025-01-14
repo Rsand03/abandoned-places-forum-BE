@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -49,4 +50,7 @@ public class LocationEntity {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    @OneToMany(mappedBy = "location")
+    private Set<LocationBookmarkEntity> bookmarks;
 }

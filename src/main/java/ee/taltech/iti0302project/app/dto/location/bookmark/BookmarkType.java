@@ -2,7 +2,9 @@ package ee.taltech.iti0302project.app.dto.location.bookmark;
 
 public enum BookmarkType {
     JAA_MEELDE("Jäta meelde"),
-    JUBA_KULASTATUD("Juba külastatud");
+    JUBA_KULASTATUD("Juba külastatud"),
+    SUUR_RISK("Suur risk"),
+    OSALISELT_AVASTATUD ("Osaliselt avastatud");
 
     private final String label;
 

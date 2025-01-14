@@ -1,5 +1,6 @@
 package ee.taltech.iti0302project.app.service.location;
 
+import ee.taltech.iti0302project.app.dto.location.bookmark.BookmarkType;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreateDto;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationBookmarkMapper;
@@ -30,7 +31,7 @@ public class LocationBookmarkService {
         List<LocationBookmarkEntity> bookmarks;
 
         if (locationId.isPresent()) {
-            bookmarks = locationBookmarkRepository.findByCreatedByAndLocationId(userId, locationId.get());
+            bookmarks = locationBookmarkRepository.findByCreatedByAndLocation_Id(userId, locationId.get());
         } else {
             bookmarks = locationBookmarkRepository.findByCreatedBy(userId);
         }
@@ -43,9 +44,12 @@ public class LocationBookmarkService {
     public Optional<LocationBookmarkDto> createLocationBookmark(LocationBookmarkCreateDto locationBookmarkCreateDto) {
         validateLocationBookmark(locationBookmarkCreateDto);
 
+        LocationEntity locationEntity = locationRepository.findById(locationBookmarkCreateDto.getLocationId())
+                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
+
         LocationBookmarkEntity bookmarkEntity = locationBookmarkMapper.toEntity(locationBookmarkCreateDto);
 
-        bookmarkEntity.setLocationId(locationBookmarkCreateDto.getLocationId());
+        bookmarkEntity.setLocation(locationEntity);
         bookmarkEntity.setType(locationBookmarkCreateDto.getType().getLabel());
 
         LocationBookmarkEntity savedEntity = locationBookmarkRepository.save(bookmarkEntity);
@@ -65,13 +69,19 @@ public class LocationBookmarkService {
     }
 
     @Transactional
-    public void deleteLocationBookmarkByUuid(UUID locationId, UUID userId) {
-        boolean exists = locationBookmarkRepository.existsByLocationIdAndCreatedBy(locationId, userId);
+    public void deleteLocationBookmark(UUID userId, UUID locationId, BookmarkType bookmarkType) {
+        LocationEntity locationEntity = locationRepository.findById(locationId)
+                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
+
+        boolean exists = locationBookmarkRepository.existsByCreatedByAndLocationAndType(userId, locationEntity,
+                bookmarkType.getLabel());
+
         if (!exists) {
             throw new EntityNotFoundException("Bookmark not found for locationId: " + locationId
-                    + " and userId: " + userId);
+                    + " and userId: " + userId + " and type: " + bookmarkType);
         }
 
-        locationBookmarkRepository.deleteByLocationIdAndCreatedBy(locationId, userId);
+        locationBookmarkRepository.deleteByCreatedByAndLocationAndType(userId, locationEntity,
+                bookmarkType.getLabel());
     }
 }

@@ -1,7 +1,9 @@
 package ee.taltech.iti0302project.app.controller.location;
 
+import ee.taltech.iti0302project.app.dto.location.bookmark.BookmarkType;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreateDto;
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
+import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.location.LocationBookmarkService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +22,14 @@ import java.util.UUID;
 public class LocationBookmarkController {
 
     private final LocationBookmarkService locationBookmarkService;
+    private final JwtService jwtService;
 
     @GetMapping("")
     public ResponseEntity<List<LocationBookmarkDto>> getLocationBookmarks(
-            @RequestParam(value = "userId", required = true) UUID userId,
-            @RequestParam(value = "locationId", required = false) Optional<UUID> locationId
+            @RequestParam(value = "locationId", required = false) Optional<UUID> locationId,
+            @RequestHeader("Authorization") String authHeader
     ) {
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         List<LocationBookmarkDto> bookmarks = locationBookmarkService.getLocationBookmarksByUserAndLocation(userId, locationId);
         return ResponseEntity.ok(bookmarks);
     }
@@ -41,8 +45,10 @@ public class LocationBookmarkController {
     @DeleteMapping("")
     public ResponseEntity<Void> deleteLocationBookmark(
             @RequestParam UUID locationId,
-            @RequestParam UUID userId) {
-        locationBookmarkService.deleteLocationBookmarkByUuid(locationId, userId);
+            @RequestParam BookmarkType bookmarkType,
+            @RequestHeader("Authorization") String authHeader) {
+        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
+        locationBookmarkService.deleteLocationBookmark(userId, locationId, bookmarkType);
         return ResponseEntity.noContent().build();
     }
 }

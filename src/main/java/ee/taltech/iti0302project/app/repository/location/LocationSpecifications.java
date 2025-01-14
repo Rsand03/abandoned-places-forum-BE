@@ -1,6 +1,9 @@
 package ee.taltech.iti0302project.app.repository.location;
 
+import ee.taltech.iti0302project.app.entity.location.LocationBookmarkEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -46,4 +49,15 @@ public class LocationSpecifications {
                 statusId == null ? null : cb.equal(root.get("status").get("id"), statusId);
     }
 
+    public static Specification<LocationEntity> hasBookmarkTypes(List<String> bookmarkTypes) {
+        return (root, query, cb) -> {
+            if (bookmarkTypes == null || bookmarkTypes.isEmpty()) {
+                return null;
+            }
+
+            Join<LocationEntity, LocationBookmarkEntity> bookmarksJoin = root.join("bookmarks", JoinType.INNER);
+
+            return cb.and(bookmarksJoin.get("type").in(bookmarkTypes));
+        };
+    }
 }

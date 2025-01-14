@@ -42,4 +42,7 @@ public class LocationCriteria {
     @Max(value = 50)
     private Long statusId;
 
+    @Schema(description = "Bookmark type names to filter by", example = "JUBA_KULASTATUD")
+    @Size(max = 50)
+    private List<String> bookmarkTypes = new ArrayList<>();
 }

@@ -13,11 +13,7 @@ import ee.taltech.iti0302project.app.dto.mapper.location.LocationStatusMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationConditionRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationRepository;
-import ee.taltech.iti0302project.app.repository.location.LocationSpecifications;
-import ee.taltech.iti0302project.app.repository.location.LocationStatusRepository;
+import ee.taltech.iti0302project.app.repository.location.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -41,6 +37,7 @@ public class LocationService {
     private final LocationConditionRepository locationConditionRepository;
     private final LocationStatusRepository locationStatusRepository;
     private final UserRepository userRepository;
+    private final LocationBookmarkRepository locationBookmarkRepository;
 
     private final LocationMapper locationMapper;
     private final LocationCategoryMapper categoryMapper;
@@ -89,6 +86,10 @@ public class LocationService {
                     if (criteria.getStatusId() != null) {
                         spec = spec.and(LocationSpecifications.hasStatus(criteria.getStatusId()));
                     }
+                    if (criteria.getBookmarkTypes() != null) {
+                        spec = spec.and(LocationSpecifications.hasBookmarkTypes(criteria.getBookmarkTypes()));
+                    }
+
                     return locationMapper.toDtoList(locationRepository.findAll(spec));
                 });
     }
@@ -173,6 +174,7 @@ public class LocationService {
                 .filter(locationEntity -> locationEntity.getCreatedBy().equals(userId))
                 .filter(locationEntity -> !locationEntity.isPublic())
                 .map(locationEntity -> {
+                    locationBookmarkRepository.deleteAllByLocationAndCreatedBy(locationEntity, userId);
                     locationRepository.deleteById(locationId);
                     log.info("deleted location with id " + locationEntity.getId());
                     return locationMapper.toResponseDto(locationEntity);
