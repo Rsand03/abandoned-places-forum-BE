@@ -67,9 +67,10 @@ public class ProfileControllerIT {
     @Test
     void updateEmail_successful() throws Exception {
         UUID userId = UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d");
-        ChangeEmailDto changeEmailDto = new ChangeEmailDto();
-        changeEmailDto.setNewEmail("test@gmail.com");
-        changeEmailDto.setPassword("user");
+        ChangeEmailDto changeEmailDto = ChangeEmailDto.builder()
+                .newEmail("test@gmail.com")
+                .password("user")
+                .build();
         mvc.perform(put("/api/profile/{userId}/updateEmail", userId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
                 .content(objectMapper.writeValueAsString(changeEmailDto))
@@ -84,9 +85,10 @@ public class ProfileControllerIT {
     @Test
     void updateEmail_userDoesntMatchWithJwtHeader() throws Exception {
         UUID userId = UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68f");
-        ChangeEmailDto changeEmailDto = new ChangeEmailDto();
-        changeEmailDto.setNewEmail("test@gmail.com");
-        changeEmailDto.setPassword("user");
+        ChangeEmailDto changeEmailDto = ChangeEmailDto.builder()
+                .newEmail("test@gmail.com")
+                .password("user")
+                .build();
         mvc.perform(put("/api/profile/{userId}/updateEmail", userId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(changeEmailDto))
@@ -97,9 +99,10 @@ public class ProfileControllerIT {
     @Test
     void updatePassword_successful() throws Exception {
         UUID userId = UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d");
-        ChangePasswordDto changePasswordDto = new ChangePasswordDto();
-        changePasswordDto.setCurrentPassword("user");
-        changePasswordDto.setNewPassword("newPassword");
+        ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+                .currentPassword("user")
+                .newPassword("newPassword")
+                .build();
         mvc.perform(put("/api/profile/{userId}/updatePassword", userId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(changePasswordDto))
@@ -121,9 +124,10 @@ public class ProfileControllerIT {
     @Test
     void updatePassword_wrongCurrentPassword() throws Exception {
         UUID userId = UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d");
-        ChangePasswordDto changePasswordDto = new ChangePasswordDto();
-        changePasswordDto.setCurrentPassword("wrongPassword");
-        changePasswordDto.setNewPassword("newPassword");
+        ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+                .currentPassword("wrongPassword")
+                .newPassword("newPassword")
+                .build();
         mvc.perform(put("/api/profile/{userId}/updatePassword", userId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(changePasswordDto))
@@ -136,9 +140,10 @@ public class ProfileControllerIT {
     @Test
     void updatePassword_userDoesntMatchWithJwtHeader() throws Exception {
         UUID userId = UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68f");
-        ChangePasswordDto changePasswordDto = new ChangePasswordDto();
-        changePasswordDto.setCurrentPassword("user");
-        changePasswordDto.setNewPassword("newPassword");
+        ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+                .currentPassword("user")
+                .newPassword("newPassword")
+                .build();
         mvc.perform(put("/api/profile/{userId}/updatePassword", userId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(changePasswordDto))

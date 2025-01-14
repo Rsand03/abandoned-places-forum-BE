@@ -51,16 +51,19 @@ class ProfileServiceTest {
         userEntity.setEmail("test@example.com");
         userEntity.setPassword("password123");
 
-        userProfileDto = new UserProfileDto();
-        userProfileDto.setEmail(userEntity.getEmail());
+        userProfileDto = UserProfileDto.builder()
+                .email(userEntity.getEmail())
+                .build();
 
-        changeEmailDto = new ChangeEmailDto();
-        changeEmailDto.setPassword("password123");
-        changeEmailDto.setNewEmail("new@example.com");
+        changeEmailDto = ChangeEmailDto.builder()
+                .password("password123")
+                .newEmail("new@example.com")
+                .build();
 
-        changePasswordDto = new ChangePasswordDto();
-        changePasswordDto.setCurrentPassword("password123");
-        changePasswordDto.setNewPassword("newPassword123");
+        changePasswordDto = ChangePasswordDto.builder()
+                .currentPassword("password123")
+                .newPassword("newPassword123")
+                .build();
     }
 
     @Test
