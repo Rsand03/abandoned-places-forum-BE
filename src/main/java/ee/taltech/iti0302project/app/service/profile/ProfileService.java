@@ -52,6 +52,8 @@ public class ProfileService {
         user.setEmail(changeEmailDto.getNewEmail());
         userRepository.save(user);
 
+        log.info("User {} updated email to {}", user.getId(), user.getEmail());
+
         return userMapper.toUserProfileDto(user);
     }
 
@@ -66,6 +68,8 @@ public class ProfileService {
 
         user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         userRepository.save(user);
+
+        log.info("User {} updated password", user.getId());
 
         return userMapper.toUserProfileDto(user);
     }

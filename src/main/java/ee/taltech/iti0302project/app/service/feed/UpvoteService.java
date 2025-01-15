@@ -8,6 +8,7 @@ import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.repository.feed.UpvoteRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpvoteService {
 
     private final UpvoteRepository upvoteRepository;
@@ -30,6 +32,9 @@ public class UpvoteService {
             UpvoteEntity upvote = upvoteRepository.findByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())
                     .orElseThrow(() -> new ApplicationException("Upvote not found"));
             upvoteRepository.delete(upvote);
+
+            log.info("Upvote removed from post {} by {}", upvote.getPost(), upvote.getUser());
+
             return upvoteDto;
         } else {
             UpvoteEntity upvote = upvoteMapper.toEntity(upvoteDto);
@@ -38,6 +43,9 @@ public class UpvoteService {
             upvote.setPost(postRepository.findById(upvoteDto.getPostId())
                     .orElseThrow(() -> new ApplicationException("Invalid post id")));
             upvote = upvoteRepository.save(upvote);
+
+            log.info("Upvote added to post {} by {}", upvote.getPost(), upvote.getUser());
+
             return upvoteMapper.toDto(upvote);
         }
     }

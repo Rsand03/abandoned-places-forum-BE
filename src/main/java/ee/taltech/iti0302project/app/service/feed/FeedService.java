@@ -18,6 +18,7 @@ import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
 import ee.taltech.iti0302project.app.specifications.PostSpecifications;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,9 +35,8 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class FeedService {
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FeedService.class);
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
@@ -67,6 +67,8 @@ public class FeedService {
 
         postRepository.save(entity);
 
+        log.info("Post {} added by {}", entity.getId(), entity.getCreatedBy());
+
         return postMapper.toDto(entity);
     }
 
@@ -81,7 +83,7 @@ public class FeedService {
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria, UUID currentUserId) {
         Specification<PostEntity> spec = addSpecifications(criteria);
 
-        logger.info("Search Criteria: {}", criteria);
+        log.info("Search Criteria: {}", criteria);
 
         String sortBy = criteria.sortBy() != null ? criteria.sortBy() : "id";
         String direction = criteria.sortDirection() != null ? criteria.sortDirection().toUpperCase() : "DESC";
@@ -92,7 +94,8 @@ public class FeedService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         Page<PostEntity> entityPage = postRepository.findAll(spec, pageable);
-        logger.info("Post Page: {}", entityPage.getContent());
+
+        log.info("Post Page: {}", entityPage.getContent());
 
         List<FetchPostsDto> dtoList = entityPage.getContent().stream()
                 .map(post -> {

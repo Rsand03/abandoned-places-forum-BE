@@ -10,6 +10,7 @@ import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.feed.CommentRepository;
 import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -39,6 +41,8 @@ public class CommentService {
         commentEntity.setCreatedAt(LocalDateTime.now());
 
         CommentEntity savedComment = commentRepository.save(commentEntity);
+
+        log.info("Comment {} uploaded by {}", commentEntity.getBody(), commentEntity.getCreatedBy());
 
         return commentMapper.toDto(savedComment);
     }
