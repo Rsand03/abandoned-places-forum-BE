@@ -1,21 +1,31 @@
 package ee.taltech.iti0302project.test.service.profile;
 
+import ee.taltech.iti0302project.app.criteria.UserCriteria;
 import ee.taltech.iti0302project.app.dto.mapper.user.UserMapper;
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
+import ee.taltech.iti0302project.app.dto.profile.UserDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
+import ee.taltech.iti0302project.app.pagination.PageResponse;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.service.profile.ProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,8 +58,10 @@ class ProfileServiceTest {
         userId = UUID.randomUUID();
         userEntity = new UserEntity();
         userEntity.setId(userId);
+        userEntity.setUsername("John");
         userEntity.setEmail("test@example.com");
         userEntity.setPassword("password123");
+        userEntity.setRole("admin");
 
         userProfileDto = UserProfileDto.builder()
                 .email(userEntity.getEmail())
@@ -178,5 +190,148 @@ class ProfileServiceTest {
         });
         assertEquals(ProfileService.USER_NOT_FOUND_MSG, exception.getMessage());
     }
+
+    @Test
+    void findUsers_success() {
+        // Given
+        UserCriteria criteria = new UserCriteria(
+                null,
+                "john",
+                null,
+                null,
+                null,
+                0,
+                10
+        );
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<UserEntity> userPage = mock(Page.class);
+        List<UserEntity> userEntities = List.of(userEntity);
+
+        given(userRepository.findAll(any(Specification.class), eq(pageable))).willReturn(userPage);
+        given(userPage.getContent()).willReturn(userEntities);
+        given(userPage.getTotalElements()).willReturn(1L);
+        given(userMapper.toDtoList(userEntities)).willReturn(List.of(UserDto.builder().username("John").build()));
+
+        // When
+        PageResponse<UserDto> result = profileService.findUsers(criteria);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.totalElements());
+        assertEquals(1, result.content().size());
+        assertEquals("John", result.content().getFirst().getUsername());
+
+        verify(userRepository, times(1)).findAll(any(Specification.class), eq(pageable));
+    }
+
+    @Test
+    void findUsers_noResults() {
+        // Given
+        UserCriteria criteria = new UserCriteria(
+                null,
+                "nonexistent",
+                null,
+                null,
+                null,
+                0,
+                10
+        );
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<UserEntity> userPage = mock(Page.class);
+        List<UserEntity> userEntities = List.of();
+
+        given(userRepository.findAll(any(Specification.class), eq(pageable))).willReturn(userPage);
+        given(userPage.getContent()).willReturn(userEntities);
+        given(userPage.getTotalElements()).willReturn(0L);
+
+        // When
+        PageResponse<UserDto> result = profileService.findUsers(criteria);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(0, result.totalElements());
+        assertTrue(result.content().isEmpty());
+
+        ArgumentCaptor<Specification<UserEntity>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        verify(userRepository, times(1)).findAll(specCaptor.capture(), eq(pageable));
+
+        Specification<UserEntity> capturedSpec = specCaptor.getValue();
+        assertNotNull(capturedSpec);
+    }
+
+    @Test
+    void findUsers_invalidCriteria() {
+        // Given
+        UserCriteria criteria = new UserCriteria(
+                null,
+                null,
+                "invalidRole",
+                null,
+                null,
+                0,
+                10
+        );
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<UserEntity> userPage = mock(Page.class);
+        List<UserEntity> userEntities = List.of();
+
+        given(userRepository.findAll(any(Specification.class), eq(pageable))).willReturn(userPage);
+        given(userPage.getContent()).willReturn(userEntities);
+        given(userPage.getTotalElements()).willReturn(0L);
+
+        // When
+        PageResponse<UserDto> result = profileService.findUsers(criteria);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(0, result.totalElements());
+        assertTrue(result.content().isEmpty());
+
+        ArgumentCaptor<Specification<UserEntity>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        verify(userRepository, times(1)).findAll(specCaptor.capture(), eq(pageable));
+
+        Specification<UserEntity> capturedSpec = specCaptor.getValue();
+        assertNotNull(capturedSpec);
+    }
+
+    @Test
+    void findUsers_specificationTest() {
+        // Given
+        UserCriteria criteria = new UserCriteria(
+                null,
+                "John",
+                "admin",
+                null,
+                null,
+                0,
+                10
+        );
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<UserEntity> userPage = mock(Page.class);
+        List<UserEntity> userEntities = List.of(userEntity);
+
+        given(userRepository.findAll(any(Specification.class), eq(pageable))).willReturn(userPage);
+        given(userPage.getContent()).willReturn(userEntities);
+        given(userPage.getTotalElements()).willReturn(1L);
+        given(userMapper.toDtoList(userEntities)).willReturn(List.of(UserDto.builder().username("John").role("admin").build()));
+
+        // When
+        PageResponse<UserDto> result = profileService.findUsers(criteria);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.totalElements());
+        assertEquals(1, result.content().size());
+        assertEquals("John", result.content().getFirst().getUsername());
+        assertEquals("admin", result.content().getFirst().getRole());
+
+        verify(userRepository, times(1)).findAll(any(Specification.class), eq(pageable));
+    }
+
 }
 
