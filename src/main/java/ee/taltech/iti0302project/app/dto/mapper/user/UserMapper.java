@@ -1,6 +1,6 @@
 package ee.taltech.iti0302project.app.dto.mapper.user;
 
-import ee.taltech.iti0302project.app.dto.UserDto;
+import ee.taltech.iti0302project.app.dto.profile.UserDto;
 import ee.taltech.iti0302project.app.dto.auth.AuthResponseDto;
 import ee.taltech.iti0302project.app.dto.auth.UserRegisterDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
