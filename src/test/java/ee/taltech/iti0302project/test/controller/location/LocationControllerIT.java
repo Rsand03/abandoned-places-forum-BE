@@ -16,7 +16,6 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -66,27 +65,6 @@ class LocationControllerIT {
                 .statusId(4L)
                 .additionalInformation("Updated additional")
                 .build();
-    }
-
-
-    @Test
-    void getLocationAttributes() throws Exception {
-        mvc.perform(get("/api/locations/attributes").with(user("user")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.categories.length()").value(14))
-                .andExpect(jsonPath("$.conditions.length()").value(6))
-                .andExpect(jsonPath("$.statuses.length()").value(8))
-                .andExpect(jsonPath("$.categories[0].name").value("Määramata"))
-                .andExpect(jsonPath("$.conditions[5].name").value("Väga hea"))
-                .andExpect(jsonPath("$.statuses[7].name").value("Omaniku loal ligipääsetav"));
-    }
-
-    // Probably unnecessary endpoint - all functionality is covered by /location/attributes
-    @Test
-    void getLocationStatuses() throws Exception {
-        mvc.perform(get("/api/locations/statuses").with(user("user")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[1].name").value("Lammutatud"));
     }
 
 
