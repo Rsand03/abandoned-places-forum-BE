@@ -49,12 +49,11 @@ public class FeedService {
                 .orElseThrow(() -> new ApplicationException("User not found"));
 
         PostEntity entity = postMapper.toEntity(createdPost);
+        entity.setLocation(locationRepository.findById(createdPost.getLocationId()).orElseThrow(
+                () -> new ApplicationException("Invalid location id"))
+        );
 
-        if (entity.getLocationId() == null) {
-            throw new ApplicationException("Location is not added");
-        }
-
-        LocationEntity location = locationRepository.findById(entity.getLocationId())
+        LocationEntity location = locationRepository.findById(entity.getLocation().getId())
                 .orElseThrow(() -> new ApplicationException("Location not found"));
 
         if (!location.isPublic()) {
@@ -93,7 +92,7 @@ public class FeedService {
 
         List<FetchPostsDto> dtoList = entityPage.getContent().stream()
                 .map(post -> {
-                    LocationEntity locationEntity = locationRepository.findById(post.getLocationId())
+                    LocationEntity locationEntity = locationRepository.findById(post.getLocation().getId())
                             .orElseThrow(() -> new ApplicationException("Location not found"));
 
                     FetchPostsDto dto = fetchPostsMapper.toDto(post);
@@ -144,7 +143,7 @@ public class FeedService {
                 .orElseThrow(() -> new ApplicationException("Post not found"));
 
         for (UpvoteEntity upvote : post.getUpvotes()) {
-            if (upvote.getUserId().equals(userId)) {
+            if (upvote.getUser().getId().equals(userId)) {
                 return true;
             }
         }
