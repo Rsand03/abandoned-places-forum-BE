@@ -26,15 +26,4 @@ public class UserSpecifications {
         };
     }
 
-    public static Specification<UserEntity> sortBy(String field, boolean ascending) {
-        return (root, query, cb) -> {
-            if (field == null || field.isEmpty()) return null;
-            if (ascending) {
-                query.orderBy(cb.asc(root.get(field)));
-            } else {
-                query.orderBy(cb.desc(root.get(field)));
-            }
-            return null; // Sorting does not directly contribute to filtering.
-        };
-    }
 }

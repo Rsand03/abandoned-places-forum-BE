@@ -1,7 +1,6 @@
 package ee.taltech.iti0302project.app.controller.profile;
 
 import ee.taltech.iti0302project.app.criteria.UserCriteria;
-import ee.taltech.iti0302project.app.dto.profile.UserDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
@@ -86,7 +85,7 @@ public class ProfileController {
     @Operation(summary = "Retrieve users by requested criteria")
     @ApiResponse(responseCode = "200", description = "Users retrieved by criteria")
     @GetMapping("allUsers")
-    public ResponseEntity<PageResponse<UserDto>> findUsers(@Valid @ModelAttribute UserCriteria criteria) {
+    public ResponseEntity<PageResponse<UserProfileDto>> findUsers(@Valid @ModelAttribute UserCriteria criteria) {
         return ResponseEntity.ok(userService.findUsers(criteria));
     }
 

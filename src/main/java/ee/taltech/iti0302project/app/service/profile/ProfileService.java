@@ -1,7 +1,6 @@
 package ee.taltech.iti0302project.app.service.profile;
 
 import ee.taltech.iti0302project.app.criteria.UserCriteria;
-import ee.taltech.iti0302project.app.dto.profile.UserDto;
 import ee.taltech.iti0302project.app.dto.mapper.user.UserMapper;
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
@@ -75,7 +74,7 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<UserDto> findUsers(UserCriteria criteria) {
+    public PageResponse<UserProfileDto> findUsers(UserCriteria criteria) {
         Specification<UserEntity> spec = addSpecifications(criteria);
 
         log.info("Search Criteria: {}", criteria);
@@ -92,7 +91,7 @@ public class ProfileService {
 
         log.info("User Page: {}", entityPage.getContent());
 
-        List<UserDto> dtoList = userMapper.toDtoList(entityPage.getContent());
+        List<UserProfileDto> dtoList = userMapper.toUserProfileDtoList(entityPage.getContent());
 
         return new PageResponse<>(
                 dtoList,
@@ -116,12 +115,6 @@ public class ProfileService {
 
         if (criteria.role() != null && !criteria.role().isEmpty()) {
             spec = spec.and(UserSpecifications.hasRole(criteria.role()));
-        }
-
-        if (criteria.sortBy() != null && !criteria.sortBy().isEmpty() &&
-                criteria.sortDirection() != null && !criteria.sortDirection().isEmpty()) {
-            boolean isAscending = criteria.sortDirection().equalsIgnoreCase("asc");
-            spec = spec.and(UserSpecifications.sortBy(criteria.sortBy(), isAscending));
         }
 
         return spec;

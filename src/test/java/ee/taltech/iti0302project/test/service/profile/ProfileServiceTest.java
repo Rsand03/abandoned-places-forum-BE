@@ -196,7 +196,7 @@ class ProfileServiceTest {
         // Given
         UserCriteria criteria = new UserCriteria(
                 null,
-                "john",
+                "John",
                 null,
                 null,
                 null,
@@ -211,10 +211,10 @@ class ProfileServiceTest {
         given(userRepository.findAll(any(Specification.class), eq(pageable))).willReturn(userPage);
         given(userPage.getContent()).willReturn(userEntities);
         given(userPage.getTotalElements()).willReturn(1L);
-        given(userMapper.toDtoList(userEntities)).willReturn(List.of(UserDto.builder().username("John").build()));
+        given(userMapper.toUserProfileDtoList(userEntities)).willReturn(List.of(UserProfileDto.builder().username("John").build()));
 
         // When
-        PageResponse<UserDto> result = profileService.findUsers(criteria);
+        PageResponse<UserProfileDto> result = profileService.findUsers(criteria);
 
         // Then
         assertNotNull(result);
@@ -248,7 +248,7 @@ class ProfileServiceTest {
         given(userPage.getTotalElements()).willReturn(0L);
 
         // When
-        PageResponse<UserDto> result = profileService.findUsers(criteria);
+        PageResponse<UserProfileDto> result = profileService.findUsers(criteria);
 
         // Then
         assertNotNull(result);
@@ -284,7 +284,7 @@ class ProfileServiceTest {
         given(userPage.getTotalElements()).willReturn(0L);
 
         // When
-        PageResponse<UserDto> result = profileService.findUsers(criteria);
+        PageResponse<UserProfileDto> result = profileService.findUsers(criteria);
 
         // Then
         assertNotNull(result);
@@ -318,10 +318,11 @@ class ProfileServiceTest {
         given(userRepository.findAll(any(Specification.class), eq(pageable))).willReturn(userPage);
         given(userPage.getContent()).willReturn(userEntities);
         given(userPage.getTotalElements()).willReturn(1L);
-        given(userMapper.toDtoList(userEntities)).willReturn(List.of(UserDto.builder().username("John").role("admin").build()));
+        given(userMapper.toUserProfileDtoList(userEntities)).willReturn(
+                List.of(UserProfileDto.builder().username("John").role("admin").build()));
 
         // When
-        PageResponse<UserDto> result = profileService.findUsers(criteria);
+        PageResponse<UserProfileDto> result = profileService.findUsers(criteria);
 
         // Then
         assertNotNull(result);

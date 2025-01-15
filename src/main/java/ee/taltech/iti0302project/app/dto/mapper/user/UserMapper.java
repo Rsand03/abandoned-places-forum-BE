@@ -23,6 +23,8 @@ public interface UserMapper {
 
     UserProfileDto toUserProfileDto(UserEntity user);
 
+    List<UserProfileDto> toUserProfileDtoList(List<UserEntity> usersList);
+
     @Mapping(source = "id", target = "userId")
     AuthResponseDto toAuthResponseDto(UserEntity userEntity);
 }
