@@ -11,6 +11,7 @@ import ee.taltech.iti0302project.app.repository.feed.CommentRepository;
 import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +25,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
+    @Transactional
     public CommentDto createComment(CommentDto commentDto) {
         PostEntity post = postRepository.findById(commentDto.getPostId())
                 .orElseThrow(() -> new ApplicationException("Post not found"));
@@ -41,6 +43,7 @@ public class CommentService {
         return commentMapper.toDto(savedComment);
     }
 
+    @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByPostId(Integer postId) {
         List<CommentEntity> comments = commentRepository.findByPostId(postId);
         return commentMapper.toDtoList(comments);

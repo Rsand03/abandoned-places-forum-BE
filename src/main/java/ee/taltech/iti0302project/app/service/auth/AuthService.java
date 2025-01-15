@@ -30,6 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
 
+    @Transactional
     public AuthResponseDto registerUser(UserRegisterDto userRegisterDto) {
         log.info("Registering user with username: {}", userRegisterDto.getUsername());
 

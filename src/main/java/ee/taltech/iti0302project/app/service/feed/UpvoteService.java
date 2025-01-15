@@ -9,6 +9,7 @@ import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.repository.feed.UpvoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class UpvoteService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
+    @Transactional
     public UpvoteDto toggleUpvote(UpvoteDto upvoteDto) {
         boolean hasAlreadyUpvoted = upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId());
 
@@ -40,6 +42,7 @@ public class UpvoteService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<UpvoteDto> getUpvotesByPostId(Long postId) {
         List<UpvoteEntity> upvotes = upvoteRepository.findByPostId(postId);
         return upvoteMapper.toDtoList(upvotes);

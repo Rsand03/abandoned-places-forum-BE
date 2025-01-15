@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,6 +45,7 @@ public class FeedService {
     private final LocationRepository locationRepository;
     private final LocationMapper locationMapper;
 
+    @Transactional
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
                 .orElseThrow(() -> new ApplicationException("User not found"));
@@ -68,12 +70,14 @@ public class FeedService {
         return postMapper.toDto(entity);
     }
 
+    @Transactional(readOnly = true)
     public Optional<FetchPostsDto> getPostById(Long postId) {
         Optional<PostEntity> postEntityOptional = postRepository.findById(postId);
 
         return postEntityOptional.map(fetchPostsMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria, UUID currentUserId) {
         Specification<PostEntity> spec = addSpecifications(criteria);
 

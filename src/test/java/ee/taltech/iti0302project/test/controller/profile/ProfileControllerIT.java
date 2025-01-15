@@ -38,9 +38,6 @@ public class ProfileControllerIT {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    private UserRepository userRepository;
-
     @BeforeEach
     void authTokenSetup() {
         UserLoginDto loginDto = UserLoginDto.builder()
