@@ -9,7 +9,7 @@ import ee.taltech.iti0302project.app.exception.ConflictException;
 import ee.taltech.iti0302project.app.exception.ForbiddenException;
 import ee.taltech.iti0302project.app.exception.NotFoundException;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
-import ee.taltech.iti0302project.app.service.profile.UserPointsService;
+import ee.taltech.iti0302project.app.service.user.UserPointsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

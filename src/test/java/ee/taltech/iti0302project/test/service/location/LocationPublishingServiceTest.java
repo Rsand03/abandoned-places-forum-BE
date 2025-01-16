@@ -10,7 +10,7 @@ import ee.taltech.iti0302project.app.exception.ForbiddenException;
 import ee.taltech.iti0302project.app.exception.NotFoundException;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
 import ee.taltech.iti0302project.app.service.location.LocationPublishingService;
-import ee.taltech.iti0302project.app.service.profile.UserPointsService;
+import ee.taltech.iti0302project.app.service.user.UserPointsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,8 +41,8 @@ class LocationPublishingServiceTest {
     private static final double LAT_60_METERS_AWAY = 59.000411D;
 
     private static final UUID PUBLISHER_UUID = UUID.fromString("68ce8219-45fd-4c01-8ba5-7b84d39d7617");
-    public static final long MAX_PUBLIC_LOCATIONS = 1000L;
-    public static final int POINTS_FOR_PUBLISHING_LOCATION = 5;
+    private static final long MAX_PUBLIC_LOCATIONS = 1000L;
+    private static final int POINTS_FOR_PUBLISHING_LOCATION = 5;
 
     @Mock
     private LocationRepository locationRepository;

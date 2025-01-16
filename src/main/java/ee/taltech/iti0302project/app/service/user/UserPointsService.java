@@ -1,4 +1,4 @@
-package ee.taltech.iti0302project.app.service.profile;
+package ee.taltech.iti0302project.app.service.user;
 
 import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import ee.taltech.iti0302project.app.enums.user.UserPointActions;

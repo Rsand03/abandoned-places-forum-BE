@@ -7,6 +7,7 @@ import ee.taltech.iti0302project.app.service.location.LocationPublishingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,7 +31,7 @@ public class LocationPublishingController {
     @Operation(summary = "Publish a private location and set a minimum points requirement for other users to see it")
     @ApiResponse(responseCode = "200", description = "Location published successfully")
     @PatchMapping("/publishLocation")
-    public ResponseEntity<LocationResponseDto> publishLocation(@RequestBody LocationPublishDto locationPublishDto,
+    public ResponseEntity<LocationResponseDto> publishLocation(@Valid @RequestBody LocationPublishDto locationPublishDto,
                                                                @RequestHeader("Authorization") String authHeader) {
         UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         locationPublishDto.setPublisherId(userId);
