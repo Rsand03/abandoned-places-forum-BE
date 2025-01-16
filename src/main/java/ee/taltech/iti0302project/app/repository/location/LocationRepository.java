@@ -12,6 +12,8 @@ public interface LocationRepository extends JpaRepository<LocationEntity, UUID>,
 
     long countByIsPublicFalseAndCreatedBy(UUID createdBy);
 
+    long countByIsPublicTrue();
+
     List<LocationEntity> findAllByIsPublicTrue();
 
 }

@@ -4,19 +4,16 @@ import ee.taltech.iti0302project.app.dto.location.LocationPublishDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
-import ee.taltech.iti0302project.app.entity.user.UserEntity;
-import ee.taltech.iti0302project.app.exception.ApplicationException;
+import ee.taltech.iti0302project.app.enums.user.UserPointActions;
 import ee.taltech.iti0302project.app.exception.ConflictException;
 import ee.taltech.iti0302project.app.exception.ForbiddenException;
-import ee.taltech.iti0302project.app.repository.UserRepository;
+import ee.taltech.iti0302project.app.exception.NotFoundException;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
+import ee.taltech.iti0302project.app.service.profile.UserPointsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Transactional
@@ -24,25 +21,24 @@ import java.util.UUID;
 @Slf4j
 public class LocationPublishingService {
 
-    public static final int MIN_DISTANCE_BETWEEN_PUBLIC_LOCATIONS = 50;
-    public static final int USER_POINTS_FOR_PUBLISHING_A_LOCATION = 5;
+    public static final Integer MIN_DISTANCE_BETWEEN_PUBLIC_LOCATIONS = 50;
+    public static final int MAX_PUBLIC_LOCATIONS = 1000;
 
     private final LocationRepository locationRepository;
-    private final UserRepository userRepository;
+    private final UserPointsService userPointsService;
     private final LocationMapper locationMapper;
 
 
-    public Optional<LocationResponseDto> publishLocation(LocationPublishDto locationPublishDto, UUID createdBy) {
+    public LocationResponseDto publishLocation(LocationPublishDto publishDto) {
 
-        LocationEntity locationToPublish = locationRepository.findById(locationPublishDto.getLocationId())
-                .orElseThrow(() -> new ApplicationException("Location not found"));
+        LocationEntity locationToPublish = locationRepository.findById(publishDto.getLocationId())
+                .orElseThrow(() -> new NotFoundException("Location not found"));
+
         if (locationToPublish.isPublic()) {
             throw new ConflictException("Location already public");
-        }
-
-        UserEntity userEntity = userRepository.findById(createdBy)
-                .orElseThrow(() -> new ApplicationException("User not found"));
-        if (userEntity.getId().equals(locationToPublish.getCreatedBy())) {
+        } else if (locationRepository.countByIsPublicTrue() >= MAX_PUBLIC_LOCATIONS) {
+            throw new ConflictException("Too many public locations");
+        } else if (!publishDto.getPublisherId().equals(locationToPublish.getCreatedBy())) {
             throw new ForbiddenException("Location is not created by the user");
         }
 
@@ -54,18 +50,25 @@ public class LocationPublishingService {
                     publicLocation.getLon()
             );
             if (distance < MIN_DISTANCE_BETWEEN_PUBLIC_LOCATIONS) {
-                throw new ConflictException("Location is less than 50 meters away from another location.");
+                throw new ConflictException(
+                        String.format("Location is less than %d meters away from another public location.",
+                        MIN_DISTANCE_BETWEEN_PUBLIC_LOCATIONS)
+                );
             }
         }
 
         locationToPublish.setPublic(true);
-        locationToPublish.setMinRequiredPointsToView(locationPublishDto.getMinRequiredPointsToView());
+        locationToPublish.setMinRequiredPointsToView(publishDto.getMinRequiredPointsToView());
         LocationEntity publishedLocation = locationRepository.save(locationToPublish);
 
-        userEntity.setPoints(userEntity.getPoints() + USER_POINTS_FOR_PUBLISHING_A_LOCATION);
-        userRepository.save(userEntity);
+        Integer earnedPoints = userPointsService.giveUserPoints(
+                UserPointActions.PUBLISH_LOCATION, publishDto.getPublisherId()
+        );
 
-        return Optional.of(locationMapper.toResponseDto(publishedLocation));
+        log.info("User {} published location named {} and earned {} points",
+                publishDto.getPublisherId(), publishedLocation.getName(), earnedPoints);
+
+        return locationMapper.toResponseDto(publishedLocation);
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -76,7 +79,7 @@ public class LocationPublishingService {
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return EARTH_RADIUS_KM * c * 1000;
+        return EARTH_RADIUS_KM * c * MAX_PUBLIC_LOCATIONS;
     }
 
 }

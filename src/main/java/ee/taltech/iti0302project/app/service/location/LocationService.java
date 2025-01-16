@@ -8,6 +8,7 @@ import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.exception.ConflictException;
+import ee.taltech.iti0302project.app.exception.NotFoundException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationBookmarkRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
@@ -93,8 +94,8 @@ public class LocationService {
     // Variant 1: no optional streams; specific error messages; easier to unit-test
     public LocationResponseDto createLocation(LocationCreateDto dto) {
 
-        if (dto.getCreatedBy() == null || !userRepository.existsById(dto.getCreatedBy())) {
-            throw new ApplicationException("Invalid user");
+        if (!userRepository.existsById(dto.getCreatedBy())) {
+            throw new NotFoundException("No such user");
         } else if (locationRepository.countByIsPublicFalseAndCreatedBy(dto.getCreatedBy()) >= PRIVATE_LOCATIONS_PER_USER) {
             throw new ConflictException("User exceeded maximum amount of private locations");
         }  else if (dto.getSubCategoryIds().contains(dto.getMainCategoryId())) {
@@ -108,11 +109,11 @@ public class LocationService {
         newLocationEntity.setCreatedBy(dto.getCreatedBy());
         newLocationEntity.setSubCategories(locationCategoryRepository.findAllById(dto.getSubCategoryIds()));
         newLocationEntity.setMainCategory(locationCategoryRepository.findById(dto.getMainCategoryId())
-                .orElseThrow(() -> new ApplicationException("Invalid main category id")));
+                .orElseThrow(() -> new NotFoundException("No such main category id")));
         newLocationEntity.setCondition(locationConditionRepository.findById(dto.getConditionId())
-                .orElseThrow(() -> new ApplicationException("Invalid condition id")));
+                .orElseThrow(() -> new NotFoundException("No such condition id")));
         newLocationEntity.setStatus(locationStatusRepository.findById(dto.getStatusId())
-                .orElseThrow(() -> new ApplicationException("Invalid status id")));
+                .orElseThrow(() -> new NotFoundException("No such status id")));
 
         LocationEntity createdEntity = locationRepository.save(newLocationEntity);
 
@@ -125,16 +126,16 @@ public class LocationService {
         return validateLocationEditDto(locationCreateDto)
                 .map(dto -> {
                     LocationEntity prevLocationEntity = locationRepository.findById(dto.getId())
-                            .orElseThrow(() -> new ApplicationException("Invalid location id"));
+                            .orElseThrow(() -> new NotFoundException("No such location"));
 
                     prevLocationEntity.setName(dto.getName());
                     prevLocationEntity.setSubCategories(locationCategoryRepository.findAllById(dto.getSubCategoryIds()));
                     prevLocationEntity.setMainCategory(locationCategoryRepository.findById(dto.getMainCategoryId())
-                            .orElseThrow(() -> new ApplicationException("Invalid main category id")));
+                            .orElseThrow(() -> new NotFoundException("No such main category id")));
                     prevLocationEntity.setCondition(locationConditionRepository.findById(dto.getConditionId())
-                            .orElseThrow(() -> new ApplicationException("Invalid condition id")));
+                            .orElseThrow(() -> new NotFoundException("No such condition id")));
                     prevLocationEntity.setStatus(locationStatusRepository.findById(dto.getStatusId())
-                            .orElseThrow(() -> new ApplicationException("Invalid status id")));
+                            .orElseThrow(() -> new NotFoundException("No such status id")));
                     prevLocationEntity.setAdditionalInformation(dto.getAdditionalInformation());
 
                     LocationEntity editedEntity = locationRepository.save(prevLocationEntity);
@@ -147,7 +148,7 @@ public class LocationService {
 
     private Optional<LocationEditDto> validateLocationEditDto(LocationEditDto locationEditDto) {
         return Optional.of(locationEditDto)
-                .filter(dto -> dto.getEditingUserId() != null && userRepository.existsById(dto.getEditingUserId()))
+                .filter(dto -> userRepository.existsById(dto.getEditingUserId()))
                 .filter(dto -> locationRepository.findById(dto.getId())
                         .filter(location -> location.getCreatedBy().equals(dto.getEditingUserId()))
                         .map(location -> !location.isPublic())

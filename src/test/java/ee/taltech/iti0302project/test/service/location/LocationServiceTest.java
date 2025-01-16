@@ -10,6 +10,7 @@ import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationStatusEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.exception.ConflictException;
+import ee.taltech.iti0302project.app.exception.NotFoundException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationBookmarkRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
@@ -224,21 +225,6 @@ class LocationServiceTest {
     }
 
     @Test
-    void createLocation_nullCreatedBy_errorThrown() {
-        // Given
-        defaultLocationCreateDto.setCreatedBy(null);
-
-        // When
-        Throwable thrown = catchThrowable(() -> locationService.createLocation(defaultLocationCreateDto));
-
-        // Then
-        assertThat(thrown)
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage("Invalid user");
-        then(locationRepository).shouldHaveNoMoreInteractions();
-    }
-
-    @Test
     void createLocation_createdByNotFound_errorThrown() {
         // Given
         given(userRepository.existsById(defaultLocationCreateDto.getCreatedBy())).willReturn(false);
@@ -248,8 +234,8 @@ class LocationServiceTest {
 
         // Then
         assertThat(thrown)
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage("Invalid user");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("No such user");
         then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
@@ -370,8 +356,8 @@ class LocationServiceTest {
 
         // Then
         assertThat(thrown)
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage("Invalid main category id");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("No such main category id");
         then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
@@ -399,8 +385,8 @@ class LocationServiceTest {
 
         // Then
         assertThat(thrown)
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage("Invalid condition id");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("No such condition id");
         then(locationRepository).shouldHaveNoMoreInteractions();
     }
 
@@ -429,8 +415,8 @@ class LocationServiceTest {
 
         // Then
         assertThat(thrown)
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage("Invalid status id");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("No such status id");
         then(locationRepository).shouldHaveNoMoreInteractions();
     }
 

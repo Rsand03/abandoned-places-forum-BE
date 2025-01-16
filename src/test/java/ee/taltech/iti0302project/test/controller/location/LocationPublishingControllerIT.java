@@ -1,7 +1,6 @@
 package ee.taltech.iti0302project.test.controller.location;
 
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
-import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
 import ee.taltech.iti0302project.app.dto.location.LocationPublishDto;
 import ee.taltech.iti0302project.app.service.auth.AuthService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -23,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class LocationPublishControllerIT {
+class LocationPublishingControllerIT {
 
     @Autowired
     private MockMvc mvc;
@@ -47,23 +45,10 @@ class LocationPublishControllerIT {
         adminAdminAuthToken = authService.authenticateUser(loginDto).getToken();
     }
 
-    @BeforeEach
-    void locationEditDtoSetup() {
-        defaultLocationEditDto = LocationEditDto.builder()
-                .id(UUID.fromString("53ce8219-45fd-4c00-8ba5-7b84d29d7617"))
-                .name("Updated")
-                .mainCategoryId(9L)
-                .subCategoryIds(List.of(1L, 2L))
-                .conditionId(4L)
-                .statusId(4L)
-                .additionalInformation("Updated additional")
-                .build();
-    }
-
     @Test
     void publishLocation_error() throws Exception {
         LocationPublishDto invalidLocationCreateDto = LocationPublishDto.builder()
-                .locationId(UUID.fromString("53ce8219-45fd-4c00-8ba5-7b84d29d7617"))
+                .locationId(UUID.fromString("99ce8219-45fd-4c00-8ba5-7b84d29d7617"))
                 .minRequiredPointsToView(5)
                 .build();
 
@@ -71,7 +56,7 @@ class LocationPublishControllerIT {
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(invalidLocationCreateDto))
                         .contentType("application/json")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
 }
