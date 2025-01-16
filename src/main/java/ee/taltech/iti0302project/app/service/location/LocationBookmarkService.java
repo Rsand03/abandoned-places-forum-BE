@@ -5,10 +5,10 @@ import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreat
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationBookmarkMapper;
 import ee.taltech.iti0302project.app.entity.location.*;
+import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationBookmarkRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +45,7 @@ public class LocationBookmarkService {
         validateLocationBookmark(locationBookmarkCreateDto);
 
         LocationEntity locationEntity = locationRepository.findById(locationBookmarkCreateDto.getLocationId())
-                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
+                .orElseThrow(() -> new ApplicationException("Location not found"));
 
         LocationBookmarkEntity bookmarkEntity = locationBookmarkMapper.toEntity(locationBookmarkCreateDto);
 
@@ -58,12 +58,12 @@ public class LocationBookmarkService {
 
     private void validateLocationBookmark(LocationBookmarkCreateDto locationBookmarkCreateDto) {
         if (!userRepository.existsById(locationBookmarkCreateDto.getCreatedByUserUuid())) {
-            throw new EntityNotFoundException("User not found with ID: "
+            throw new ApplicationException("User not found with ID: "
                     + locationBookmarkCreateDto.getCreatedByUserUuid());
         }
 
         if (!locationRepository.existsById(locationBookmarkCreateDto.getLocationId())) {
-            throw new EntityNotFoundException("Location not found with ID: "
+            throw new ApplicationException("Location not found with ID: "
                     + locationBookmarkCreateDto.getLocationId());
         }
     }
@@ -71,13 +71,13 @@ public class LocationBookmarkService {
     @Transactional
     public void deleteLocationBookmark(UUID userId, UUID locationId, BookmarkType bookmarkType) {
         LocationEntity locationEntity = locationRepository.findById(locationId)
-                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
+                .orElseThrow(() -> new ApplicationException("Location not found"));
 
         boolean exists = locationBookmarkRepository.existsByCreatedByAndLocationAndType(userId, locationEntity,
                 bookmarkType.getLabel());
 
         if (!exists) {
-            throw new EntityNotFoundException("Bookmark not found for locationId: " + locationId
+            throw new ApplicationException("Bookmark not found for locationId: " + locationId
                     + " and userId: " + userId + " and type: " + bookmarkType);
         }
 
