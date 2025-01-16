@@ -64,8 +64,9 @@ class LocationBookmarkServiceTest {
                 .type(BookmarkType.SUUR_RISK)
                 .build();
 
-        locationBookmarkDto = new LocationBookmarkDto();
-        locationBookmarkDto.setType(BookmarkType.SUUR_RISK.getLabel());
+        locationBookmarkDto = LocationBookmarkDto.builder()
+                .type(BookmarkType.SUUR_RISK.getLabel())
+                .build();
 
         locationBookmarkEntity = new LocationBookmarkEntity();
         locationBookmarkEntity.setLocation(locationEntity);
