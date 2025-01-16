@@ -22,6 +22,7 @@ public class AuthController {
 
     @Operation(summary = "Register a new user")
     @ApiResponse(responseCode = "200", description = "User registered and jwt retrieved")
+    @ApiResponse(responseCode = "400", description = "Invalid userRegisterDto")
     @PostMapping("/public/auth/register")
     public ResponseEntity<AuthResponseDto> registerUser(@Valid @RequestBody UserRegisterDto userRegisterDto) {
 
@@ -32,6 +33,7 @@ public class AuthController {
 
     @Operation(summary = "Log in by retrieving jwt")
     @ApiResponse(responseCode = "200", description = "Jwt retrieved")
+    @ApiResponse(responseCode = "400", description = "Invalid userLoginDto")
     @PostMapping("/public/auth/login")
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto) {
         AuthResponseDto response = authService.authenticateUser(userLoginDto);

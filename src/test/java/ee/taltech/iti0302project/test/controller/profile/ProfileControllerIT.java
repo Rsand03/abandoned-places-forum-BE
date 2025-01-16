@@ -1,12 +1,9 @@
 package ee.taltech.iti0302project.test.controller.profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.taltech.iti0302project.app.criteria.UserCriteria;
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
-import ee.taltech.iti0302project.app.entity.user.UserEntity;
-import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.service.auth.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,14 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class ProfileControllerIT {
+class ProfileControllerIT {
 
     @Autowired
     private MockMvc mvc;

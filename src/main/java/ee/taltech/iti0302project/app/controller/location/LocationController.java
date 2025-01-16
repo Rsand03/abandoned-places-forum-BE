@@ -39,6 +39,7 @@ public class LocationController {
     @Operation(summary = "Retrieve locations matching criteria, defaulting to user-created locations and" +
             " public locations viewable with user's points")
     @ApiResponse(responseCode = "200", description = "Retrieved locations or empty list")
+    @ApiResponse(responseCode = "400", description = "Invalid criteria")
     @GetMapping("")
     public ResponseEntity<List<LocationResponseDto>> getFilteredLocations(@Valid @ParameterObject LocationCriteria criteria,
                                                                           @RequestHeader("Authorization") String authHeader) {
@@ -51,6 +52,7 @@ public class LocationController {
 
     @Operation(summary = "Create new private location")
     @ApiResponse(responseCode = "200", description = "Location created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid locationCreateDto")
     @PostMapping("")
     public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationCreateDto locationCreateDto,
                                                               @RequestHeader("Authorization") String authHeader) {
@@ -61,6 +63,8 @@ public class LocationController {
 
     @Operation(summary = "Edit an existing private location of the user")
     @ApiResponse(responseCode = "200", description = "Location edited successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid locationEditDto")
+    @ApiResponse(responseCode = "403", description = "Not allowed to modify the location")
     @PatchMapping("")
     public ResponseEntity<LocationResponseDto> editLocation(@Valid @RequestBody LocationEditDto locationEditDto,
                                                             @RequestHeader("Authorization") String authHeader) {
@@ -70,7 +74,8 @@ public class LocationController {
     }
 
     @Operation(summary = "Delete an existing private location of the user")
-    @ApiResponse(responseCode = "200", description = "Location deleted successfully")
+    @ApiResponse(responseCode = "204", description = "Location deleted successfully")
+    @ApiResponse(responseCode = "404", description = "No such location")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLocation(@PathVariable UUID id,
                                                @RequestHeader("Authorization") String authHeader) {
@@ -81,6 +86,7 @@ public class LocationController {
 
     @Operation(summary = "Retrieve a location based on id")
     @ApiResponse(responseCode = "200", description = "Retrieved location")
+    @ApiResponse(responseCode = "404", description = "No such location")
     @GetMapping("/{id}")
     public ResponseEntity<LocationResponseDto> getLocationById(@PathVariable UUID id,
                                                                @RequestHeader("Authorization") String authHeader) {

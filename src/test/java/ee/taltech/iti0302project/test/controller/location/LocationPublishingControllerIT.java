@@ -68,7 +68,7 @@ class LocationPublishingControllerIT {
 
     @Test
     void publishLocation_success() throws Exception {
-        mvc.perform((patch("/api/locations/publishLocation")
+        mvc.perform((patch("/api/locations/publish")
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(defaultPublishDto))
                         .contentType("application/json")))
@@ -84,7 +84,7 @@ class LocationPublishingControllerIT {
         Integer prevPoints = userEntity1.getPoints();
 
 
-        mvc.perform((patch("/api/locations/publishLocation")
+        mvc.perform((patch("/api/locations/publish")
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(defaultPublishDto))
                         .contentType("application/json")))
@@ -103,7 +103,7 @@ class LocationPublishingControllerIT {
     void publishLocation_nullLocationId_badRequest() throws Exception {
         defaultPublishDto.setLocationId(null);
 
-        mvc.perform((patch("/api/locations/publishLocation")
+        mvc.perform((patch("/api/locations/publish")
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(defaultPublishDto))
                         .contentType("application/json")))
@@ -114,7 +114,7 @@ class LocationPublishingControllerIT {
     void publishLocation_nullMinRequiredPointsToView_badRequest() throws Exception {
         defaultPublishDto.setMinRequiredPointsToView(null);
 
-        mvc.perform((patch("/api/locations/publishLocation")
+        mvc.perform((patch("/api/locations/publish")
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(defaultPublishDto))
                         .contentType("application/json")))
@@ -125,7 +125,7 @@ class LocationPublishingControllerIT {
     void publishLocation_tooHighMinRequiredPointsToView_badRequest() throws Exception {
         defaultPublishDto.setMinRequiredPointsToView(501);
 
-        mvc.perform((patch("/api/locations/publishLocation")
+        mvc.perform((patch("/api/locations/publish")
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .content(objectMapper.writeValueAsString(defaultPublishDto))
                         .contentType("application/json")))
@@ -134,7 +134,7 @@ class LocationPublishingControllerIT {
 
     @Test
     void publishLocation_locationOfOtherUser_forbidden() throws Exception {
-        mvc.perform((patch("/api/locations/publishLocation")
+        mvc.perform((patch("/api/locations/publish")
                         .header("Authorization", "Bearer " + adminAdminAuthToken)
                         .content(objectMapper.writeValueAsString(defaultPublishDto))
                         .contentType("application/json")))

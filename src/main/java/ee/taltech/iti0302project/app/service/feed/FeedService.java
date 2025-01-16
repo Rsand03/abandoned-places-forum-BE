@@ -35,6 +35,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 @Slf4j
 public class FeedService {
 
@@ -45,7 +46,6 @@ public class FeedService {
     private final LocationRepository locationRepository;
     private final LocationMapper locationMapper;
 
-    @Transactional
     public CreatePostDto createPost(CreatePostDto createdPost) {
         UserEntity user = userRepository.findById(createdPost.getUserId())
                 .orElseThrow(() -> new ApplicationException("User not found"));

@@ -30,6 +30,8 @@ public class LocationPublishingController {
 
     @Operation(summary = "Publish a private location and set a minimum points requirement for other users to see it")
     @ApiResponse(responseCode = "200", description = "Location published successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid locationPublishDto")
+    @ApiResponse(responseCode = "403", description = "Not allowed to modify the location")
     @PatchMapping("/publish")
     public ResponseEntity<LocationResponseDto> publishLocation(@Valid @RequestBody LocationPublishDto locationPublishDto,
                                                                @RequestHeader("Authorization") String authHeader) {
