@@ -11,9 +11,9 @@
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
 
-    <changeSet id="1" author="16-11-2024-rasand">
+    <changeSet id="1" author="16-01-2025-rasand">
 
-        <!-- User user public loc 1 -->
+        <!-- User user public location 1 -->
         <insert tableName="locations">
             <column name="id" value="a59b74f9-d7fc-4c8e-bf47-2b060276421e"/>
             <column name="name" value="User user public loc 1"/>
@@ -30,7 +30,7 @@
             <column name="created_at" value="2024-11-16T10:00:00"/>
         </insert>
 
-        <!-- User user public loc 2 -->
+        <!-- User user public location 2 -->
         <insert tableName="locations">
             <column name="id" value="a7fb00a2-6b6f-4fd2-985d-6f9aed8bdd81"/>
             <column name="name" value="User user public loc 2"/>
@@ -47,7 +47,7 @@
             <column name="created_at" value="2024-11-16T10:00:00"/>
         </insert>
 
-        <!-- User user private loc 1 which is pending approval -->
+        <!-- User user private location 1 which is pending approval -->
         <insert tableName="locations">
             <column name="id" value="53ce8219-45fd-4c00-8ba5-7b84d29d7617"/>
             <column name="name" value="User user private loc 1"/>
@@ -64,7 +64,7 @@
             <column name="created_at" value="2024-11-16T10:15:00"/>
         </insert>
 
-        <!-- Admin admin private loc 1 -->
+        <!-- Admin admin private location 1 -->
         <insert tableName="locations">
             <column name="id" value="d43d3e9b-f1c3-467e-b70d-b9906d8507f2"/>
             <column name="name" value="Admin admin private loc 1"/>
@@ -81,7 +81,7 @@
             <column name="created_at" value="2024-11-16T10:15:00"/>
         </insert>
 
-        <!-- Admin admin public loc 1 -->
+        <!-- Admin admin public location 1 -->
         <insert tableName="locations">
             <column name="id" value="f3b814b6-cc3f-448c-bb13-2832b9b8d7e9"/>
             <column name="name" value="Admin admin public loc 1"/>
@@ -98,7 +98,7 @@
             <column name="created_at" value="2024-11-16T10:15:00"/>
         </insert>
 
-        <!-- Subcategories of User user private loc 1 which is pending approval -->
+        <!-- Subcategories of user user private location 1 which is pending approval -->
         <insert tableName="location_category_assignments">
             <column name="location_id" value="53ce8219-45fd-4c00-8ba5-7b84d29d7617">
             </column>

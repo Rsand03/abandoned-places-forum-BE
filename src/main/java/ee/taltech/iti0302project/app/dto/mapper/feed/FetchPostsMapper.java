@@ -12,11 +12,11 @@ import java.util.List;
 public interface FetchPostsMapper {
 
     @Mapping(source = "createdBy.username", target = "createdByUsername")
+    @Mapping(source = "location.condition.name", target = "location.condition")
+    @Mapping(source = "location.status.name", target = "location.status")
     FetchPostsDto toDto(PostEntity postEntity);
 
     @Mapping(source = "createdBy.username", target = "createdByUsername")
     List<FetchPostsDto> toDtoList(List<PostEntity> postEntityList);
-
-    PostEntity toEntity(FetchPostsDto postDto);
 }
 

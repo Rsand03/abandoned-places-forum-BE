@@ -85,12 +85,12 @@ class FeedServiceTest {
         postEntity = new PostEntity();
         postEntity.setId(1L);
         postEntity.setCreatedBy(userEntity);
-        postEntity.setLocationId(locationEntity.getId());
-        postEntity.setLocationId(locationEntity.getId());
+        postEntity.setLocation(locationEntity);
+        postEntity.setLocation(locationEntity);
 
         upvoteEntity = new UpvoteEntity();
-        upvoteEntity.setPostId(postEntity.getId());
-        upvoteEntity.setUserId(userEntity.getId());
+        upvoteEntity.setPost(postEntity);
+        upvoteEntity.setUser(userEntity);
 
         postEntity.setUpvotes(new ArrayList<>(List.of(upvoteEntity)));
 
@@ -166,7 +166,7 @@ class FeedServiceTest {
         // Given
         createPostDto.setLocationId(null);
         PostEntity postEntityWithNullLocation = new PostEntity();
-        postEntityWithNullLocation.setLocationId(null);
+        postEntityWithNullLocation.setLocation(null);
 
         given(userRepository.findById(createPostDto.getUserId())).willReturn(Optional.of(userEntity));
         given(postMapper.toEntity(createPostDto)).willReturn(postEntityWithNullLocation);
@@ -175,7 +175,7 @@ class FeedServiceTest {
         ApplicationException exception = assertThrows(ApplicationException.class, () -> {
             feedService.createPost(createPostDto);
         });
-        assertEquals("Location is not added", exception.getMessage());
+        assertEquals("Invalid location id", exception.getMessage());
     }
 
     @Test
@@ -223,9 +223,9 @@ class FeedServiceTest {
     void hasUserUpvotedPost_returnsTrueWhenUserHasUpvoted() {
         // Given
         Long postId = 1L;
-        UpvoteEntity upvoteEntity = new UpvoteEntity();
-        upvoteEntity.setUserId(userEntity.getId());
-        postEntity.setUpvotes(List.of(upvoteEntity));
+        UpvoteEntity upvoteEntity2 = new UpvoteEntity();
+        upvoteEntity2.setUser(userEntity);
+        postEntity.setUpvotes(List.of(upvoteEntity2));
         given(postRepository.findById(postId)).willReturn(Optional.of(postEntity));
 
         // When
@@ -260,7 +260,7 @@ class FeedServiceTest {
         given(postRepository.findAll(any(Specification.class), eq(pageable))).willReturn(postPage);
         given(postPage.getContent()).willReturn(postEntities);
         given(fetchPostsMapper.toDto(postEntity)).willReturn(fetchPostsDto);
-        given(locationRepository.findById(postEntity.getLocationId())).willReturn(Optional.of(locationEntity));
+        given(locationRepository.findById(postEntity.getLocation().getId())).willReturn(Optional.of(locationEntity));
         given(postRepository.findById(postEntity.getId())).willReturn(Optional.of(postEntity));
         given(locationMapper.toResponseDto(locationEntity)).willReturn(locationResponseDto);
         given(postPage.getTotalElements()).willReturn(1L);
@@ -312,12 +312,15 @@ class FeedServiceTest {
 
         given(postRepository.findAll(any(Specification.class), eq(pageable))).willReturn(postPage);
         given(postPage.getContent()).willReturn(postEntities);
-        given(locationRepository.findById(postEntity.getLocationId())).willReturn(Optional.of(locationEntity));
+        given(locationRepository.findById(postEntity.getLocation().getId())).willReturn(Optional.of(locationEntity));
 
-        given(locationRepository.findById(postEntity.getLocationId())).willReturn(Optional.empty());
+        given(locationRepository.findById(postEntity.getLocation().getId())).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(ApplicationException.class, () -> feedService.findPosts(searchCriteria, userEntity.getId()));
+        UUID uuid = userEntity.getId();
+        assertThrows(ApplicationException.class, () -> {
+            feedService.findPosts(searchCriteria, uuid);
+        });
 
         verify(postRepository, times(1)).findAll(any(Specification.class), eq(pageable));
     }

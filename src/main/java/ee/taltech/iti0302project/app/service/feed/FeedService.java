@@ -18,6 +18,7 @@ import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
 import ee.taltech.iti0302project.app.specifications.PostSpecifications;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,9 +35,9 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
+@Slf4j
 public class FeedService {
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FeedService.class);
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
@@ -49,12 +51,11 @@ public class FeedService {
                 .orElseThrow(() -> new ApplicationException("User not found"));
 
         PostEntity entity = postMapper.toEntity(createdPost);
+        entity.setLocation(locationRepository.findById(createdPost.getLocationId()).orElseThrow(
+                () -> new ApplicationException("Invalid location id"))
+        );
 
-        if (entity.getLocationId() == null) {
-            throw new ApplicationException("Location is not added");
-        }
-
-        LocationEntity location = locationRepository.findById(entity.getLocationId())
+        LocationEntity location = locationRepository.findById(entity.getLocation().getId())
                 .orElseThrow(() -> new ApplicationException("Location not found"));
 
         if (!location.isPublic()) {
@@ -66,19 +67,23 @@ public class FeedService {
 
         postRepository.save(entity);
 
+        log.info("Post {} added by {}", entity.getId(), entity.getCreatedBy());
+
         return postMapper.toDto(entity);
     }
 
+    @Transactional(readOnly = true)
     public Optional<FetchPostsDto> getPostById(Long postId) {
         Optional<PostEntity> postEntityOptional = postRepository.findById(postId);
 
         return postEntityOptional.map(fetchPostsMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<FetchPostsDto> findPosts(FeedSearchCriteria criteria, UUID currentUserId) {
         Specification<PostEntity> spec = addSpecifications(criteria);
 
-        logger.info("Search Criteria: {}", criteria);
+        log.info("Search Criteria: {}", criteria);
 
         String sortBy = criteria.sortBy() != null ? criteria.sortBy() : "id";
         String direction = criteria.sortDirection() != null ? criteria.sortDirection().toUpperCase() : "DESC";
@@ -89,11 +94,12 @@ public class FeedService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         Page<PostEntity> entityPage = postRepository.findAll(spec, pageable);
-        logger.info("Post Page: {}", entityPage.getContent());
+
+        log.info("Post Page: {}", entityPage.getContent());
 
         List<FetchPostsDto> dtoList = entityPage.getContent().stream()
                 .map(post -> {
-                    LocationEntity locationEntity = locationRepository.findById(post.getLocationId())
+                    LocationEntity locationEntity = locationRepository.findById(post.getLocation().getId())
                             .orElseThrow(() -> new ApplicationException("Location not found"));
 
                     FetchPostsDto dto = fetchPostsMapper.toDto(post);
@@ -144,7 +150,7 @@ public class FeedService {
                 .orElseThrow(() -> new ApplicationException("Post not found"));
 
         for (UpvoteEntity upvote : post.getUpvotes()) {
-            if (upvote.getUserId().equals(userId)) {
+            if (upvote.getUser().getId().equals(userId)) {
                 return true;
             }
         }

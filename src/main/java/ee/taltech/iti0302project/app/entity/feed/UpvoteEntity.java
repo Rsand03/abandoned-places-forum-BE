@@ -1,10 +1,9 @@
 package ee.taltech.iti0302project.app.entity.feed;
 
+import ee.taltech.iti0302project.app.entity.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,10 +14,12 @@ public class UpvoteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "post_id", nullable = false)
-    private Long postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private PostEntity post;
 
-    @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
 }

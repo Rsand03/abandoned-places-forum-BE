@@ -72,7 +72,8 @@ class LocationControllerIT {
     void getFilteredLocations_filterByMainCategory() throws Exception {
         mvc.perform((get("/api/locations")
                         .header("Authorization", "Bearer " + userUserAuthToken)
-                        .param("mainCategoryId", "1")))
+                        .param("categoryIds", "1"))
+                        .param("filterByMainCategoryOnly", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("a59b74f9-d7fc-4c8e-bf47-2b060276421e"))
                 .andExpect(jsonPath("$.length()").value(1));

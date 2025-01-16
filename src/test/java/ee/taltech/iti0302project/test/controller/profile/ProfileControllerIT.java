@@ -16,14 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class ProfileControllerIT {
+class ProfileControllerIT {
 
     @Autowired
     private MockMvc mvc;
@@ -149,6 +150,58 @@ public class ProfileControllerIT {
                         .content(objectMapper.writeValueAsString(changePasswordDto))
                         .contentType("application/json"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void findUsers_success() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10")
+                        .param("minPoints", "0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    void findUsers_noResults() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10")
+                        .param("minPoints", "300"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(0));
+    }
+
+    @Test
+    void findUsers_invalidPageSize() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void findUsers_noCriteria() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    void findUsers_withRoleFilter() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10")
+                        .param("role", "USER"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1));
     }
 
 }
