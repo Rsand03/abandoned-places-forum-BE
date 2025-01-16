@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.test.service.feed;
 
-import ee.taltech.iti0302project.app.dto.feed.UpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.CreateUpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.UpvoteResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.UpvoteMapper;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
@@ -40,7 +41,8 @@ class UpvoteServiceTest {
     @InjectMocks
     private UpvoteService upvoteService;
 
-    private UpvoteDto upvoteDto;
+    private CreateUpvoteDto createUpvoteDto;
+    private UpvoteResponseDto upvoteResponseDto;
     private UpvoteEntity upvoteEntity;
     private UserEntity userEntity;
     private PostEntity postEntity;
@@ -56,7 +58,12 @@ class UpvoteServiceTest {
         PostEntity defaultPostEntity = new PostEntity();
         defaultPostEntity.setId(1L);
 
-        upvoteDto = UpvoteDto.builder()
+        createUpvoteDto = CreateUpvoteDto.builder()
+                .userId(userEntity.getId())
+                .postId(postEntity.getId())
+                .build();
+
+        upvoteResponseDto = UpvoteResponseDto.builder()
                 .postId(1L)
                 .userId(userEntity.getId())
                 .build();
@@ -70,46 +77,48 @@ class UpvoteServiceTest {
     @Test
     void toggleUpvote_create_success() {
         // Given
-        given(upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())).willReturn(false);
-        given(userRepository.findById(upvoteDto.getUserId())).willReturn(Optional.of(userEntity));
-        given(postRepository.findById(upvoteDto.getPostId())).willReturn(Optional.of(postEntity));
-        given(upvoteMapper.toEntity(upvoteDto)).willReturn(upvoteEntity);
+        given(upvoteRepository.existsByPostIdAndUserId(createUpvoteDto.getPostId(), createUpvoteDto.getUserId())).willReturn(false);
+        given(userRepository.findById(createUpvoteDto.getUserId())).willReturn(Optional.of(userEntity));
+        given(postRepository.findById(createUpvoteDto.getPostId())).willReturn(Optional.of(postEntity));
+        given(upvoteMapper.toEntity(createUpvoteDto)).willReturn(upvoteEntity);
         given(upvoteRepository.save(upvoteEntity)).willReturn(upvoteEntity);
-        given(upvoteMapper.toDto(upvoteEntity)).willReturn(upvoteDto);
+        given(upvoteMapper.toResponseDto(upvoteEntity)).willReturn(upvoteResponseDto);
 
         // When
-        UpvoteDto result = upvoteService.toggleUpvote(upvoteDto);
+        UpvoteResponseDto result = upvoteService.toggleUpvote(createUpvoteDto);
 
         // Then
-        assertEquals(upvoteDto, result);
+        assertEquals(upvoteResponseDto, result);
         verify(upvoteRepository, times(1)).save(upvoteEntity);
     }
 
     @Test
     void toggleUpvote_delete_success() {
         // Given
-        given(upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())).willReturn(true);
-        given(upvoteRepository.findByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())).willReturn(Optional.of(upvoteEntity));
+        given(upvoteRepository.existsByPostIdAndUserId(createUpvoteDto.getPostId(), createUpvoteDto.getUserId())).willReturn(true);
+        given(upvoteRepository.findByPostIdAndUserId(createUpvoteDto.getPostId(),createUpvoteDto.getUserId())).willReturn(Optional.of(upvoteEntity));
+        given(upvoteMapper.toResponseDto(upvoteEntity)).willReturn(upvoteResponseDto);
 
         // When
-        UpvoteDto result = upvoteService.toggleUpvote(upvoteDto);
+        UpvoteResponseDto result = upvoteService.toggleUpvote(createUpvoteDto);
 
         // Then
-        assertEquals(upvoteDto, result);
+        assertEquals(upvoteResponseDto, result);
         verify(upvoteRepository, times(1)).delete(upvoteEntity);
     }
 
     @Test
     void toggleUpvote_alreadyUpvoted() {
         // Given
-        given(upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())).willReturn(true);
-        given(upvoteRepository.findByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())).willReturn(Optional.of(upvoteEntity));
+        given(upvoteRepository.existsByPostIdAndUserId(createUpvoteDto.getPostId(), createUpvoteDto.getUserId())).willReturn(true);
+        given(upvoteRepository.findByPostIdAndUserId(createUpvoteDto.getPostId(), createUpvoteDto.getUserId())).willReturn(Optional.of(upvoteEntity));
+        given(upvoteMapper.toResponseDto(upvoteEntity)).willReturn(upvoteResponseDto);
 
         // When
-        UpvoteDto result = upvoteService.toggleUpvote(upvoteDto);
+        UpvoteResponseDto result = upvoteService.toggleUpvote(createUpvoteDto);
 
         // Then
-        assertEquals(upvoteDto, result);
+        assertEquals(upvoteResponseDto, result);
         verify(upvoteRepository, times(1)).delete(upvoteEntity);
         then(upvoteRepository).shouldHaveNoMoreInteractions();
     }
@@ -118,14 +127,14 @@ class UpvoteServiceTest {
     void getUpvotesByPostId_success() {
         // Given
         given(upvoteRepository.findByPostId(1L)).willReturn(List.of(upvoteEntity));
-        given(upvoteMapper.toDtoList(List.of(upvoteEntity))).willReturn(List.of(upvoteDto));
+        given(upvoteMapper.toDtoList(List.of(upvoteEntity))).willReturn(List.of(upvoteResponseDto));
 
         // When
-        List<UpvoteDto> result = upvoteService.getUpvotesByPostId(1L);
+        List<UpvoteResponseDto> result = upvoteService.getUpvotesByPostId(1L);
 
         // Then
         assertEquals(1, result.size());
-        assertEquals(upvoteDto, result.getFirst());
+        assertEquals(upvoteResponseDto, result.getFirst());
         verify(upvoteRepository, times(1)).findByPostId(1L);
     }
 
@@ -136,7 +145,7 @@ class UpvoteServiceTest {
         given(upvoteMapper.toDtoList(List.of())).willReturn(List.of());
 
         // When
-        List<UpvoteDto> result = upvoteService.getUpvotesByPostId(1L);
+        List<UpvoteResponseDto> result = upvoteService.getUpvotesByPostId(1L);
 
         // Then
         assertTrue(result.isEmpty());

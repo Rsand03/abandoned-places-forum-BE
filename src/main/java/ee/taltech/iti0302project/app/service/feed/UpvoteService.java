@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.app.service.feed;
 
-import ee.taltech.iti0302project.app.dto.feed.UpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.CreateUpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.UpvoteResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.UpvoteMapper;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
@@ -25,7 +26,7 @@ public class UpvoteService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
-    public UpvoteDto toggleUpvote(UpvoteDto upvoteDto) {
+    public UpvoteResponseDto toggleUpvote(CreateUpvoteDto upvoteDto) {
         boolean hasAlreadyUpvoted = upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId());
 
         if (hasAlreadyUpvoted) {
@@ -35,7 +36,9 @@ public class UpvoteService {
 
             log.info("Upvote removed from post {} by {}", upvote.getPost(), upvote.getUser());
 
-            return upvoteDto;
+            UpvoteResponseDto responseDto = upvoteMapper.toResponseDto(upvote);
+
+            return responseDto;
         } else {
             UpvoteEntity upvote = upvoteMapper.toEntity(upvoteDto);
             upvote.setUser(userRepository.findById(upvoteDto.getUserId())
@@ -46,12 +49,12 @@ public class UpvoteService {
 
             log.info("Upvote added to post {} by {}", upvote.getPost(), upvote.getUser());
 
-            return upvoteMapper.toDto(upvote);
+            return upvoteMapper.toResponseDto(upvote);
         }
     }
 
     @Transactional(readOnly = true)
-    public List<UpvoteDto> getUpvotesByPostId(Long postId) {
+    public List<UpvoteResponseDto> getUpvotesByPostId(Long postId) {
         List<UpvoteEntity> upvotes = upvoteRepository.findByPostId(postId);
         return upvoteMapper.toDtoList(upvotes);
     }
