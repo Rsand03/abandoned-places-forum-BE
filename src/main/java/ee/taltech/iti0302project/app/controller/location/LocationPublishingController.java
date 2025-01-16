@@ -30,7 +30,7 @@ public class LocationPublishingController {
 
     @Operation(summary = "Publish a private location and set a minimum points requirement for other users to see it")
     @ApiResponse(responseCode = "200", description = "Location published successfully")
-    @PatchMapping("/publishLocation")
+    @PatchMapping("/publish")
     public ResponseEntity<LocationResponseDto> publishLocation(@Valid @RequestBody LocationPublishDto locationPublishDto,
                                                                @RequestHeader("Authorization") String authHeader) {
         UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);

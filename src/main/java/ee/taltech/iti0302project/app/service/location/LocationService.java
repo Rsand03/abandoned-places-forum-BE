@@ -64,17 +64,17 @@ public class LocationService {
                             criteria.getUserPoints())
                     );
 
-                    if (criteria.getMainCategoryId() != null) {
-                        spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getMainCategoryId()));
+                    if (criteria.isFilterByMainCategoryOnly()) {
+                        spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getCategoryIds()));
+                    } else {
+                        spec = spec.and(LocationSpecifications.hasMainCategoryOrSubcategory(criteria.getCategoryIds()));
                     }
-                    if (!criteria.getSubCategoryIds().isEmpty()) {
-                        spec = spec.and(LocationSpecifications.hasSubcategories(criteria.getSubCategoryIds()));
+
+                    if (criteria.getConditionIds() != null) {
+                        spec = spec.and(LocationSpecifications.hasCondition(criteria.getConditionIds()));
                     }
-                    if (criteria.getConditionId() != null) {
-                        spec = spec.and(LocationSpecifications.hasCondition(criteria.getConditionId()));
-                    }
-                    if (criteria.getStatusId() != null) {
-                        spec = spec.and(LocationSpecifications.hasStatus(criteria.getStatusId()));
+                    if (criteria.getStatusIds() != null) {
+                        spec = spec.and(LocationSpecifications.hasStatus(criteria.getStatusIds()));
                     }
                     if (criteria.getBookmarkTypes() != null) {
                         spec = spec.and(LocationSpecifications.hasBookmarkTypes(criteria.getBookmarkTypes()));
@@ -86,8 +86,12 @@ public class LocationService {
 
     private Optional<LocationCriteria> validateLocationCriteria(LocationCriteria validatedCriteria) {
         return Optional.of(validatedCriteria)
-                .filter(criteria -> criteria.getSubCategoryIds().stream()
+                .filter(criteria -> criteria.getCategoryIds().stream()
                         .noneMatch(x -> x == null || x < 1 || x > 15))
+                .filter(criteria -> criteria.getConditionIds().stream()
+                        .noneMatch(x -> x == null || x < 1 || x > 6))
+                .filter(criteria -> criteria.getStatusIds().stream()
+                        .noneMatch(x -> x == null || x < 1 || x > 8))
                 .filter(criteria -> userRepository.existsById(criteria.getUserId()));
     }
 

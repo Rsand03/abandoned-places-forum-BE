@@ -1,9 +1,11 @@
 package ee.taltech.iti0302project.app.repository.location;
 
 import ee.taltech.iti0302project.app.entity.location.LocationBookmarkEntity;
+import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -25,28 +27,49 @@ public class LocationSpecifications {
                 );
     }
 
-    public static Specification<LocationEntity> hasMainCategory(Long mainCategoryId) {
-        return (root, query, cb) ->
-                mainCategoryId == null ? null : cb.equal(root.get("mainCategory").get("id"), mainCategoryId);
-    }
-
-    public static Specification<LocationEntity> hasSubcategories(List<Long> subcategoryIds) {
+    public static Specification<LocationEntity> hasMainCategory(List<Long> categoryIds) {
         return (root, query, cb) -> {
-            if (subcategoryIds == null || subcategoryIds.isEmpty()) {
+            if (categoryIds == null || categoryIds.isEmpty()) {
                 return null;
             }
-            return root.join("subCategories").get("id").in(subcategoryIds);
+            return root.get("mainCategory").get("id").in(categoryIds);
         };
     }
 
-    public static Specification<LocationEntity> hasCondition(Long conditionId) {
-        return (root, query, cb) ->
-                conditionId == null ? null : cb.equal(root.get("condition").get("id"), conditionId);
+    public static Specification<LocationEntity> hasMainCategoryOrSubcategory(List<Long> categoryIds) {
+        return (root, query, cb) -> {
+            if (categoryIds == null || categoryIds.isEmpty()) {
+                return null;
+            }
+            Join<LocationEntity, LocationCategoryEntity> subCategoryJoin = root.join("subCategories", JoinType.LEFT);
+
+            Predicate mainCategoryPredicate = cb.isTrue(
+                    root.get("mainCategory").get("id").in(categoryIds)
+            );
+            Predicate subCategoryPredicate = cb.isTrue(
+                    subCategoryJoin.get("id").in(categoryIds)
+            );
+
+            return cb.or(mainCategoryPredicate, subCategoryPredicate);
+        };
     }
 
-    public static Specification<LocationEntity> hasStatus(Long statusId) {
-        return (root, query, cb) ->
-                statusId == null ? null : cb.equal(root.get("status").get("id"), statusId);
+    public static Specification<LocationEntity> hasCondition(List<Long> conditionIds) {
+        return (root, query, cb) -> {
+            if (conditionIds == null || conditionIds.isEmpty()) {
+                return null;
+            }
+            return root.get("condition").get("id").in(conditionIds);
+        };
+    }
+
+    public static Specification<LocationEntity> hasStatus(List<Long> statusIds) {
+        return (root, query, cb) -> {
+            if (statusIds == null || statusIds.isEmpty()) {
+                return null;
+            }
+            return root.get("status").get("id").in(statusIds);
+        };
     }
 
     public static Specification<LocationEntity> hasBookmarkTypes(List<String> bookmarkTypes) {
