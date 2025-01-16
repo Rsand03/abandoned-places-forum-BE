@@ -23,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class ProfileService {
 
@@ -38,7 +39,6 @@ public class ProfileService {
         return userMapper.toUserProfileDto(user);
     }
 
-    @Transactional
     public UserProfileDto updateEmail(UUID userId, ChangeEmailDto changeEmailDto) {
 
         UserEntity user = userRepository.findById(userId)
@@ -56,7 +56,6 @@ public class ProfileService {
         return userMapper.toUserProfileDto(user);
     }
 
-    @Transactional
     public UserProfileDto updatePassword(UUID userId, ChangePasswordDto changePasswordDto) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MSG));

@@ -11,6 +11,12 @@ import java.util.UUID;
 @Data
 @Schema(description = "DTO to make an existing private location public")
 public class LocationPublishDto {
+
+    @Schema(description = "UUID of the user publishing the location, extracted from auth header JWT")
+    private UUID publisherId;
+
+    @Schema(description = "UUID of the location to be published")
+    @NotNull
     private UUID locationId;
 
     @Schema(description = "Minimum points other users need to view this public location",

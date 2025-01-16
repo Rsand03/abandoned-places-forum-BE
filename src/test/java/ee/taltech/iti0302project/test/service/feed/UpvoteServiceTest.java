@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,8 +53,8 @@ class UpvoteServiceTest {
 
         postEntity = new PostEntity();
 
-        PostEntity postEntity = new PostEntity();
-        postEntity.setId(1L);
+        PostEntity defaultPostEntity = new PostEntity();
+        defaultPostEntity.setId(1L);
 
         upvoteDto = UpvoteDto.builder()
                 .postId(1L)
@@ -62,7 +63,7 @@ class UpvoteServiceTest {
 
         upvoteEntity = new UpvoteEntity();
         upvoteEntity.setId(1L);
-        upvoteEntity.setPost(postEntity);
+        upvoteEntity.setPost(defaultPostEntity);
         upvoteEntity.setUser(userEntity);
     }
 
@@ -110,6 +111,7 @@ class UpvoteServiceTest {
         // Then
         assertEquals(upvoteDto, result);
         verify(upvoteRepository, times(1)).delete(upvoteEntity);
+        then(upvoteRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test

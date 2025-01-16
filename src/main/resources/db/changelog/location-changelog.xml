@@ -12,8 +12,47 @@
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
 
+    <!-- location_categories  -->
+    <changeSet id="1" author="16-01-2025-rasand">
+        <createTable tableName="location_categories">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color_hex" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- location_conditions  -->
+    <changeSet id="2" author="16-01-2025-rasand">
+        <createTable tableName="location_conditions">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- location_statuses  -->
+    <changeSet id="3" author="16-01-2025-rasand">
+        <createTable tableName="location_statuses">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
     <!-- locations -->
-    <changeSet id="1" author="16-11-2024-rasand">
+    <changeSet id="4" author="16-01-2025-rasand">
         <createTable tableName="locations">
             <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
@@ -60,49 +99,22 @@
         <addForeignKeyConstraint baseTableName="locations" baseColumnNames="created_by"
                                  referencedTableName="users" referencedColumnNames="id"
                                  constraintName="fk_locations_created_by"/>
-    </changeSet>
+        <!-- location attributes' FKs; probably should add indexing too in the future -->
+        <addForeignKeyConstraint baseTableName="locations" baseColumnNames="main_category_id"
+                                 referencedTableName="location_categories" referencedColumnNames="id"
+                                 constraintName="fk_locations_main_category"/>
 
-    <!-- location_categories  -->
-    <changeSet id="3" author="author_name">
-        <createTable tableName="location_categories">
-            <column name="id" type="integer">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="color_hex" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
+        <addForeignKeyConstraint baseTableName="locations" baseColumnNames="location_condition_id"
+                                 referencedTableName="location_conditions" referencedColumnNames="id"
+                                 constraintName="fk_locations_location_condition"/>
 
-    <!-- location_conditions  -->
-    <changeSet id="4" author="placeholder">
-        <createTable tableName="location_conditions">
-            <column name="id" type="integer">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <!-- location_statuses  -->
-    <changeSet id="5" author="placeholder">
-        <createTable tableName="location_statuses">
-            <column name="id" type="integer">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <addForeignKeyConstraint baseTableName="locations" baseColumnNames="location_status_id"
+                                 referencedTableName="location_statuses" referencedColumnNames="id"
+                                 constraintName="fk_locations_location_status"/>
     </changeSet>
 
     <!-- location_category_assignments -->
-    <changeSet id="6" author="author_name">
+    <changeSet id="5" author="16-01-2025-rasand">
         <createTable tableName="location_category_assignments">
             <column name="location_id" type="uuid">
                 <constraints nullable="false"/>
@@ -121,7 +133,7 @@
     </changeSet>
 
     <!-- location_bookmarks -->
-    <changeSet id="7" author="author_name">
+    <changeSet id="6" author="16-01-2025-rasand">
         <createTable tableName="location_bookmarks">
             <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
@@ -132,19 +144,19 @@
             <column name="created_by" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
             <column name="location_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="location_bookmarks" baseColumnNames="created_by"
-                                 referencedTableName="users" referencedColumnNames="id"
-                                 constraintName="fk_location_bookmarks_created_by"/>
         <addForeignKeyConstraint baseTableName="location_bookmarks" baseColumnNames="location_id"
                                  referencedTableName="locations" referencedColumnNames="id"
                                  constraintName="fk_location_bookmarks_location_id"/>
+        <addForeignKeyConstraint baseTableName="location_bookmarks" baseColumnNames="created_by"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_location_bookmarks_created_by"/>
         <addUniqueConstraint tableName="location_bookmarks" columnNames="created_by, location_id, bookmark_type"/>
     </changeSet>
 
