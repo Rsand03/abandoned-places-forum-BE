@@ -46,7 +46,6 @@ public class UpvoteController {
     @ApiResponse(responseCode = "200", description = "Upvotes retrieved successfully")
     @GetMapping("/{postId}")
     public ResponseEntity<List<UpvoteDto>> getUpvotesByPostId(@PathVariable Long postId) {
-        // TODO: implement this endpoint in FE
         List<UpvoteDto> upvotes = upvoteService.getUpvotesByPostId(postId);
         return ResponseEntity.ok(upvotes);
     }

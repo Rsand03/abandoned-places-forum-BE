@@ -4,19 +4,27 @@ import ee.taltech.iti0302project.app.dto.feed.UpvoteDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.UpvoteMapper;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
+import ee.taltech.iti0302project.app.repository.UserRepository;
+import ee.taltech.iti0302project.app.repository.feed.PostRepository;
 import ee.taltech.iti0302project.app.repository.feed.UpvoteRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpvoteService {
 
     private final UpvoteRepository upvoteRepository;
     private final UpvoteMapper upvoteMapper;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
+    @Transactional
     public UpvoteDto toggleUpvote(UpvoteDto upvoteDto) {
         boolean hasAlreadyUpvoted = upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId());
 
@@ -24,14 +32,25 @@ public class UpvoteService {
             UpvoteEntity upvote = upvoteRepository.findByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId())
                     .orElseThrow(() -> new ApplicationException("Upvote not found"));
             upvoteRepository.delete(upvote);
+
+            log.info("Upvote removed from post {} by {}", upvote.getPost(), upvote.getUser());
+
             return upvoteDto;
         } else {
             UpvoteEntity upvote = upvoteMapper.toEntity(upvoteDto);
+            upvote.setUser(userRepository.findById(upvoteDto.getUserId())
+                    .orElseThrow(() -> new ApplicationException("Invalid user id")));
+            upvote.setPost(postRepository.findById(upvoteDto.getPostId())
+                    .orElseThrow(() -> new ApplicationException("Invalid post id")));
             upvote = upvoteRepository.save(upvote);
+
+            log.info("Upvote added to post {} by {}", upvote.getPost(), upvote.getUser());
+
             return upvoteMapper.toDto(upvote);
         }
     }
 
+    @Transactional(readOnly = true)
     public List<UpvoteDto> getUpvotesByPostId(Long postId) {
         List<UpvoteEntity> upvotes = upvoteRepository.findByPostId(postId);
         return upvoteMapper.toDtoList(upvotes);

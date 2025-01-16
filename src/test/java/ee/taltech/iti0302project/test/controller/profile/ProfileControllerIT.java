@@ -1,9 +1,12 @@
 package ee.taltech.iti0302project.test.controller.profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ee.taltech.iti0302project.app.criteria.UserCriteria;
 import ee.taltech.iti0302project.app.dto.auth.UserLoginDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangeEmailDto;
 import ee.taltech.iti0302project.app.dto.profile.ChangePasswordDto;
+import ee.taltech.iti0302project.app.entity.user.UserEntity;
+import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.service.auth.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -149,6 +152,58 @@ public class ProfileControllerIT {
                         .content(objectMapper.writeValueAsString(changePasswordDto))
                         .contentType("application/json"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void findUsers_success() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10")
+                        .param("minPoints", "0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    void findUsers_noResults() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10")
+                        .param("minPoints", "300"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(0));
+    }
+
+    @Test
+    void findUsers_invalidPageSize() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void findUsers_noCriteria() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    void findUsers_withRoleFilter() throws Exception {
+        mvc.perform(get("/api/profile/allUsers")
+                        .header("Authorization", "Bearer " + userUserAuthToken)
+                        .param("page", "0")
+                        .param("pageSize", "10")
+                        .param("role", "USER"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1));
     }
 
 }

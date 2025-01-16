@@ -1,6 +1,6 @@
 package ee.taltech.iti0302project.app.dto.mapper.user;
 
-import ee.taltech.iti0302project.app.dto.UserDto;
+import ee.taltech.iti0302project.app.dto.profile.UserDto;
 import ee.taltech.iti0302project.app.dto.auth.AuthResponseDto;
 import ee.taltech.iti0302project.app.dto.auth.UserRegisterDto;
 import ee.taltech.iti0302project.app.dto.profile.UserProfileDto;
@@ -22,6 +22,8 @@ public interface UserMapper {
     UserEntity toEntity(UserProfileDto userProfileDto);
 
     UserProfileDto toUserProfileDto(UserEntity user);
+
+    List<UserProfileDto> toUserProfileDtoList(List<UserEntity> usersList);
 
     @Mapping(source = "id", target = "userId")
     AuthResponseDto toAuthResponseDto(UserEntity userEntity);
