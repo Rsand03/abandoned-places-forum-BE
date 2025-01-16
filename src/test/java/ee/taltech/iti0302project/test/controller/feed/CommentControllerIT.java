@@ -49,6 +49,7 @@ public class CommentControllerIT {
 
         CommentDto commentDto = CommentDto.builder()
                 .body("Test comment")
+                .createdByUsername("user")
                 .createdById(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"))
                 .postId(postId).build();
 
@@ -68,8 +69,9 @@ public class CommentControllerIT {
 
         CommentDto commentDto = CommentDto.builder()
                 .body("Test comment")
-                .createdByUsername("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d")
-                .postId(postId).build();
+                .createdByUsername("user")
+                .postId(postId)
+                .createdById(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d")).build();
 
         mvc.perform(post("/api/feed/{postId}/comments", postId)
                         .header("Authorization", "Bearer " + userUserAuthToken)
@@ -86,8 +88,9 @@ public class CommentControllerIT {
 
         CommentDto commentDto = CommentDto.builder()
                 .body("Test comment")
-                .createdByUsername("e71a1997-5f06-4b3b-b5cd-bbbcec65d68f")
-                .postId(postId).build();
+                .createdByUsername("noExistent")
+                .postId(postId)
+                .createdById(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68f")).build();
 
 
         mvc.perform(post("/api/feed/{postId}/comments", postId)

@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.app.dto.mapper.feed;
 
-import ee.taltech.iti0302project.app.dto.feed.UpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.CreateUpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.UpvoteResponseDto;
 import ee.taltech.iti0302project.app.entity.feed.UpvoteEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,9 +14,10 @@ public interface UpvoteMapper {
 
     @Mapping(source = "post.id", target = "postId")
     @Mapping(source = "user.id", target = "userId")
-    UpvoteDto toDto(UpvoteEntity upvoteEntity);
+    UpvoteResponseDto toResponseDto(UpvoteEntity upvoteEntity);
 
-    List<UpvoteDto> toDtoList(List<UpvoteEntity>upvoteEntityList);
+    List<UpvoteResponseDto> toDtoList(List<UpvoteEntity>upvoteEntityList);
 
-    UpvoteEntity toEntity(UpvoteDto upvoteDto);
+    UpvoteEntity toEntity(CreateUpvoteDto upvoteDto);
+
 }

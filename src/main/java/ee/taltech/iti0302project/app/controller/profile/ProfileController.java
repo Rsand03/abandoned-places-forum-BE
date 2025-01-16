@@ -51,7 +51,7 @@ public class ProfileController {
     @PutMapping("/{userId}/updateEmail")
     public ResponseEntity<UserProfileDto> updateEmail(
             @PathVariable UUID userId,
-            @RequestBody ChangeEmailDto changeEmailDto,
+            @Valid @RequestBody ChangeEmailDto changeEmailDto,
             @RequestHeader("Authorization") String authHeader) {
 
         try {
@@ -69,7 +69,7 @@ public class ProfileController {
     @PutMapping("/{userId}/updatePassword")
     public ResponseEntity<UserProfileDto> updatePassword(
             @PathVariable UUID userId,
-            @RequestBody ChangePasswordDto changePasswordDto,
+            @Valid @RequestBody ChangePasswordDto changePasswordDto,
             @RequestHeader("Authorization") String authHeader) {
 
         try {

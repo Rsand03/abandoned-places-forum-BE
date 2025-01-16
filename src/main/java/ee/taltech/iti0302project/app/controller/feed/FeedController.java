@@ -33,7 +33,7 @@ public class FeedController {
     )
     @ApiResponse(responseCode = "200", description = "Post created successfully")
     @PostMapping("/createPost")
-    public ResponseEntity<CreatePostDto> createPost(@RequestBody CreatePostDto createdPost) {
+    public ResponseEntity<CreatePostDto> createPost(@Valid @RequestBody CreatePostDto createdPost) {
         return ResponseEntity.ok(feedService.createPost(createdPost));
     }
 
