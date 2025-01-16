@@ -36,9 +36,7 @@ public class UpvoteService {
 
             log.info("Upvote removed from post {} by {}", upvote.getPost(), upvote.getUser());
 
-            UpvoteResponseDto responseDto = upvoteMapper.toResponseDto(upvote);
-
-            return responseDto;
+            return upvoteMapper.toResponseDto(upvote);
         } else {
             UpvoteEntity upvote = upvoteMapper.toEntity(upvoteDto);
             upvote.setUser(userRepository.findById(upvoteDto.getUserId())
