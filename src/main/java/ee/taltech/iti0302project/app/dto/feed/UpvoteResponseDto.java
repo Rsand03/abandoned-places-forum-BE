@@ -9,8 +9,8 @@ import java.util.UUID;
 
 @Data
 @Builder
-@Schema(description = "DTO for upvoting a post")
-public class UpvoteDto {
+@Schema(description = "DTO for upvote response")
+public class UpvoteResponseDto {
 
     @NotNull
     @Schema(description = "Unique identifier of the upvote", example = "1")

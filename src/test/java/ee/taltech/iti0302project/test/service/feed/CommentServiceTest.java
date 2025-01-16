@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.test.service.feed;
 
 import ee.taltech.iti0302project.app.dto.feed.CommentDto;
+import ee.taltech.iti0302project.app.dto.feed.CreateCommentDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.CommentMapper;
 import ee.taltech.iti0302project.app.entity.feed.CommentEntity;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
@@ -42,6 +43,7 @@ class CommentServiceTest {
     private CommentService commentService;
 
     private CommentDto commentDto;
+    private CreateCommentDto createCommentDto;
     private CommentEntity commentEntity;
     private PostEntity postEntity;
     private UserEntity userEntity;
@@ -54,6 +56,11 @@ class CommentServiceTest {
 
         postEntity = new PostEntity();
         postEntity.setId(1L);
+
+        createCommentDto = CreateCommentDto.builder()
+                .postId(1L)
+                .body("Test comment")
+                .createdById(userId).build();
 
         commentDto = CommentDto.builder()
                 .postId(1L)
@@ -71,14 +78,14 @@ class CommentServiceTest {
     @Test
     void createComment_success() {
         // Given
-        given(postRepository.findById(commentDto.getPostId())).willReturn(Optional.of(postEntity));
-        given(userRepository.findById(commentDto.getCreatedById())).willReturn(Optional.of(userEntity));
-        given(commentMapper.toEntity(commentDto)).willReturn(commentEntity);
+        given(postRepository.findById(createCommentDto.getPostId())).willReturn(Optional.of(postEntity));
+        given(userRepository.findById(createCommentDto.getCreatedById())).willReturn(Optional.of(userEntity));
+        given(commentMapper.toEntity(createCommentDto)).willReturn(commentEntity);
         given(commentRepository.save(commentEntity)).willReturn(commentEntity);
         given(commentMapper.toDto(commentEntity)).willReturn(commentDto);
 
         // When
-        CommentDto result = commentService.createComment(commentDto);
+        CommentDto result = commentService.createComment(createCommentDto);
 
         // Then
         assertEquals(commentDto, result);
@@ -88,23 +95,23 @@ class CommentServiceTest {
     @Test
     void createComment_postNotFound() {
         // Given
-        given(postRepository.findById(commentDto.getPostId())).willReturn(Optional.empty());
+        given(postRepository.findById(createCommentDto.getPostId())).willReturn(Optional.empty());
 
         // When & Then
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> commentService.createComment(commentDto));
+                () -> commentService.createComment(createCommentDto));
         assertEquals("Post not found", exception.getMessage());
     }
 
     @Test
     void createComment_userNotFound() {
         // Given
-        given(postRepository.findById(commentDto.getPostId())).willReturn(Optional.of(postEntity));
-        given(userRepository.findById(commentDto.getCreatedById())).willReturn(Optional.empty());
+        given(postRepository.findById(createCommentDto.getPostId())).willReturn(Optional.of(postEntity));
+        given(userRepository.findById(createCommentDto.getCreatedById())).willReturn(Optional.empty());
 
         // When & Then
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> commentService.createComment(commentDto));
+                () -> commentService.createComment(createCommentDto));
         assertEquals("User not found", exception.getMessage());
     }
 

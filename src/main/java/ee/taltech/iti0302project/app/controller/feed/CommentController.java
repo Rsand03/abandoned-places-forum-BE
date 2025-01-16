@@ -1,10 +1,12 @@
 package ee.taltech.iti0302project.app.controller.feed;
 
 import ee.taltech.iti0302project.app.dto.feed.CommentDto;
+import ee.taltech.iti0302project.app.dto.feed.CreateCommentDto;
 import ee.taltech.iti0302project.app.service.feed.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +28,7 @@ public class CommentController {
     @ApiResponse(responseCode = "200", description = "Comment created successfully")
     @PostMapping
     public ResponseEntity<CommentDto> createComment(
-            @RequestBody CommentDto commentDto
+            @Valid @RequestBody CreateCommentDto commentDto
     ) {
         CommentDto response = commentService.createComment(commentDto);
         return ResponseEntity.ok(response);

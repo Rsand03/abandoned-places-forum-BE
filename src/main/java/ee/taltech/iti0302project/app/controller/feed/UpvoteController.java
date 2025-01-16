@@ -1,11 +1,13 @@
 package ee.taltech.iti0302project.app.controller.feed;
 
-import ee.taltech.iti0302project.app.dto.feed.UpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.CreateUpvoteDto;
+import ee.taltech.iti0302project.app.dto.feed.UpvoteResponseDto;
 import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.feed.UpvoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,13 +36,13 @@ public class UpvoteController {
     )
     @ApiResponse(responseCode = "200", description = "Upvote created or toggled successfully")
     @PostMapping
-    public ResponseEntity<UpvoteDto> createUpvote(@RequestBody UpvoteDto upvoteDto,
-                                                  @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<UpvoteResponseDto> createUpvote(@Valid @RequestBody CreateUpvoteDto upvoteDto,
+                                                          @RequestHeader("Authorization") String authHeader) {
         UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
 
         upvoteDto.setUserId(userId);
 
-        UpvoteDto createdUpvote = upvoteService.toggleUpvote(upvoteDto);
+        UpvoteResponseDto createdUpvote = upvoteService.toggleUpvote(upvoteDto);
         return ResponseEntity.ok(createdUpvote);
     }
 
@@ -50,8 +52,8 @@ public class UpvoteController {
     )
     @ApiResponse(responseCode = "200", description = "Upvotes retrieved successfully")
     @GetMapping("/{postId}")
-    public ResponseEntity<List<UpvoteDto>> getUpvotesByPostId(@PathVariable Long postId) {
-        List<UpvoteDto> upvotes = upvoteService.getUpvotesByPostId(postId);
+    public ResponseEntity<List<UpvoteResponseDto>> getUpvotesByPostId(@PathVariable Long postId) {
+        List<UpvoteResponseDto> upvotes = upvoteService.getUpvotesByPostId(postId);
         return ResponseEntity.ok(upvotes);
     }
 }

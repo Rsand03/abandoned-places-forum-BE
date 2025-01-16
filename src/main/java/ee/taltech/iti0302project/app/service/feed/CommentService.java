@@ -1,6 +1,7 @@
 package ee.taltech.iti0302project.app.service.feed;
 
 import ee.taltech.iti0302project.app.dto.feed.CommentDto;
+import ee.taltech.iti0302project.app.dto.feed.CreateCommentDto;
 import ee.taltech.iti0302project.app.dto.mapper.feed.CommentMapper;
 import ee.taltech.iti0302project.app.entity.feed.CommentEntity;
 import ee.taltech.iti0302project.app.entity.feed.PostEntity;
@@ -28,7 +29,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
-    public CommentDto createComment(CommentDto commentDto) {
+    public CommentDto createComment(CreateCommentDto commentDto) {
         PostEntity post = postRepository.findById(commentDto.getPostId())
                 .orElseThrow(() -> new ApplicationException("Post not found"));
 
