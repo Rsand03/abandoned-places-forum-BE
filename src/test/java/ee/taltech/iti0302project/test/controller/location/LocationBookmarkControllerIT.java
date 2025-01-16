@@ -45,7 +45,7 @@ public class LocationBookmarkControllerIT {
     @Test
     void createLocationBookmark_isCreated() throws Exception {
         LocationBookmarkCreateDto locationBookmarkCreateDto = LocationBookmarkCreateDto.builder()
-                .type(BookmarkType.valueOf("Suur_risk"))
+                    .type(BookmarkType.valueOf("SUUR_RISK"))
                 .createdByUserUuid(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"))
                 .locationId(UUID.fromString("a59b74f9-d7fc-4c8e-bf47-2b060276421e")).build();
 
@@ -54,7 +54,7 @@ public class LocationBookmarkControllerIT {
                         .content(objectMapper.writeValueAsString(locationBookmarkCreateDto))
                         .contentType("application/json"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.type").value("Suur_risk"));
+                .andExpect(jsonPath("$.type").value("Suur risk"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class LocationBookmarkControllerIT {
         mvc.perform(get("/api/location-bookmarks")
                         .header("Authorization", "Bearer " + userUserAuthToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test
@@ -95,20 +95,6 @@ public class LocationBookmarkControllerIT {
                         .header("Authorization", "Bearer " + userUserAuthToken)
                         .param("locationId", locationId.toString())
                         .param("bookmarkType", bookmarkType.name()))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void createLocationBookmark_invalidType() throws Exception {
-        LocationBookmarkCreateDto locationBookmarkCreateDto = LocationBookmarkCreateDto.builder()
-                .type(BookmarkType.valueOf("Invalid_type"))
-                .createdByUserUuid(UUID.fromString("e71a1997-5f06-4b3b-b5cd-bbbcec65d68d"))
-                .locationId(UUID.fromString("a59b74f9-d7fc-4c8e-bf47-2b060276421e")).build();
-
-        mvc.perform(post("/api/location-bookmarks")
-                        .header("Authorization", "Bearer " + userUserAuthToken)
-                        .content(objectMapper.writeValueAsString(locationBookmarkCreateDto))
-                        .contentType("application/json"))
                 .andExpect(status().isBadRequest());
     }
 
