@@ -28,10 +28,7 @@ public class LocationBookmarkController {
     private final LocationBookmarkService locationBookmarkService;
     private final JwtService jwtService;
 
-    @Operation(
-            summary = "Create a new post",
-            description = "Allows users to create a new post in the feed"
-    )
+    @Operation(description = "Retrieve location bookmark by userId and locationId")
     @ApiResponse(responseCode = "200", description = "LocationBookmarks retrieved successfully")
     @GetMapping("")
     public ResponseEntity<List<LocationBookmarkDto>> getLocationBookmarks(
@@ -58,7 +55,7 @@ public class LocationBookmarkController {
 
     @Operation(
             summary = "Delete a locationBookmark",
-            description = "Allows users to delete locationBookmarks from locations"
+            description = "Allows users to delete locationBookmarks of specific locations"
     )
     @ApiResponse(responseCode = "204", description = "Bookmark deleted successfully")
     @DeleteMapping("")

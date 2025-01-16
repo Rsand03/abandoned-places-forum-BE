@@ -17,7 +17,7 @@ public class LocationBookmarkCreateDto {
     private BookmarkType type;
 
     @NotNull
-    @Schema(description = "UUID of the user creating the post", example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
+    @Schema(description = "UUID of the user creating the bookmark", example = "d290f1ee-6c54-4b01-90e6-d701748f0851")
     private UUID createdByUserUuid;
 
     @NotNull
