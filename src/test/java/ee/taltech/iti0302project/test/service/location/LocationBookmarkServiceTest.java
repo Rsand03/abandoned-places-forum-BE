@@ -6,11 +6,11 @@ import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationBookmarkMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationBookmarkEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
+import ee.taltech.iti0302project.app.exception.ApplicationException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationBookmarkRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationRepository;
 import ee.taltech.iti0302project.app.service.location.LocationBookmarkService;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -139,7 +139,7 @@ class LocationBookmarkServiceTest {
         when(userRepository.existsById(userId)).thenReturn(false);
 
         // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+        ApplicationException exception = assertThrows(ApplicationException.class, () ->
                 locationBookmarkService.createLocationBookmark(locationBookmarkCreateDto));
         assertEquals("User not found with ID: " + userId, exception.getMessage());
     }
@@ -166,7 +166,7 @@ class LocationBookmarkServiceTest {
                 .thenReturn(false);
 
         // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+        ApplicationException exception = assertThrows(ApplicationException.class, () ->
                 locationBookmarkService.deleteLocationBookmark(userId, locationId, BookmarkType.SUUR_RISK));
         assertEquals("Bookmark not found for locationId: " + locationId + " and userId: " + userId + " and type: " + BookmarkType.SUUR_RISK, exception.getMessage());
     }
