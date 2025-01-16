@@ -5,6 +5,9 @@ import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkCreat
 import ee.taltech.iti0302project.app.dto.location.bookmark.LocationBookmarkDto;
 import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.location.LocationBookmarkService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +22,17 @@ import java.util.UUID;
 @RequestMapping("api/location-bookmarks")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "LocationBookmark", description = "LocationBookmark management APIs")
 public class LocationBookmarkController {
 
     private final LocationBookmarkService locationBookmarkService;
     private final JwtService jwtService;
 
+    @Operation(
+            summary = "Create a new post",
+            description = "Allows users to create a new post in the feed"
+    )
+    @ApiResponse(responseCode = "200", description = "LocationBookmarks retrieved successfully")
     @GetMapping("")
     public ResponseEntity<List<LocationBookmarkDto>> getLocationBookmarks(
             @RequestParam(value = "locationId", required = false) Optional<UUID> locationId,
@@ -34,6 +43,11 @@ public class LocationBookmarkController {
         return ResponseEntity.ok(bookmarks);
     }
 
+    @Operation(
+            summary = "Create a new locationBookmark",
+            description = "Allows users to create new locationBookmarks for locations"
+    )
+    @ApiResponse(responseCode = "200", description = "LocationBookmark created successfully")
     @PostMapping("")
     public ResponseEntity<LocationBookmarkDto> createLocationBookmark(
             @Valid @RequestBody LocationBookmarkCreateDto createdLocationBookmark) {
@@ -42,6 +56,11 @@ public class LocationBookmarkController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
+    @Operation(
+            summary = "Delete a locationBookmark",
+            description = "Allows users to delete locationBookmarks from locations"
+    )
+    @ApiResponse(responseCode = "204", description = "Bookmark deleted successfully")
     @DeleteMapping("")
     public ResponseEntity<Void> deleteLocationBookmark(
             @RequestParam UUID locationId,
