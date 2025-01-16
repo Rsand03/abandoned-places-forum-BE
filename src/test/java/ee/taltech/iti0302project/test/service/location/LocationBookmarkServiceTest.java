@@ -48,6 +48,7 @@ class LocationBookmarkServiceTest {
     private LocationEntity locationEntity;
     private LocationBookmarkDto locationBookmarkDto;
     private LocationBookmarkEntity locationBookmarkEntity;
+    private LocationBookmarkCreateDto locationBookmarkCreateDto;
 
     @BeforeEach
     void setUp() {
@@ -57,10 +58,11 @@ class LocationBookmarkServiceTest {
         locationEntity = new LocationEntity();
         locationEntity.setId(locationId);
 
-        LocationBookmarkCreateDto locationBookmarkCreateDto = LocationBookmarkCreateDto.builder().build();
-        locationBookmarkCreateDto.setCreatedByUserUuid(userId);
-        locationBookmarkCreateDto.setLocationId(locationId);
-        locationBookmarkCreateDto.setType(BookmarkType.SUUR_RISK); // Example type
+        locationBookmarkCreateDto = LocationBookmarkCreateDto.builder()
+                .createdByUserUuid(userId)
+                .locationId(locationId)
+                .type(BookmarkType.SUUR_RISK)
+                .build();
 
         locationBookmarkDto = new LocationBookmarkDto();
         locationBookmarkDto.setType(BookmarkType.SUUR_RISK.getLabel());
@@ -110,6 +112,7 @@ class LocationBookmarkServiceTest {
     void testCreateLocationBookmark_validData() {
         // Arrange
         when(locationRepository.findById(locationId)).thenReturn(Optional.of(locationEntity));
+        when(locationRepository.existsById(locationId)).thenReturn(true);
         when(userRepository.existsById(userId)).thenReturn(true);
         when(locationBookmarkMapper.toEntity(any(LocationBookmarkCreateDto.class)))
                 .thenReturn(locationBookmarkEntity);
