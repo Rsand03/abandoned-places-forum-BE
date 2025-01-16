@@ -11,6 +11,7 @@ import java.util.UUID;
 @Data
 @Schema(description = "DTO to make an existing private location public")
 public class LocationPublishDto {
+
     private UUID locationId;
 
     @Schema(description = "Minimum points other users need to view this public location",

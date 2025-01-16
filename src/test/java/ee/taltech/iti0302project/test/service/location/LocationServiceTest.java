@@ -9,6 +9,7 @@ import ee.taltech.iti0302project.app.entity.location.LocationConditionEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationStatusEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
+import ee.taltech.iti0302project.app.exception.ConflictException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationBookmarkRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
@@ -282,7 +283,7 @@ class LocationServiceTest {
 
         // Then
         assertThat(thrown)
-                .isInstanceOf(ApplicationException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("User exceeded maximum amount of private locations");
         then(locationRepository).shouldHaveNoMoreInteractions();
     }

@@ -3,7 +3,6 @@ package ee.taltech.iti0302project.app.controller.location;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
 import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
-import ee.taltech.iti0302project.app.dto.location.LocationPublishDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.service.auth.JwtService;
 import ee.taltech.iti0302project.app.service.location.LocationService;
@@ -87,20 +86,6 @@ public class LocationController {
                                                                @RequestHeader("Authorization") String authHeader) {
         UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
         return locationService.getLocationById(id, userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @Operation(summary = "Publish a private location and set a minimum points requirement for other users to see it")
-    @ApiResponse(responseCode = "200", description = "Location published successfully")
-    @PatchMapping("/publishLocation")
-    public ResponseEntity<LocationResponseDto> publishLocation(
-            @RequestBody LocationPublishDto locationPublishDto,
-            @RequestHeader("Authorization") String authHeader
-    ) {
-        UUID userId = jwtService.extractUserIdFromAuthHeader(authHeader);
-
-        return locationService.publishLocation(locationPublishDto, userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
