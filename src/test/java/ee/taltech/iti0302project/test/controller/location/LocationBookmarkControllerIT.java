@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class LocationBookmarkControllerIT {
+class LocationBookmarkControllerIT {
     @Autowired
     private MockMvc mvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
