@@ -3,11 +3,12 @@ package ee.taltech.iti0302project.app.service.location;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationCriteria;
 import ee.taltech.iti0302project.app.dto.location.LocationEditDto;
-import ee.taltech.iti0302project.app.dto.location.LocationPublishDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationEntity;
 import ee.taltech.iti0302project.app.exception.ApplicationException;
+import ee.taltech.iti0302project.app.exception.ConflictException;
+import ee.taltech.iti0302project.app.exception.NotFoundException;
 import ee.taltech.iti0302project.app.repository.UserRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationBookmarkRepository;
 import ee.taltech.iti0302project.app.repository.location.LocationCategoryRepository;
@@ -63,17 +64,17 @@ public class LocationService {
                             criteria.getUserPoints())
                     );
 
-                    if (criteria.getMainCategoryId() != null) {
-                        spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getMainCategoryId()));
+                    if (criteria.isFilterByMainCategoryOnly()) {
+                        spec = spec.and(LocationSpecifications.hasMainCategory(criteria.getCategoryIds()));
+                    } else {
+                        spec = spec.and(LocationSpecifications.hasMainCategoryOrSubcategory(criteria.getCategoryIds()));
                     }
-                    if (!criteria.getSubCategoryIds().isEmpty()) {
-                        spec = spec.and(LocationSpecifications.hasSubcategories(criteria.getSubCategoryIds()));
+
+                    if (criteria.getConditionIds() != null) {
+                        spec = spec.and(LocationSpecifications.hasCondition(criteria.getConditionIds()));
                     }
-                    if (criteria.getConditionId() != null) {
-                        spec = spec.and(LocationSpecifications.hasCondition(criteria.getConditionId()));
-                    }
-                    if (criteria.getStatusId() != null) {
-                        spec = spec.and(LocationSpecifications.hasStatus(criteria.getStatusId()));
+                    if (criteria.getStatusIds() != null) {
+                        spec = spec.and(LocationSpecifications.hasStatus(criteria.getStatusIds()));
                     }
                     if (criteria.getBookmarkTypes() != null) {
                         spec = spec.and(LocationSpecifications.hasBookmarkTypes(criteria.getBookmarkTypes()));
@@ -85,19 +86,23 @@ public class LocationService {
 
     private Optional<LocationCriteria> validateLocationCriteria(LocationCriteria validatedCriteria) {
         return Optional.of(validatedCriteria)
-                .filter(criteria -> criteria.getSubCategoryIds().stream()
+                .filter(criteria -> criteria.getCategoryIds().stream()
                         .noneMatch(x -> x == null || x < 1 || x > 15))
+                .filter(criteria -> criteria.getConditionIds().stream()
+                        .noneMatch(x -> x == null || x < 1 || x > 6))
+                .filter(criteria -> criteria.getStatusIds().stream()
+                        .noneMatch(x -> x == null || x < 1 || x > 8))
                 .filter(criteria -> userRepository.existsById(criteria.getUserId()));
     }
 
     // Variant 1: no optional streams; specific error messages; easier to unit-test
     public LocationResponseDto createLocation(LocationCreateDto dto) {
 
-        if (dto.getCreatedBy() == null || !userRepository.existsById(dto.getCreatedBy())) {
-            throw new ApplicationException("Invalid user");
+        if (!userRepository.existsById(dto.getCreatedBy())) {
+            throw new NotFoundException("No such user");
         } else if (locationRepository.countByIsPublicFalseAndCreatedBy(dto.getCreatedBy()) >= PRIVATE_LOCATIONS_PER_USER) {
-            throw new ApplicationException("User exceeded maximum amount of private locations");
-        } else if (dto.getSubCategoryIds().contains(dto.getMainCategoryId())) {
+            throw new ConflictException("User exceeded maximum amount of private locations");
+        }  else if (dto.getSubCategoryIds().contains(dto.getMainCategoryId())) {
             throw new ApplicationException("Duplicate of main category in subcategories");
         } else if (dto.getSubCategoryIds().stream().anyMatch(x -> x == null || !locationCategoryRepository.existsById(x))) {
             throw new ApplicationException("Invalid subcategories");
@@ -108,11 +113,11 @@ public class LocationService {
         newLocationEntity.setCreatedBy(dto.getCreatedBy());
         newLocationEntity.setSubCategories(locationCategoryRepository.findAllById(dto.getSubCategoryIds()));
         newLocationEntity.setMainCategory(locationCategoryRepository.findById(dto.getMainCategoryId())
-                .orElseThrow(() -> new ApplicationException("Invalid main category id")));
+                .orElseThrow(() -> new NotFoundException("No such main category id")));
         newLocationEntity.setCondition(locationConditionRepository.findById(dto.getConditionId())
-                .orElseThrow(() -> new ApplicationException("Invalid condition id")));
+                .orElseThrow(() -> new NotFoundException("No such condition id")));
         newLocationEntity.setStatus(locationStatusRepository.findById(dto.getStatusId())
-                .orElseThrow(() -> new ApplicationException("Invalid status id")));
+                .orElseThrow(() -> new NotFoundException("No such status id")));
 
         LocationEntity createdEntity = locationRepository.save(newLocationEntity);
 
@@ -125,16 +130,16 @@ public class LocationService {
         return validateLocationEditDto(locationCreateDto)
                 .map(dto -> {
                     LocationEntity prevLocationEntity = locationRepository.findById(dto.getId())
-                            .orElseThrow(() -> new ApplicationException("Invalid location id"));
+                            .orElseThrow(() -> new NotFoundException("No such location"));
 
                     prevLocationEntity.setName(dto.getName());
                     prevLocationEntity.setSubCategories(locationCategoryRepository.findAllById(dto.getSubCategoryIds()));
                     prevLocationEntity.setMainCategory(locationCategoryRepository.findById(dto.getMainCategoryId())
-                            .orElseThrow(() -> new ApplicationException("Invalid main category id")));
+                            .orElseThrow(() -> new NotFoundException("No such main category id")));
                     prevLocationEntity.setCondition(locationConditionRepository.findById(dto.getConditionId())
-                            .orElseThrow(() -> new ApplicationException("Invalid condition id")));
+                            .orElseThrow(() -> new NotFoundException("No such condition id")));
                     prevLocationEntity.setStatus(locationStatusRepository.findById(dto.getStatusId())
-                            .orElseThrow(() -> new ApplicationException("Invalid status id")));
+                            .orElseThrow(() -> new NotFoundException("No such status id")));
                     prevLocationEntity.setAdditionalInformation(dto.getAdditionalInformation());
 
                     LocationEntity editedEntity = locationRepository.save(prevLocationEntity);
@@ -147,7 +152,7 @@ public class LocationService {
 
     private Optional<LocationEditDto> validateLocationEditDto(LocationEditDto locationEditDto) {
         return Optional.of(locationEditDto)
-                .filter(dto -> dto.getEditingUserId() != null && userRepository.existsById(dto.getEditingUserId()))
+                .filter(dto -> userRepository.existsById(dto.getEditingUserId()))
                 .filter(dto -> locationRepository.findById(dto.getId())
                         .filter(location -> location.getCreatedBy().equals(dto.getEditingUserId()))
                         .map(location -> !location.isPublic())
@@ -168,48 +173,6 @@ public class LocationService {
                     log.info("deleted location with id " + locationEntity.getId());
                     return locationMapper.toResponseDto(locationEntity);
                 });
-    }
-
-
-    public Optional<LocationResponseDto> publishLocation(LocationPublishDto locationPublishDto, UUID createdBy) {
-        LocationEntity location = locationRepository.findById(locationPublishDto.getLocationId())
-                .filter(locationEntity -> locationEntity.getCreatedBy().equals(createdBy))
-                .orElseThrow(() -> new ApplicationException("Location not found"));
-
-        if (location.isPublic()) throw new ApplicationException("Location already public");
-
-        List<LocationEntity> allLocations = locationRepository.findAll();
-        for (LocationEntity otherLocation : allLocations) {
-            if (!otherLocation.getId().equals(locationPublishDto.getLocationId())) {
-                double distance = calculateDistance(
-                        location.getLat(),
-                        location.getLon(),
-                        otherLocation.getLat(),
-                        otherLocation.getLon()
-                );
-                if (distance < 50) {
-                    throw new ApplicationException("Location is less than 50 meters away from another location.");
-                }
-            }
-        }
-
-        location.setPublic(true);
-        location.setMinRequiredPointsToView(locationPublishDto.getMinRequiredPointsToView());
-
-        locationRepository.save(location);
-
-        return Optional.of(locationMapper.toResponseDto(location));
-    }
-
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int EARTH_RADIUS = 6371;
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return EARTH_RADIUS * c * 1000;
     }
 
 }

@@ -223,9 +223,9 @@ class FeedServiceTest {
     void hasUserUpvotedPost_returnsTrueWhenUserHasUpvoted() {
         // Given
         Long postId = 1L;
-        UpvoteEntity upvoteEntity = new UpvoteEntity();
-        upvoteEntity.setUser(userEntity);
-        postEntity.setUpvotes(List.of(upvoteEntity));
+        UpvoteEntity upvoteEntity2 = new UpvoteEntity();
+        upvoteEntity2.setUser(userEntity);
+        postEntity.setUpvotes(List.of(upvoteEntity2));
         given(postRepository.findById(postId)).willReturn(Optional.of(postEntity));
 
         // When
@@ -317,7 +317,10 @@ class FeedServiceTest {
         given(locationRepository.findById(postEntity.getLocation().getId())).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(ApplicationException.class, () -> feedService.findPosts(searchCriteria, userEntity.getId()));
+        UUID uuid = userEntity.getId();
+        assertThrows(ApplicationException.class, () -> {
+            feedService.findPosts(searchCriteria, uuid);
+        });
 
         verify(postRepository, times(1)).findAll(any(Specification.class), eq(pageable));
     }

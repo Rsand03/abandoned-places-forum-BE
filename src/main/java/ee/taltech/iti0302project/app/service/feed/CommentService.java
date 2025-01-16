@@ -20,6 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 @Slf4j
 public class CommentService {
 
@@ -28,7 +29,6 @@ public class CommentService {
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
-    @Transactional
     public CommentDto createComment(CreateCommentDto commentDto) {
         PostEntity post = postRepository.findById(commentDto.getPostId())
                 .orElseThrow(() -> new ApplicationException("Post not found"));

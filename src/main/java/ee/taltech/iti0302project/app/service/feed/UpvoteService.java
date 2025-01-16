@@ -17,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class UpvoteService {
 
@@ -25,7 +26,6 @@ public class UpvoteService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
-    @Transactional
     public UpvoteResponseDto toggleUpvote(CreateUpvoteDto upvoteDto) {
         boolean hasAlreadyUpvoted = upvoteRepository.existsByPostIdAndUserId(upvoteDto.getPostId(), upvoteDto.getUserId());
 

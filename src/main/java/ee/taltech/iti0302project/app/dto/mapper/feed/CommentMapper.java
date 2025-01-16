@@ -6,7 +6,6 @@ import ee.taltech.iti0302project.app.entity.feed.CommentEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 

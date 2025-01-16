@@ -13,7 +13,7 @@
 
 
     <!-- ChangeSet for the users table -->
-    <changeSet id="1" author="author_name">
+    <changeSet id="1" author="16-01-2025-rasand">
         <createTable tableName="users">
             <column name="id" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
@@ -33,7 +33,9 @@
             <column name="role" type="varchar(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="timestamp"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

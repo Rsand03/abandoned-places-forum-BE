@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class CommentControllerIT {
+class CommentControllerIT {
 
     @Autowired
     private MockMvc mvc;
