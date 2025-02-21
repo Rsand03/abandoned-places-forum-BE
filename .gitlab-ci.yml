@@ -58,13 +58,13 @@ deploy:
     - chmod 700 ~/.ssh
   script:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
-      cd /opt/iti0302/postgres &&
+      cd /opt/web-project/postgres &&
       sudo docker-compose down &&
       sudo docker-compose pull &&
       sudo docker-compose up -d &&
-      cd /opt/iti0302/backend &&
+      cd /opt/web-project/backend &&
       sudo docker-compose down &&
       sudo docker-compose pull &&
       sudo docker-compose up -d"
   only:
-    - main
+    - branches
