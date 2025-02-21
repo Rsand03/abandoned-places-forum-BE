@@ -47,7 +47,9 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5174", "http://localhost:5173", "http://abandoned.zapto.org"));
+        config.setAllowedOrigins(
+                List.of("http://localhost:5174", "http://localhost:5173", "http://abandoned.zapto.org", "https://abandoned.zapto.org")
+        );
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
