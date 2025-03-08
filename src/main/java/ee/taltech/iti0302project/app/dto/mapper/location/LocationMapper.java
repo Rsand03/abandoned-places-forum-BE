@@ -12,8 +12,8 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LocationMapper {
 
-    @Mapping(source = "condition.name", target = "condition")
-    @Mapping(source = "status.name", target = "status")
+    @Mapping(source = "condition", target = "condition")
+    @Mapping(source = "status", target = "status")
     LocationResponseDto toResponseDto(LocationEntity locationEntity);
 
     List<LocationResponseDto> toDtoList(List<LocationEntity> locationEntityList);

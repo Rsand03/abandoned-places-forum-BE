@@ -12,8 +12,8 @@ import java.util.List;
 public interface FetchPostsMapper {
 
     @Mapping(source = "createdBy.username", target = "createdByUsername")
-    @Mapping(source = "location.condition.name", target = "location.condition")
-    @Mapping(source = "location.status.name", target = "location.status")
+    @Mapping(source = "location.condition", target = "location.condition")
+    @Mapping(source = "location.status", target = "location.status")
     FetchPostsDto toDto(PostEntity postEntity);
 
     @Mapping(source = "createdBy.username", target = "createdByUsername")

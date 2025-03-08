@@ -3,6 +3,8 @@ package ee.taltech.iti0302project.test.service.location;
 import ee.taltech.iti0302project.app.dto.location.LocationCreateDto;
 import ee.taltech.iti0302project.app.dto.location.LocationResponseDto;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationCategoryDto;
+import ee.taltech.iti0302project.app.dto.location.attributes.LocationConditionDto;
+import ee.taltech.iti0302project.app.dto.location.attributes.LocationStatusDto;
 import ee.taltech.iti0302project.app.dto.mapper.location.LocationMapper;
 import ee.taltech.iti0302project.app.entity.location.LocationCategoryEntity;
 import ee.taltech.iti0302project.app.entity.location.LocationConditionEntity;
@@ -77,6 +79,8 @@ class LocationServiceTest {
 
     private LocationCategoryDto defaultMainCategoryDto;
     private List<LocationCategoryDto> defaultSubCategoriesDto;
+    private LocationConditionDto defaultConditionDto;
+    private LocationStatusDto defaultStatusDto;
 
     private LocationEntity locationEntitySavedToRepository;
     private LocationEntity locationEntityReceivedFromRepository;
@@ -93,9 +97,16 @@ class LocationServiceTest {
         subCategory2.setId(4L);
         defaultSubCategories = List.of(subCategory1, subCategory2);
 
-        defaultMainCategoryDto = LocationCategoryDto.builder().id(2L).build();
+        defaultMainCategoryDto = LocationCategoryDto.builder()
+                .id(2L).build();
         defaultSubCategoriesDto = List.of(
-                LocationCategoryDto.builder().id(3L).build(), LocationCategoryDto.builder().id(4L).build());
+                LocationCategoryDto.builder().id(3L).build(),
+                LocationCategoryDto.builder().id(4L).build()
+        );
+        defaultConditionDto = LocationConditionDto.builder()
+                .id(1L).build();
+        defaultStatusDto = LocationStatusDto.builder()
+                .id(1L).build();
 
         defaultCondition = new LocationConditionEntity();
         defaultCondition.setId(1L);
@@ -154,8 +165,8 @@ class LocationServiceTest {
         given(locationMapper.toResponseDto(locationEntityReceivedFromRepository)).willReturn(locationResponseDto);
         locationResponseDto.setMainCategory(defaultMainCategoryDto);
         locationResponseDto.setSubCategories(defaultSubCategoriesDto);
-        locationResponseDto.setCondition(locationEntityReceivedFromRepository.getCondition().getName());
-        locationResponseDto.setStatus(locationEntityReceivedFromRepository.getStatus().getName());
+        locationResponseDto.setCondition(defaultConditionDto);
+        locationResponseDto.setStatus(defaultStatusDto);
 
         // When
         LocationResponseDto result = locationService.createLocation(defaultLocationCreateDto);
@@ -196,8 +207,8 @@ class LocationServiceTest {
         given(locationMapper.toResponseDto(locationEntityReceivedFromRepository)).willReturn(locationResponseDto);
         locationResponseDto.setMainCategory(defaultMainCategoryDto);
         locationResponseDto.setSubCategories(List.of());
-        locationResponseDto.setCondition(locationEntityReceivedFromRepository.getCondition().getName());
-        locationResponseDto.setStatus(locationEntityReceivedFromRepository.getStatus().getName());
+        locationResponseDto.setCondition(defaultConditionDto);
+        locationResponseDto.setStatus(defaultStatusDto);
 
         // When
         LocationResponseDto result = locationService.createLocation(defaultLocationCreateDto);
