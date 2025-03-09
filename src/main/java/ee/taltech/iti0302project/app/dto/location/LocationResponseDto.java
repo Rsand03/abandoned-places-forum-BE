@@ -2,6 +2,8 @@ package ee.taltech.iti0302project.app.dto.location;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ee.taltech.iti0302project.app.dto.location.attributes.LocationCategoryDto;
+import ee.taltech.iti0302project.app.dto.location.attributes.LocationConditionDto;
+import ee.taltech.iti0302project.app.dto.location.attributes.LocationStatusDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -30,11 +32,11 @@ public class LocationResponseDto {
     @Schema(description = "List of locationCategory objects containing id, name and colorHex")
     private List<LocationCategoryDto> subCategories;
 
-    @Schema(description = "Location condiditon name", example = "Eluohtlik")
-    private String condition;
+    @Schema(description = "LocationCondition object containing id, name")
+    private LocationConditionDto condition;
 
-    @Schema(description = "Location status name", example = "Raskesti ligipääsetav")
-    private String status;
+    @Schema(description = "LocationStatus object containing id, name")
+    private LocationStatusDto status;
 
     @Schema(description = "Additional info about the location",
             example = "Interior is generally well-preserved, but the roof is leaking and the ceilings might collapse")
